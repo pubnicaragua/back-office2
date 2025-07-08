@@ -1,7 +1,6 @@
 import React from 'react';
 import { MetricsCard } from './MetricsCard';
 import { PieChart } from './PieChart';
-import { AdvancedCharts } from './AdvancedCharts';
 import { MessageCircle } from 'lucide-react';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 
@@ -119,15 +118,6 @@ export function GeneralDashboard() {
   const assistanceData = processAttendanceData();
   const lossData = processLossData();
 
-  // Sample data for advanced charts
-  const salesTrendData = [
-    { name: 'Ene', value: 65000 },
-    { name: 'Feb', value: 72000 },
-    { name: 'Mar', value: 68000 },
-    { name: 'Abr', value: 78000 },
-    { name: 'May', value: 85000 },
-    { name: 'Jun', value: 92000 },
-  ];
   return (
     <div className="p-6 space-y-6">
       {/* Metrics Cards */}
@@ -161,22 +151,6 @@ export function GeneralDashboard() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Advanced Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <AdvancedCharts 
-          data={salesTrendData} 
-          type="line" 
-          title="Tendencia de Ventas (6 meses)" 
-          color="#3B82F6"
-        />
-        <AdvancedCharts 
-          data={salesTrendData} 
-          type="area" 
-          title="Crecimiento Acumulado" 
-          color="#10B981"
-        />
       </div>
     </div>
   );

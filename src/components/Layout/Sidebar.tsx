@@ -9,10 +9,7 @@ import {
   X,
   Tag,
   Send,
-  Monitor,
-  UserCheck,
-  Settings,
-  PieChart
+  Monitor
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -32,9 +29,6 @@ const menuItems = [
   { id: 'documentos', label: 'Documentos', icon: FileText },
   { id: 'promociones', label: 'Promociones', icon: Tag },
   { id: 'colaboradores', label: 'Colaboradores', icon: Users },
-  { id: 'clientes', label: 'Clientes', icon: UserCheck },
-  { id: 'reportes', label: 'Reportes', icon: PieChart },
-  { id: 'configuracion', label: 'Configuración', icon: Settings },
 ];
 
 export function Sidebar({ currentView, onViewChange, isOpen, onToggle }: SidebarProps) {

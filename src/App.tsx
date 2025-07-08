@@ -12,10 +12,6 @@ import { VentasDashboard } from './components/Ventas/VentasDashboard';
 import { ProductosTotales } from './components/Inventario/ProductosTotales';
 import { RecepcionPedidos } from './components/Pedidos/RecepcionPedidos';
 import { GestionDespachos } from './components/GestionDespachos/GestionDespachos';
-import { GestionClientes } from './components/Clientes/GestionClientes';
-import { CentroReportes } from './components/Reportes/CentroReportes';
-import { ConfiguracionGeneral } from './components/Configuracion/ConfiguracionGeneral';
-import { SolvIAChat } from './components/Chat/SolvIAChat';
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -57,12 +53,6 @@ function AppContent() {
         return <Promociones />;
       case 'colaboradores':
         return <Colaboradores />;
-      case 'clientes':
-        return <GestionClientes />;
-      case 'reportes':
-        return <CentroReportes />;
-      case 'configuracion':
-        return <ConfiguracionGeneral />;
       default:
         return <GeneralDashboard />;
     }
@@ -87,7 +77,6 @@ function AppContent() {
         <main className="bg-gray-50">
           {renderContent()}
         </main>
-        <SolvIAChat />
       </div>
     </div>
   );
