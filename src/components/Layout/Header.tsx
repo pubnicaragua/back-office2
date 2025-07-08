@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Clock, User } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { NotificationCenter } from '../Notificaciones/NotificationCenter';
 
 interface HeaderProps {
   onMenuToggle: () => void;
@@ -31,6 +32,9 @@ export function Header({ onMenuToggle, currentView }: HeaderProps) {
       case 'documentos': return 'Documentos';
       case 'promociones': return 'Promociones';
       case 'colaboradores': return 'Colaboradores';
+      case 'clientes': return 'Clientes';
+      case 'reportes': return 'Reportes';
+      case 'configuracion': return 'Configuración';
       default: return 'General';
     }
   };
@@ -70,6 +74,8 @@ export function Header({ onMenuToggle, currentView }: HeaderProps) {
             <span className="font-medium">{formatTime(currentTime)}</span>
             <Clock className="w-4 h-4" />
           </div>
+          
+          <NotificationCenter />
           
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
