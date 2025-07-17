@@ -3,11 +3,18 @@ import { Table } from '../Common/Table';
 import { NotaCreditoDetalle } from './NotaCreditoDetalle';
 import { FilterModal } from '../Common/FilterModal';
 import { Filter } from 'lucide-react';
+import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 export function NotaCredito() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showDetalle, setShowDetalle] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+
+  const { data: notasCredito, loading } = useSupabaseData<any>(
+    'ventas',
+    '*, sucursales(nombre), cajas(nombre)',
+    { tipo_dte: 'nota_credito' }
+  );
 
   const columns = [
     { key: 'tipo', label: 'Tipo de doc.' },
@@ -18,48 +25,18 @@ export function NotaCredito() {
     { key: 'caja', label: 'Caja' },
   ];
 
-  const data = [
-    {
-      tipo: 'Manual',
-      folio: '8949564506',
-      fecha: '28/05/2025 20:00',
-      monto: '$ 1,523',
-      sucursal: 'N°1',
-      caja: 'N°1',
-    },
-    {
-      tipo: 'Electrónica',
-      folio: '8949564506',
-      fecha: '28/05/2025 20:00',
-      monto: '$ 1,523',
-      sucursal: 'N°1',
-      caja: 'N°1',
-    },
-    {
-      tipo: 'Electrónica',
-      folio: '8949564506',
-      fecha: '28/05/2025 20:00',
-      monto: '$ 1,523',
-      sucursal: 'N°1',
-      caja: 'N°1',
-    },
-    {
-      tipo: 'Electrónica',
-      folio: '8949564506',
-      fecha: '28/05/2025 20:00',
-      monto: '$ 1,523',
-      sucursal: 'N°1',
-      caja: 'N°1',
-    },
-    {
-      tipo: 'Electrónica',
-      folio: '8949564506',
-      fecha: '28/05/2025 20:00',
-      monto: '$ 1,523',
-      sucursal: 'N°1',
-      caja: 'N°1',
-    },
-  ];
+  const processedData = notasCredito.map(nota => ({
+    tipo: 'Electrónica',
+    folio: nota.folio,
+    fecha: new Date(nota.fecha).toLocaleString('es-CL'),
+    monto: `$ ${parseFloat(nota.total || 0).toLocaleString('es-CL')}`,
+    sucursal: nota.sucursales?.nombre || 'N°1',
+    caja: nota.cajas?.nombre || 'N°1',
+  }));
+
+  if (loading) {
+    return <div className="text-center py-4">Cargando notas de crédito...</div>;
+  }
 
   if (showDetalle) {
     return <NotaCreditoDetalle onBack={() => setShowDetalle(false)} />;
@@ -93,7 +70,7 @@ export function NotaCredito() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {data.map((row, index) => (
+            {processedData.map((row, index) => (
               <tr 
                 key={index} 
                 className="hover:bg-gray-50 cursor-pointer"

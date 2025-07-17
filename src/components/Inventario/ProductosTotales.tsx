@@ -17,7 +17,7 @@ export function ProductosTotales() {
 
   const { data: productos, loading } = useSupabaseData<any>(
     'productos',
-    '*'
+    '*, categorias(nombre)'
   );
 
   const columns = [
@@ -32,19 +32,19 @@ export function ProductosTotales() {
   ];
 
   const processedData = productos.map(producto => ({
-    producto: producto.nombre || 'Super 8',
-    stock: '1',
-    categoria: 'Chocolate',
-    descripcion: producto.descripcion || '50gr',
-    sku: producto.codigo || '9434763021',
-    costo: `Costo: ${Math.round(producto.precio * 0.6)} $`,
-    precio: `Precio: ${producto.precio} $`,
-    disponible: '',
+    producto: producto.nombre,
+    stock: producto.stock?.toString() || '0',
+    categoria: producto.categorias?.nombre || 'Sin categoría',
+    descripcion: producto.descripcion || '',
+    sku: producto.codigo,
+    costo: `Costo: ${Math.round((producto.costo || 0))} $`,
+    precio: `Precio: ${Math.round((producto.precio || 0))} $`,
+    disponible: producto.stock > 0 ? 'Disponible' : 'Agotado',
   }));
 
   const filteredData = processedData.filter(item =>
     item.producto.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.sku.includes(searchTerm)
+    item.sku.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {

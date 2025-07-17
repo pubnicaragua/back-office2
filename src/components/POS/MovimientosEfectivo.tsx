@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import { Table } from '../Common/Table';
+import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 export function MovimientosEfectivo() {
   const [currentPage, setCurrentPage] = useState(1);
+  
+  const { data: movimientos, loading } = useSupabaseData<any>(
+    'movimientos_caja',
+    '*, usuarios(nombre), aperturas_caja(*, cajas(nombre), sucursales(nombre))'
+  );
 
   const columns = [
     { key: 'tipo', label: 'Retiro / Ingreso' },
@@ -12,51 +18,25 @@ export function MovimientosEfectivo() {
     { key: 'caja', label: 'Caja' },
   ];
 
-  const data = [
-    {
-      tipo: 'Retiro',
-      monto: '$ 1,523',
-      fecha: '28/05/2025 20:00',
-      sucursal: 'N°1',
-      caja: 'N°1',
-    },
-    {
-      tipo: 'Ingreso',
-      monto: '$ 1,523',
-      fecha: '28/05/2025 18:00',
-      sucursal: 'N°5',
-      caja: 'N°5',
-    },
-    {
-      tipo: 'Ingreso',
-      monto: '$ 1,523',
-      fecha: '28/05/2025 18:00',
-      sucursal: 'N°5',
-      caja: 'N°5',
-    },
-    {
-      tipo: 'Ingreso',
-      monto: '$ 1,523',
-      fecha: '28/05/2025 18:00',
-      sucursal: 'N°5',
-      caja: 'N°5',
-    },
-    {
-      tipo: 'Ingreso',
-      monto: '$ 1,523',
-      fecha: '28/05/2025 18:00',
-      sucursal: 'N°5',
-      caja: 'N°5',
-    },
-  ];
+  const processedData = movimientos.map(movimiento => ({
+    tipo: movimiento.tipo === 'ingreso' ? 'Ingreso' : 'Retiro',
+    monto: `$ ${parseFloat(movimiento.monto || 0).toLocaleString('es-CL')}`,
+    fecha: new Date(movimiento.fecha).toLocaleString('es-CL'),
+    sucursal: movimiento.aperturas_caja?.sucursales?.nombre || 'N°1',
+    caja: movimiento.aperturas_caja?.cajas?.nombre || 'N°1',
+  }));
+
+  if (loading) {
+    return <div className="text-center py-4">Cargando movimientos...</div>;
+  }
 
   return (
     <div className="space-y-6">
       <Table
         columns={columns}
-        data={data}
+        data={processedData}
         currentPage={currentPage}
-        totalPages={3}
+        totalPages={Math.ceil(processedData.length / 10)}
         onPageChange={setCurrentPage}
       />
     </div>

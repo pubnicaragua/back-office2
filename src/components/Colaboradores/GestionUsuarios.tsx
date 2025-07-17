@@ -29,12 +29,17 @@ export function GestionUsuarios() {
     { key: 'rol', label: 'Rol' },
   ];
 
-  const processedData = usuarios.map(usuario => ({
-    nombres: usuario.nombres || 'Pedro Pérez',
-    rut: usuario.rut || '12.345.678-9',
-    edad: '35',
-    rol: 'Empleado',
-  }));
+  const processedData = usuarios.map(usuario => {
+    const fechaNacimiento = new Date('1990-01-01'); // Default date
+    const edad = new Date().getFullYear() - fechaNacimiento.getFullYear();
+    
+    return {
+      nombres: `${usuario.nombre} ${usuario.apellidos}`,
+      rut: usuario.rut,
+      edad: edad.toString(),
+      rol: usuario.usuario_empresa?.[0]?.rol || 'Empleado',
+    };
+  });
 
   const filteredData = processedData.filter(item =>
     item.nombres.toLowerCase().includes(searchTerm.toLowerCase()) ||

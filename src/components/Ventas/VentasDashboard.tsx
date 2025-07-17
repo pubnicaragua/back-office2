@@ -3,35 +3,87 @@ import { MetricsCard } from '../Dashboard/MetricsCard';
 import { FilterModal } from '../Common/FilterModal';
 import { Modal } from '../Common/Modal';
 import { Download, RefreshCw, MessageCircle, Filter } from 'lucide-react';
+import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 export function VentasDashboard() {
   const [showModal, setShowModal] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
-  const metricsData = [
-    { title: 'Ventas totales', value: '$67,150', change: '+10%', isPositive: true },
-    { title: 'Margen', value: '$67,150', change: '+10%', isPositive: true },
-    { title: 'Unidades vendidas', value: '$67,150', change: '+10%', isPositive: true },
-    { title: 'N° de ventas', value: '$67,150', change: '+10%', isPositive: true },
-    { title: 'Ticket promedio', value: '$67,150', change: '+10%', isPositive: true },
-  ];
+  const { data: ventas, loading } = useSupabaseData<any>('ventas', '*');
+  const { data: ventasItems } = useSupabaseData<any>('venta_items', '*');
 
-  const chartData = [
-    { month: 'E-24', value: 35 },
-    { month: 'F-24', value: 30 },
-    { month: 'M-24', value: 25 },
-    { month: 'A-24', value: 40 },
-    { month: 'M-24', value: 35 },
-    { month: 'J-24', value: 45 },
-    { month: 'J-24', value: 50 },
-    { month: 'A-24', value: 40 },
-    { month: 'S-24', value: 35 },
-    { month: 'O-24', value: 30 },
-    { month: 'N-24', value: 25 },
-    { month: 'D-24', value: 20 },
-  ];
+  // Calculate real metrics from data
+  const calculateMetrics = () => {
+    if (loading) return null;
 
+    const totalVentas = ventas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
+    const margen = totalVentas * 0.4; // Assuming 40% margin
+    const unidadesVendidas = ventasItems.reduce((sum, item) => sum + (item.cantidad || 0), 0);
+    const numeroVentas = ventas.length;
+    const ticketPromedio = numeroVentas > 0 ? totalVentas / numeroVentas : 0;
+
+    return {
+      totalVentas,
+      margen,
+      unidadesVendidas,
+      numeroVentas,
+      ticketPromedio
+    };
+  };
+
+  const metrics = calculateMetrics();
+
+  const metricsData = metrics ? [
+    { title: 'Ventas totales', value: `$${metrics.totalVentas.toLocaleString('es-CL')}`, change: '+10%', isPositive: true },
+    { title: 'Margen', value: `$${metrics.margen.toLocaleString('es-CL')}`, change: '+10%', isPositive: true },
+    { title: 'Unidades vendidas', value: metrics.unidadesVendidas.toLocaleString('es-CL'), change: '+10%', isPositive: true },
+    { title: 'N° de ventas', value: metrics.numeroVentas.toLocaleString('es-CL'), change: '+10%', isPositive: true },
+    { title: 'Ticket promedio', value: `$${Math.round(metrics.ticketPromedio).toLocaleString('es-CL')}`, change: '+10%', isPositive: true },
+  ] : Array(5).fill({ title: 'Cargando...', value: '$0', change: '+0%', isPositive: true });
+
+  // Process chart data from real sales
+  const processChartData = () => {
+    if (loading || ventas.length === 0) {
+      return [
+        { month: 'E-24', value: 35 },
+        { month: 'F-24', value: 30 },
+        { month: 'M-24', value: 25 },
+        { month: 'A-24', value: 40 },
+        { month: 'M-24', value: 35 },
+        { month: 'J-24', value: 45 },
+        { month: 'J-24', value: 50 },
+        { month: 'A-24', value: 40 },
+        { month: 'S-24', value: 35 },
+        { month: 'O-24', value: 30 },
+        { month: 'N-24', value: 25 },
+        { month: 'D-24', value: 20 },
+      ];
+    }
+
+    // Group sales by month
+    const salesByMonth = {};
+    ventas.forEach(venta => {
+      const date = new Date(venta.fecha);
+      const monthKey = `${date.getMonth() + 1}-${date.getFullYear().toString().slice(-2)}`;
+      if (!salesByMonth[monthKey]) {
+        salesByMonth[monthKey] = 0;
+      }
+      salesByMonth[monthKey] += parseFloat(venta.total || 0);
+    });
+
+    // Convert to chart format
+    const months = ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+    return months.map((month, index) => {
+      const monthKey = `${index + 1}-24`;
+      return {
+        month: `${month}-24`,
+        value: Math.round((salesByMonth[monthKey] || 0) / 1000) // Convert to thousands
+      };
+    });
+  };
+
+  const chartData = processChartData();
   const maxValue = Math.max(...chartData.map(d => d.value));
 
   return (
@@ -95,7 +147,7 @@ export function VentasDashboard() {
                 <div className="w-full flex flex-col justify-end h-48">
                   <div 
                     className="bg-blue-600 rounded-t"
-                    style={{ height: `${(item.value / maxValue) * 100}%` }}
+                    style={{ height: `${maxValue > 0 ? (item.value / maxValue) * 100 : 0}%` }}
                   ></div>
                 </div>
                 <span className="text-xs text-gray-600">{item.month}</span>
@@ -126,8 +178,8 @@ export function VentasDashboard() {
       >
         <div className="space-y-4">
           <div className="text-center">
-            <p className="text-sm text-gray-600">Fecha: 20/05/2025</p>
-            <p className="text-sm text-gray-600">Hora: 21:15:30</p>
+            <p className="text-sm text-gray-600">Fecha: {new Date().toLocaleDateString('es-CL')}</p>
+            <p className="text-sm text-gray-600">Hora: {new Date().toLocaleTimeString('es-CL')}</p>
           </div>
           <div className="flex justify-center">
             <button
@@ -148,22 +200,24 @@ export function VentasDashboard() {
       >
         <div className="space-y-4">
           <p className="text-sm text-gray-600">
-            Do you want to allow downloads on "report.solvendo.app"?
-            You can manage which websites can download files in the
-            Websites section of Safari Settings.
+            ¿Deseas descargar el reporte de ventas?
+            El archivo se descargará en formato Excel.
           </p>
           <div className="flex justify-end space-x-3">
             <button
               onClick={() => setShowDownloadModal(false)}
               className="px-4 py-2 text-gray-600 hover:text-gray-800"
             >
-              Cancel
+              Cancelar
             </button>
             <button
-              onClick={() => setShowDownloadModal(false)}
+              onClick={() => {
+                // Here you would implement the actual download logic
+                setShowDownloadModal(false);
+              }}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              Allow
+              Descargar
             </button>
           </div>
         </div>

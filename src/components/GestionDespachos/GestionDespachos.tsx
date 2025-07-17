@@ -9,7 +9,7 @@ export function GestionDespachos() {
 
   const { data: despachos, loading } = useSupabaseData<any>(
     'despachos',
-    '*, usuarios(nombres), sucursales(nombre)'
+    '*, usuarios(nombre), sucursales(nombre), clientes(razon_social)'
   );
 
   const columns = [
@@ -22,11 +22,11 @@ export function GestionDespachos() {
   ];
 
   const processedData = despachos.map(despacho => ({
-    entregado_por: despacho.usuarios?.nombres || 'Emilio Aguilera',
+    entregado_por: despacho.usuarios?.nombre || 'Emilio Aguilera',
     folio_factura: despacho.folio || '8949564506',
-    fecha: new Date(despacho.fecha).toLocaleDateString('es-CL') || '30/05/2025',
-    monto_total: '$2000',
-    estado: despacho.estado || 'Entregado',
+    fecha: new Date(despacho.fecha).toLocaleDateString('es-CL'),
+    monto_total: '$2000', // This would need to be calculated from related items
+    estado: despacho.estado === 'pendiente' ? 'Pendiente' : 'Entregado',
     sucursal_destino: despacho.sucursales?.nombre || 'Tienda N°1',
   }));
 

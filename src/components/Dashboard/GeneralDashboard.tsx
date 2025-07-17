@@ -5,16 +5,17 @@ import { MessageCircle } from 'lucide-react';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 export function GeneralDashboard() {
-  const { data: ventas, loading: ventasLoading } = useSupabaseData<any>('ventas', '*');
-  const { data: asistencias, loading: asistenciasLoading } = useSupabaseData<any>('asistencias', '*');
-  const { data: mermas, loading: mermasLoading } = useSupabaseData<any>('mermas', '*');
+  const { data: ventas, loading: ventasLoading } = useSupabaseData<any>('ventas', '*, clientes(razon_social), usuarios(nombre)');
+  const { data: asistencias, loading: asistenciasLoading } = useSupabaseData<any>('asistencias', '*, usuarios(nombre)');
+  const { data: mermas, loading: mermasLoading } = useSupabaseData<any>('mermas', '*, productos(nombre)');
+  const { data: productos } = useSupabaseData<any>('productos', '*');
 
   // Calculate real metrics from data
   const calculateMetrics = () => {
     if (ventasLoading) return null;
 
-    const totalVentas = ventas.reduce((sum, venta) => sum + (venta.total || 0), 0);
-    const totalUnidades = ventas.reduce((sum, venta) => sum + (venta.cantidad || 1), 0);
+    const totalVentas = ventas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
+    const totalUnidades = ventas.reduce((sum, venta) => sum + 1, 0); // Assuming 1 unit per sale for now
     const numeroVentas = ventas.length;
     const ticketPromedio = numeroVentas > 0 ? totalVentas / numeroVentas : 0;
     
@@ -77,9 +78,9 @@ export function GeneralDashboard() {
     }
 
     const total = asistencias.length;
-    const presente = asistencias.filter(a => a.estado === 'presente').length;
-    const ausente = asistencias.filter(a => a.estado === 'ausente').length;
-    const tarde = asistencias.filter(a => a.estado === 'tarde').length;
+    const presente = asistencias.filter(a => a.hora_ingreso && a.hora_salida).length;
+    const ausente = asistencias.filter(a => !a.hora_ingreso).length;
+    const tarde = asistencias.filter(a => a.hora_ingreso && new Date(`1970-01-01T${a.hora_ingreso}`) > new Date('1970-01-01T08:30:00')).length;
     const justificado = total - presente - ausente - tarde;
 
     return [
@@ -130,7 +131,7 @@ export function GeneralDashboard() {
       {/* Charts and SolvIA */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <PieChart 
-          title="Asistencia / Inasistencia totales" 
+          title="Asistencias / Inasistencias totales" 
           data={assistanceData} 
         />
         

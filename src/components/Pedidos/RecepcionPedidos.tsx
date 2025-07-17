@@ -2,10 +2,16 @@ import React, { useState } from 'react';
 import { Table } from '../Common/Table';
 import { DetallePedido } from './DetallePedido';
 import { Filter, Plus, Download } from 'lucide-react';
+import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 export function RecepcionPedidos() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showDetalle, setShowDetalle] = useState(false);
+
+  const { data: pedidos, loading } = useSupabaseData<any>(
+    'despachos',
+    '*, usuarios(nombre), sucursales(nombre), clientes(razon_social)'
+  );
 
   const columns = [
     { key: 'proveedor', label: 'Proveedor' },
@@ -15,43 +21,17 @@ export function RecepcionPedidos() {
     { key: 'sucursal', label: 'Sucursal de captura' },
   ];
 
-  const data = [
-    {
-      proveedor: 'Pola - cola',
-      folio: '8949564506',
-      fecha: '30/05/2025',
-      monto: '$2000',
-      sucursal: 'Sucursal N°1',
-    },
-    {
-      proveedor: 'Proveedor',
-      folio: 'Folio factura',
-      fecha: 'Fecha',
-      monto: 'Monto total',
-      sucursal: 'Sucursal de captura',
-    },
-    {
-      proveedor: 'Proveedor',
-      folio: 'Folio factura',
-      fecha: 'Fecha',
-      monto: 'Monto total',
-      sucursal: 'Sucursal de captura',
-    },
-    {
-      proveedor: 'Proveedor',
-      folio: 'Folio factura',
-      fecha: 'Fecha',
-      monto: 'Monto total',
-      sucursal: 'Sucursal de captura',
-    },
-    {
-      proveedor: 'Proveedor',
-      folio: 'Folio factura',
-      fecha: 'Fecha',
-      monto: 'Monto total',
-      sucursal: 'Sucursal de captura',
-    },
-  ];
+  const processedData = pedidos.map(pedido => ({
+    proveedor: pedido.clientes?.razon_social || 'Proveedor',
+    folio: pedido.folio || 'Folio factura',
+    fecha: new Date(pedido.fecha).toLocaleDateString('es-CL'),
+    monto: '$2000', // This would need to be calculated from related items
+    sucursal: pedido.sucursales?.nombre || 'Sucursal de captura',
+  }));
+
+  if (loading) {
+    return <div className="text-center py-4">Cargando pedidos...</div>;
+  }
 
   if (showDetalle) {
     return <DetallePedido onBack={() => setShowDetalle(false)} />;
@@ -90,7 +70,7 @@ export function RecepcionPedidos() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {data.map((row, index) => (
+            {processedData.map((row, index) => (
               <tr 
                 key={index} 
                 className="hover:bg-gray-50 cursor-pointer"

@@ -2,10 +2,16 @@ import React, { useState } from 'react';
 import { Table } from '../Common/Table';
 import { FilterModal } from '../Common/FilterModal';
 import { Filter } from 'lucide-react';
+import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 export function DocumentosEmitidos() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+
+  const { data: ventas, loading } = useSupabaseData<any>(
+    'ventas',
+    '*, sucursales(nombre), cajas(nombre)'
+  );
 
   const columns = [
     { key: 'tipo', label: 'Tipo de doc.' },
@@ -16,48 +22,18 @@ export function DocumentosEmitidos() {
     { key: 'caja', label: 'Caja' },
   ];
 
-  const data = [
-    {
-      tipo: 'Boleta',
-      folio: '8949564506',
-      fecha: '28/05/2025 20:00',
-      monto: '$ 1,523',
-      sucursal: 'N°1',
-      caja: 'N°1',
-    },
-    {
-      tipo: 'Factura',
-      folio: '8949564506',
-      fecha: '28/05/2025 20:00',
-      monto: '$ 1,523',
-      sucursal: 'N°1',
-      caja: 'N°1',
-    },
-    {
-      tipo: 'Factura',
-      folio: '8949564506',
-      fecha: '28/05/2025 20:00',
-      monto: '$ 1,523',
-      sucursal: 'N°1',
-      caja: 'N°1',
-    },
-    {
-      tipo: 'Factura',
-      folio: '8949564506',
-      fecha: '28/05/2025 20:00',
-      monto: '$ 1,523',
-      sucursal: 'N°1',
-      caja: 'N°1',
-    },
-    {
-      tipo: 'Factura',
-      folio: '8949564506',
-      fecha: '28/05/2025 20:00',
-      monto: '$ 1,523',
-      sucursal: 'N°1',
-      caja: 'N°1',
-    },
-  ];
+  const processedData = ventas.map(venta => ({
+    tipo: venta.tipo_dte === 'boleta' ? 'Boleta' : venta.tipo_dte === 'factura' ? 'Factura' : 'Nota de Crédito',
+    folio: venta.folio,
+    fecha: new Date(venta.fecha).toLocaleString('es-CL'),
+    monto: `$ ${parseFloat(venta.total || 0).toLocaleString('es-CL')}`,
+    sucursal: venta.sucursales?.nombre || 'N°1',
+    caja: venta.cajas?.nombre || 'N°1',
+  }));
+
+  if (loading) {
+    return <div className="text-center py-4">Cargando documentos...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -74,9 +50,9 @@ export function DocumentosEmitidos() {
 
       <Table
         columns={columns}
-        data={data}
+        data={processedData}
         currentPage={currentPage}
-        totalPages={3}
+        totalPages={Math.ceil(processedData.length / 10)}
         onPageChange={setCurrentPage}
       />
 
