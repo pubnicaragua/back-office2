@@ -7,7 +7,7 @@ import { useSupabaseData } from '../../hooks/useSupabaseData';
 export function GeneralDashboard() {
   const { data: ventas, loading: ventasLoading } = useSupabaseData<any>('ventas', '*, clientes(razon_social), usuarios(nombre)');
   const { data: asistencias, loading: asistenciasLoading } = useSupabaseData<any>('asistencias', '*, usuarios(nombre)');
-  const { data: mermas, loading: mermasLoading } = useSupabaseData<any>('mermas', '*, productos(nombre)');
+  const { data: mermas, loading: mermasLoading } = useSupabaseData<any>('mermas', '*');
   const { data: productos } = useSupabaseData<any>('productos', '*');
 
   // Calculate real metrics from data

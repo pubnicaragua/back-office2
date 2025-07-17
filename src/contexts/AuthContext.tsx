@@ -126,7 +126,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               email: userEmail || 'usuario@ejemplo.com',
               nombres: 'Usuario',
               apellidos: '',
-              password_hash: 'managed_by_auth',
               activo: true
             }, {
               onConflict: 'id'
