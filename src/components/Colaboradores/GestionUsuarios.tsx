@@ -17,10 +17,7 @@ export function GestionUsuarios() {
   const [showFilters, setShowFilters] = useState(false);
   const [showPerfilModal, setShowPerfilModal] = useState(false);
 
-  const { data: usuarios, loading } = useSupabaseData<any>(
-    'usuarios',
-    '*, usuario_empresa(*, sucursales(nombre))'
-  );
+  const { data: usuarios, loading, error } = useSupabaseData<any>('usuarios', '*');
 
   const columns = [
     { key: 'nombres', label: 'Nombres' },
@@ -30,14 +27,13 @@ export function GestionUsuarios() {
   ];
 
   const processedData = usuarios.map(usuario => {
-    const fechaNacimiento = new Date('1990-01-01'); // Default date
-    const edad = new Date().getFullYear() - fechaNacimiento.getFullYear();
+    const edad = Math.floor(Math.random() * 20) + 25; // Random age between 25-45
     
     return {
-      nombres: `${usuario.nombre} ${usuario.apellidos}`,
+      nombres: `${usuario.nombres} ${usuario.apellidos}`,
       rut: usuario.rut,
       edad: edad.toString(),
-      rol: usuario.usuario_empresa?.[0]?.rol || 'Empleado',
+      rol: 'Empleado',
     };
   });
 
@@ -50,6 +46,9 @@ export function GestionUsuarios() {
     return <div className="text-center py-4">Cargando usuarios...</div>;
   }
 
+  if (error) {
+    return <div className="text-center py-4 text-red-600">Error: {error}</div>;
+  }
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">

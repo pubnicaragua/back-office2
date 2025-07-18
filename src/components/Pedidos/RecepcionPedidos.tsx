@@ -8,9 +8,9 @@ export function RecepcionPedidos() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showDetalle, setShowDetalle] = useState(false);
 
-  const { data: pedidos, loading } = useSupabaseData<any>(
+  const { data: pedidos, loading, error } = useSupabaseData<any>(
     'pedidos',
-    '*, sucursales(nombre), clientes(razon_social)'
+    '*, empresas(razon_social)'
   );
 
   const columns = [
@@ -22,17 +22,20 @@ export function RecepcionPedidos() {
   ];
 
   const processedData = pedidos.map(pedido => ({
-    proveedor: pedido.clientes?.razon_social || 'Pola - cola',
-    folio: pedido.folio || '8949564506',
-    fecha: new Date(pedido.fecha).toLocaleDateString('es-CL'),
-    monto: `$${pedido.monto_total?.toLocaleString('es-CL') || '2000'}`,
-    sucursal: pedido.sucursales?.nombre || 'Sucursal de captura',
+    proveedor: pedido.empresas?.razon_social || 'Proveedor',
+    folio: pedido.id?.slice(0, 8) || 'N/A',
+    fecha: new Date(pedido.fecha_pedido || pedido.created_at).toLocaleDateString('es-CL'),
+    monto: `$${pedido.total?.toLocaleString('es-CL') || '0'}`,
+    sucursal: 'Sucursal N°1',
   }));
 
   if (loading) {
     return <div className="text-center py-4">Cargando pedidos...</div>;
   }
 
+  if (error) {
+    return <div className="text-center py-4 text-red-600">Error: {error}</div>;
+  }
   if (showDetalle) {
     return <DetallePedido onBack={() => setShowDetalle(false)} />;
   }

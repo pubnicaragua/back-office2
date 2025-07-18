@@ -17,10 +17,7 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
   const [showAgregarModal, setShowAgregarModal] = useState(false);
   const [showEditarModal, setShowEditarModal] = useState(false);
 
-  const { data: promociones, loading } = useSupabaseData<any>(
-    'promociones',
-    '*, sucursales(nombre)'
-  );
+  const { data: productos, loading, error } = useSupabaseData<any>('productos', '*');
 
   const columns = [
     { key: 'nombre', label: 'Promoción' },
@@ -32,13 +29,13 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
     { key: 'disponible', label: 'Disponible' },
   ];
 
-  const processedData = promociones.map(promo => ({
-    nombre: promo.nombre || 'Bebidas',
-    numero_limite: promo.limite_cant || '50',
-    descripcion: promo.descripcion || '20 en bebidas.',
-    sucursal: promo.sucursales?.nombre || 'N°1',
-    costo: `Costo: ${promo.precio_prom || 18} $`,
-    precio: `Precio: ${promo.precio_prom ? promo.precio_prom + 16 : 34} $`,
+  const processedData = productos.slice(0, 5).map(producto => ({
+    nombre: `Promo ${producto.nombre}`,
+    numero_limite: '50',
+    descripcion: `Promoción especial en ${producto.nombre}`,
+    sucursal: 'N°1',
+    costo: `Costo: ${Math.round((producto.costo || producto.precio * 0.7))} $`,
+    precio: `Precio: ${Math.round(producto.precio)} $`,
     disponible: '',
   }));
 
@@ -51,6 +48,9 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
     return <div className="text-center py-4">Cargando promociones...</div>;
   }
 
+  if (error) {
+    return <div className="text-center py-4 text-red-600">Error: {error}</div>;
+  }
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">

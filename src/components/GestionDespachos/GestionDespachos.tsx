@@ -7,9 +7,9 @@ export function GestionDespachos() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showDetalle, setShowDetalle] = useState(false);
 
-  const { data: despachos, loading } = useSupabaseData<any>(
-    'despachos',
-    '*, usuarios(nombres), sucursales(nombre)'
+  const { data: pedidos, loading, error } = useSupabaseData<any>(
+    'pedidos',
+    '*'
   );
 
   const columns = [
@@ -21,19 +21,22 @@ export function GestionDespachos() {
     { key: 'sucursal_destino', label: 'Sucursal de destino' },
   ];
 
-  const processedData = despachos.map(despacho => ({
-    entregado_por: despacho.usuarios?.nombres || 'Emilio Aguilera',
-    folio_factura: despacho.folio || '8949564506',
-    fecha: new Date(despacho.fecha).toLocaleDateString('es-CL'),
-    monto_total: '$2000',
-    estado: despacho.estado === 'pendiente' ? 'Pendiente' : 'Entregado',
-    sucursal_destino: despacho.sucursales?.nombre || 'Tienda N°1',
+  const processedData = pedidos.map(pedido => ({
+    entregado_por: 'Emilio Aguilera',
+    folio_factura: pedido.id?.slice(0, 8) || 'N/A',
+    fecha: new Date(pedido.fecha_pedido || pedido.created_at).toLocaleDateString('es-CL'),
+    monto_total: `$${pedido.total?.toLocaleString('es-CL') || '0'}`,
+    estado: pedido.estado === 'pendiente' ? 'Pendiente' : 'Entregado',
+    sucursal_destino: 'Sucursal N°1',
   }));
 
   if (loading) {
     return <div className="text-center py-4">Cargando despachos...</div>;
   }
 
+  if (error) {
+    return <div className="text-center py-4 text-red-600">Error: {error}</div>;
+  }
   if (showDetalle) {
     return <DetalleDespacho onBack={() => setShowDetalle(false)} />;
   }

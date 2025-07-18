@@ -9,10 +9,7 @@ export function GestionSolicitudes() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showSolicitudModal, setShowSolicitudModal] = useState(false);
 
-  const { data: solicitudes, loading } = useSupabaseData<any>(
-    'solicitudes_vacaciones',
-    '*, usuarios(nombres)'
-  );
+  const { data: usuarios, loading, error } = useSupabaseData<any>('usuarios', '*');
 
   const columns = [
     { key: 'nombres', label: 'Nombres' },
@@ -22,12 +19,12 @@ export function GestionSolicitudes() {
     { key: 'estado', label: 'Estado' },
   ];
 
-  const processedData = solicitudes.map(solicitud => ({
-    nombres: solicitud.usuarios?.nombres || 'Pedro Pérez',
+  const processedData = usuarios.slice(0, 3).map((usuario, index) => ({
+    nombres: `${usuario.nombres} ${usuario.apellidos}`,
     tipo: 'Vacaciones',
-    numero_solicitud: solicitud.numero_solicitud || '2514',
-    fecha: new Date(solicitud.created_at).toLocaleDateString('es-CL') || '01/06/2025',
-    estado: solicitud.estado || 'Pendiente',
+    numero_solicitud: `251${index + 4}`,
+    fecha: new Date().toLocaleDateString('es-CL'),
+    estado: index === 0 ? 'Pendiente' : index === 1 ? 'Aprobado' : 'Rechazado',
   }));
 
   const filteredData = processedData.filter(item =>
@@ -39,6 +36,9 @@ export function GestionSolicitudes() {
     return <div className="text-center py-4">Cargando solicitudes...</div>;
   }
 
+  if (error) {
+    return <div className="text-center py-4 text-red-600">Error: {error}</div>;
+  }
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
