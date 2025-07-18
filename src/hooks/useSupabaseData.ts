@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
+// Cache para evitar consultas repetidas
+const queryCache = new Map();
+const CACHE_DURATION = 30000; // 30 segundos
+
 export function useSupabaseData<T>(
   table: string,
   select: string = '*',
@@ -10,9 +14,20 @@ export function useSupabaseData<T>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Crear clave de cache
+  const cacheKey = `${table}-${select}-${JSON.stringify(filters)}`;
+
   useEffect(() => {
+    // Verificar cache primero
+    const cached = queryCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      setData(cached.data);
+      setLoading(false);
+      return;
+    }
+
     fetchData();
-  }, [table, select, JSON.stringify(filters)]);
+  }, [table, select, JSON.stringify(filters), cacheKey]);
 
   const fetchData = async () => {
     try {
@@ -34,7 +49,14 @@ export function useSupabaseData<T>(
         setError(error.message);
         setData([]); // Set empty array on error
       } else {
-        setData(result || []);
+        const finalData = result || [];
+        setData(finalData);
+        
+        // Guardar en cache
+        queryCache.set(cacheKey, {
+          data: finalData,
+          timestamp: Date.now()
+        });
       }
     } catch (err: any) {
       console.error(`Error fetching ${table}:`, err);
@@ -45,7 +67,11 @@ export function useSupabaseData<T>(
     }
   };
 
-  const refetch = () => fetchData();
+  const refetch = () => {
+    // Limpiar cache al refetch
+    queryCache.delete(cacheKey);
+    fetchData();
+  };
 
   return { data, loading, error, refetch };
 }

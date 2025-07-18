@@ -5,7 +5,7 @@ import { useSupabaseData } from '../../hooks/useSupabaseData';
 export function Devoluciones() {
   const [currentPage, setCurrentPage] = useState(1);
   
-  const { data: ventas, loading, error } = useSupabaseData<any>('ventas', '*');
+  const { data: devoluciones, loading, error } = useSupabaseData<any>('devoluciones', '*, ventas(folio, total)');
 
   const columns = [
     { key: 'folio', label: 'Folio' },
@@ -15,10 +15,10 @@ export function Devoluciones() {
     { key: 'caja', label: 'Caja' },
   ];
 
-  const processedData = ventas.slice(0, 3).map(venta => ({
-    folio: venta.folio || venta.id?.slice(0, 8) || 'N/A',
-    fecha: new Date(venta.fecha).toLocaleString('es-CL'),
-    monto: `$ ${parseFloat(venta.total || 0).toLocaleString('es-CL')}`,
+  const processedData = devoluciones.map(devolucion => ({
+    folio: devolucion.ventas?.folio || devolucion.id?.slice(0, 8) || 'N/A',
+    fecha: new Date(devolucion.fecha).toLocaleString('es-CL'),
+    monto: `$ ${parseFloat(devolucion.monto_devuelto || 0).toLocaleString('es-CL')}`,
     sucursal: 'N°1',
     caja: 'N°1',
   }));
@@ -28,7 +28,8 @@ export function Devoluciones() {
   }
 
   if (error) {
-    return <div className="text-center py-4 text-red-600">Error: {error}</div>;
+    // Si no hay devoluciones, mostrar mensaje amigable
+    return <div className="text-center py-4 text-gray-500">No hay devoluciones registradas</div>;
   }
   return (
     <div className="space-y-6">

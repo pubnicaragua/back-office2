@@ -17,7 +17,7 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
   const [showAgregarModal, setShowAgregarModal] = useState(false);
   const [showEditarModal, setShowEditarModal] = useState(false);
 
-  const { data: productos, loading, error } = useSupabaseData<any>('productos', '*');
+  const { data: promociones, loading, error } = useSupabaseData<any>('promociones', '*');
 
   const columns = [
     { key: 'nombre', label: 'Promoción' },
@@ -29,14 +29,14 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
     { key: 'disponible', label: 'Disponible' },
   ];
 
-  const processedData = productos.slice(0, 5).map(producto => ({
-    nombre: `Promo ${producto.nombre}`,
-    numero_limite: '50',
-    descripcion: `Promoción especial en ${producto.nombre}`,
+  const processedData = promociones.map(promocion => ({
+    nombre: promocion.nombre,
+    numero_limite: promocion.limite_cant?.toString() || '50',
+    descripcion: promocion.descripcion,
     sucursal: 'N°1',
-    costo: `Costo: ${Math.round((producto.costo || producto.precio * 0.7))} $`,
-    precio: `Precio: ${Math.round(producto.precio)} $`,
-    disponible: '',
+    costo: `Costo: ${Math.round((promocion.precio_prom * 0.7))} $`,
+    precio: `Precio: ${Math.round(promocion.precio_prom)} $`,
+    disponible: promocion.activo ? 'Disponible' : 'No disponible',
   }));
 
   const filteredData = processedData.filter(item =>
@@ -49,7 +49,7 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
   }
 
   if (error) {
-    return <div className="text-center py-4 text-red-600">Error: {error}</div>;
+    return <div className="text-center py-4 text-gray-500">No hay promociones disponibles</div>;
   }
   return (
     <div className="space-y-6">

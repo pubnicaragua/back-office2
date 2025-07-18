@@ -5,7 +5,7 @@ import { useSupabaseData } from '../../hooks/useSupabaseData';
 export function MovimientosEfectivo() {
   const [currentPage, setCurrentPage] = useState(1);
   
-  const { data: ventas, loading, error } = useSupabaseData<any>('ventas', '*');
+  const { data: movimientos, loading, error } = useSupabaseData<any>('movimientos_caja', '*');
 
   const columns = [
     { key: 'tipo', label: 'Retiro / Ingreso' },
@@ -15,10 +15,10 @@ export function MovimientosEfectivo() {
     { key: 'caja', label: 'Caja' },
   ];
 
-  const processedData = ventas.map((venta, index) => ({
-    tipo: index % 2 === 0 ? 'Ingreso' : 'Retiro',
-    monto: `$ ${parseFloat(venta.total || 0).toLocaleString('es-CL')}`,
-    fecha: new Date(venta.fecha).toLocaleString('es-CL'),
+  const processedData = movimientos.map((movimiento) => ({
+    tipo: movimiento.tipo === 'ingreso' ? 'Ingreso' : 'Retiro',
+    monto: `$ ${parseFloat(movimiento.monto || 0).toLocaleString('es-CL')}`,
+    fecha: new Date(movimiento.fecha).toLocaleString('es-CL'),
     sucursal: 'N°1',
     caja: 'N°1',
   }));
