@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MovimientosEfectivo } from './MovimientosEfectivo';
 import { Devoluciones } from './Devoluciones';
 import { OpcionesCaja } from './OpcionesCaja';
+import { POSIntegration } from './POSIntegration';
 import { Filter } from 'lucide-react';
 
 export function POSInfo() {
@@ -10,6 +11,7 @@ export function POSInfo() {
   const tabs = [
     { id: 'movimientos', label: 'Movimientos de efectivo' },
     { id: 'devoluciones', label: 'Devoluciones' },
+    { id: 'integracion', label: 'Integración POS' },
     { id: 'opciones', label: 'Opciones de caja' },
   ];
 
@@ -19,6 +21,8 @@ export function POSInfo() {
         return <MovimientosEfectivo />;
       case 'devoluciones':
         return <Devoluciones />;
+      case 'integracion':
+        return <POSIntegration />;
       case 'opciones':
         return <OpcionesCaja />;
       default:
