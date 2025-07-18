@@ -1,10 +1,33 @@
 import React, { useState } from 'react';
-import { MetricsCard } from '../Dashboard/MetricsCard';
 import { FilterModal } from '../Common/FilterModal';
 import { Modal } from '../Common/Modal';
 import { Download, RefreshCw, MessageCircle, Filter } from 'lucide-react';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 
+interface MetricsCardProps {
+  title: string;
+  value: string;
+  change: string;
+  isPositive: boolean;
+}
+
+function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
+  return (
+    <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm text-gray-600 font-medium">{title}</p>
+      </div>
+      <div className="flex items-center justify-between">
+        <p className="text-2xl font-bold text-gray-900">{value}</p>
+        <div className={`flex items-center space-x-1 text-sm font-medium ${
+          isPositive ? 'text-green-600' : 'text-red-600'
+        }`}>
+          <span>{change}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 export function VentasDashboard() {
   const [showModal, setShowModal] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
