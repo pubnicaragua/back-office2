@@ -126,6 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               email: userEmail || 'usuario@ejemplo.com',
               nombres: 'Usuario',
               apellidos: '',
+              rut: `${Math.floor(Math.random() * 99999999)}-${Math.floor(Math.random() * 9)}`,
               activo: true
             }, {
               onConflict: 'id'

@@ -1,6 +1,7 @@
 import React from 'react';
-import { MessageCircle, TrendingUp, HelpCircle } from 'lucide-react';
+import { MessageCircle, TrendingUp, HelpCircle, X } from 'lucide-react';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
+import { SolvIAChat } from './SolvIAChat';
 
 interface MetricsCardProps {
   title: string;
@@ -98,9 +99,11 @@ function DonutChart({ title, data }: DonutChartProps) {
 }
 
 export function GeneralDashboard() {
-  const { data: ventas, loading: ventasLoading } = useSupabaseData<any>('ventas', '*, clientes(razon_social), usuarios(nombre)');
+  const [showChat, setShowChat] = React.useState(false);
+  
+  const { data: ventas, loading: ventasLoading } = useSupabaseData<any>('ventas', '*');
   const { data: ventaItems } = useSupabaseData<any>('venta_items', '*');
-  const { data: asistencias, loading: asistenciasLoading } = useSupabaseData<any>('asistencias', '*, usuarios(nombre)');
+  const { data: asistencias, loading: asistenciasLoading } = useSupabaseData<any>('asistencias', '*');
   const { data: mermas, loading: mermasLoading } = useSupabaseData<any>('mermas', '*');
   const { data: productos } = useSupabaseData<any>('productos', '*');
 
@@ -252,17 +255,20 @@ export function GeneralDashboard() {
       </div>
 
       {/* SolvIA Card - Full Width */}
-      <div className="bg-blue-600 text-white p-6 rounded-lg relative overflow-hidden">
+      <div className="bg-blue-600 text-white p-6 rounded-lg relative overflow-hidden cursor-pointer" onClick={() => setShowChat(true)}>
         <div className="relative z-10">
           <h3 className="text-xl font-semibold mb-2">¡Hola, soy SolvIA!</h3>
           <p className="text-blue-100 text-lg">Tu asistente personal.</p>
         </div>
         <div className="absolute bottom-6 right-6">
-          <div className="w-12 h-12 bg-black bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition-all cursor-pointer">
+          <div className="w-12 h-12 bg-black bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition-all">
             <MessageCircle className="w-6 h-6" />
           </div>
         </div>
       </div>
+      
+      {/* SolvIA Chat Modal */}
+      <SolvIAChat isOpen={showChat} onClose={() => setShowChat(false)} />
     </div>
   );
 }
