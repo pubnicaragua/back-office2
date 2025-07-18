@@ -44,9 +44,10 @@ export function Header({ onMenuToggle, currentView }: HeaderProps) {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 px-6 py-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+    <header className="bg-white border-b border-gray-200 px-6 py-4 relative">
+      <div className="flex items-center">
+        {/* Left side - Menu and Title */}
+        <div className="flex items-center space-x-4 flex-1">
           <button
             onClick={onMenuToggle}
             className="p-2 rounded-md hover:bg-gray-100"
@@ -57,15 +58,17 @@ export function Header({ onMenuToggle, currentView }: HeaderProps) {
           <h1 className="text-xl font-semibold text-gray-900">{getViewTitle(currentView)}</h1>
         </div>
         
-        <div className="flex items-center space-x-6">
-          <div className="flex items-center space-x-3">
-            <img 
-              src="/logo_negro.svg" 
-              alt="Solvendo" 
-              className="h-8"
-            />
-          </div>
-          
+        {/* Center - Logo */}
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <img 
+            src="/logo_negro.svg" 
+            alt="Solvendo" 
+            className="h-8"
+          />
+        </div>
+        
+        {/* Right side - Time and User */}
+        <div className="flex items-center space-x-6 flex-1 justify-end">
           <div className="flex items-center space-x-2 text-sm text-gray-600">
             <span className="font-medium">{formatTime(currentTime)}</span>
             <Clock className="w-4 h-4" />

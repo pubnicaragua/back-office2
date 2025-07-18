@@ -9,7 +9,7 @@ export function GestionDespachos() {
 
   const { data: despachos, loading } = useSupabaseData<any>(
     'despachos',
-    '*, usuarios(nombre), sucursales(nombre), clientes(razon_social)'
+    '*, usuarios(nombres), sucursales(nombre)'
   );
 
   const columns = [
@@ -22,10 +22,10 @@ export function GestionDespachos() {
   ];
 
   const processedData = despachos.map(despacho => ({
-    entregado_por: despacho.usuarios?.nombre || 'Emilio Aguilera',
+    entregado_por: despacho.usuarios?.nombres || 'Emilio Aguilera',
     folio_factura: despacho.folio || '8949564506',
     fecha: new Date(despacho.fecha).toLocaleDateString('es-CL'),
-    monto_total: '$2000', // This would need to be calculated from related items
+    monto_total: '$2000',
     estado: despacho.estado === 'pendiente' ? 'Pendiente' : 'Entregado',
     sucursal_destino: despacho.sucursales?.nombre || 'Tienda N°1',
   }));
@@ -44,37 +44,13 @@ export function GestionDespachos() {
         <h1 className="text-2xl font-semibold text-gray-900">Gestión de despachos</h1>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              {columns.map((column) => (
-                <th
-                  key={column.key}
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  {column.label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {processedData.map((row, index) => (
-              <tr 
-                key={index} 
-                className="hover:bg-gray-50 cursor-pointer"
-                onClick={() => setShowDetalle(true)}
-              >
-                {columns.map((column) => (
-                  <td key={column.key} className="px-4 py-3 text-sm text-gray-900">
-                    {row[column.key]}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        columns={columns}
+        data={processedData}
+        currentPage={currentPage}
+        totalPages={Math.ceil(processedData.length / 10)}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 }

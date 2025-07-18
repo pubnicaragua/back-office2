@@ -7,7 +7,7 @@ export function MovimientosEfectivo() {
   
   const { data: movimientos, loading } = useSupabaseData<any>(
     'movimientos_caja',
-    '*, usuarios(nombre), aperturas_caja(*, cajas(nombre), sucursales(nombre))'
+    '*, usuarios(nombres), aperturas_caja(*, cajas(nombre), sucursales(nombre))'
   );
 
   const columns = [

@@ -7,7 +7,7 @@ export function Devoluciones() {
   
   const { data: devoluciones, loading } = useSupabaseData<any>(
     'devoluciones',
-    '*, ventas(folio, sucursales(nombre), cajas(nombre))'
+    '*, ventas(folio, sucursales(nombre))'
   );
 
   const columns = [
@@ -23,7 +23,7 @@ export function Devoluciones() {
     fecha: new Date(devolucion.fecha).toLocaleString('es-CL'),
     monto: `$ ${parseFloat(devolucion.monto_devuelto || 0).toLocaleString('es-CL')}`,
     sucursal: devolucion.ventas?.sucursales?.nombre || 'N°1',
-    caja: devolucion.ventas?.cajas?.nombre || 'N°1',
+    caja: 'N°1', // Placeholder since cajas relationship doesn't exist in ventas
   }));
 
   if (loading) {

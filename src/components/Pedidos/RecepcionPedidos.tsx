@@ -9,8 +9,8 @@ export function RecepcionPedidos() {
   const [showDetalle, setShowDetalle] = useState(false);
 
   const { data: pedidos, loading } = useSupabaseData<any>(
-    'despachos',
-    '*, usuarios(nombre), sucursales(nombre), clientes(razon_social)'
+    'pedidos',
+    '*, sucursales(nombre), clientes(razon_social)'
   );
 
   const columns = [
@@ -22,10 +22,10 @@ export function RecepcionPedidos() {
   ];
 
   const processedData = pedidos.map(pedido => ({
-    proveedor: pedido.clientes?.razon_social || 'Proveedor',
-    folio: pedido.folio || 'Folio factura',
+    proveedor: pedido.clientes?.razon_social || 'Pola - cola',
+    folio: pedido.folio || '8949564506',
     fecha: new Date(pedido.fecha).toLocaleDateString('es-CL'),
-    monto: '$2000', // This would need to be calculated from related items
+    monto: `$${pedido.monto_total?.toLocaleString('es-CL') || '2000'}`,
     sucursal: pedido.sucursales?.nombre || 'Sucursal de captura',
   }));
 
@@ -55,56 +55,13 @@ export function RecepcionPedidos() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              {columns.map((column) => (
-                <th
-                  key={column.key}
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  {column.label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {processedData.map((row, index) => (
-              <tr 
-                key={index} 
-                className="hover:bg-gray-50 cursor-pointer"
-                onClick={() => index === 0 && setShowDetalle(true)}
-              >
-                {columns.map((column) => (
-                  <td key={column.key} className="px-4 py-3 text-sm text-gray-900">
-                    {row[column.key]}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-            >
-              1
-            </button>
-            <button className="px-3 py-1 rounded-md text-sm text-gray-700 hover:bg-gray-100">
-              2
-            </button>
-            <button className="px-3 py-1 rounded-md text-sm text-gray-700 hover:bg-gray-100">
-              3
-            </button>
-            <span className="text-sm text-gray-500">Siguiente</span>
-          </div>
-        </div>
-      </div>
+      <Table
+        columns={columns}
+        data={processedData}
+        currentPage={currentPage}
+        totalPages={Math.ceil(processedData.length / 10)}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 }
