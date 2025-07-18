@@ -68,19 +68,20 @@ export function VentasDashboard() {
   // Process chart data from real sales
   const processChartData = () => {
     if (loading || ventas.length === 0) {
+      const currentYear = new Date().getFullYear().toString().slice(-2);
       return [
-        { month: 'E-24', value: 35 },
-        { month: 'F-24', value: 30 },
-        { month: 'M-24', value: 25 },
-        { month: 'A-24', value: 40 },
-        { month: 'M-24', value: 35 },
-        { month: 'J-24', value: 45 },
-        { month: 'J-24', value: 50 },
-        { month: 'A-24', value: 40 },
-        { month: 'S-24', value: 35 },
-        { month: 'O-24', value: 30 },
-        { month: 'N-24', value: 25 },
-        { month: 'D-24', value: 20 },
+        { month: `E-${currentYear}`, value: 35 },
+        { month: `F-${currentYear}`, value: 30 },
+        { month: `M-${currentYear}`, value: 25 },
+        { month: `A-${currentYear}`, value: 40 },
+        { month: `M-${currentYear}`, value: 35 },
+        { month: `J-${currentYear}`, value: 45 },
+        { month: `J-${currentYear}`, value: 50 },
+        { month: `A-${currentYear}`, value: 40 },
+        { month: `S-${currentYear}`, value: 35 },
+        { month: `O-${currentYear}`, value: 30 },
+        { month: `N-${currentYear}`, value: 25 },
+        { month: `D-${currentYear}`, value: 20 },
       ];
     }
 
@@ -97,10 +98,11 @@ export function VentasDashboard() {
 
     // Convert to chart format
     const months = ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+    const currentYear = new Date().getFullYear().toString().slice(-2);
     return months.map((month, index) => {
-      const monthKey = `${index + 1}-24`;
+      const monthKey = `${index + 1}-${new Date().getFullYear()}`;
       return {
-        month: `${month}-24`,
+        month: `${month}-${currentYear}`,
         value: Math.round((salesByMonth[monthKey] || 0) / 1000) // Convert to thousands
       };
     });

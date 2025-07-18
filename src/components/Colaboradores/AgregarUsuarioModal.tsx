@@ -23,9 +23,10 @@ export function AgregarUsuarioModal({ isOpen, onClose }: AgregarUsuarioModalProp
     
     const success = await insert({
       nombres: formData.nombres,
+      apellidos: 'Apellido', // Default value
       rut: formData.rut,
-      email: `${formData.rut}@empresa.com`, // Temporal
-      password_hash: 'temp_password', // Temporal
+      email: `${formData.rut.replace(/[.-]/g, '')}@empresa.com`,
+      activo: true
     });
 
     if (success) {
