@@ -39,20 +39,36 @@ function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
 export function VentasDashboard() {
   const [showModal, setShowModal] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [filters, setFilters] = useState({
+    periodo: '',
+    sucursal: '',
+    producto: '',
+    cajas: [] as string[]
+  });
   const [showFilters, setShowFilters] = useState(false);
 
-  const { data: ventas, loading } = useSupabaseData<any>('ventas', '*');
+  const { data: ventas, loading } = useSupabaseData<any>('ventas', '*, sucursales(nombre)');
   const { data: ventasItems } = useSupabaseData<any>('venta_items', '*');
   const { data: foliosElectronicos } = useSupabaseData<FolioElectronico[]>('folios_electronicos', '*');
+  const { data: sucursales } = useSupabaseData<any>('sucursales', '*');
+  const { data: productos } = useSupabaseData<any>('productos', '*');
+  const { data: cajas } = useSupabaseData<any>('cajas', '*');
 
   // Calculate real metrics from data
   const calculateMetrics = () => {
     if (loading) return null;
 
-    const totalVentas = ventas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
+    // Aplicar filtros a las ventas
+    const filteredVentas = ventas.filter(venta => {
+      if (filters.sucursal && venta.sucursal_id !== filters.sucursal) return false;
+      if (filters.periodo && !venta.fecha.includes(filters.periodo)) return false;
+      return true;
+    });
+
+    const totalVentas = filteredVentas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
     const margen = totalVentas * 0.4; // Assuming 40% margin
     const unidadesVendidas = ventasItems.reduce((sum, item) => sum + (item.cantidad || 0), 0);
-    const numeroVentas = ventas.length;
+    const numeroVentas = filteredVentas.length;
     const ticketPromedio = numeroVentas > 0 ? totalVentas / numeroVentas : 0;
 
     return {
@@ -134,6 +150,27 @@ export function VentasDashboard() {
 
   const chartData = processChartData();
   const maxValue = Math.max(...chartData.map(d => d.value));
+
+  const handleDownloadReport = () => {
+    const reportData = {
+      fecha: new Date().toLocaleDateString('es-CL'),
+      ventas: ventas.map(v => ({
+        folio: v.folio,
+        fecha: v.fecha,
+        total: v.total,
+        sucursal: v.sucursales?.nombre
+      })),
+      resumen: metrics
+    };
+    
+    const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `reporte_ventas_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    setShowDownloadModal(false);
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -268,8 +305,7 @@ export function VentasDashboard() {
             </button>
             <button
               onClick={() => {
-                // Here you would implement the actual download logic
-                setShowDownloadModal(false);
+                handleDownloadReport();
               }}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
@@ -279,18 +315,23 @@ export function VentasDashboard() {
         </div>
       </Modal>
 
-      <FilterModal
+      <Modal
         isOpen={showFilters}
         onClose={() => setShowFilters(false)}
         title="Filtros"
+        size="md"
       >
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Enero - Diciembre
+              Período
             </label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">Ver período anterior</option>
+            <select 
+              value={filters.periodo}
+              onChange={(e) => setFilters(prev => ({ ...prev, periodo: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Todos los períodos</option>
               <option value="2024">2024</option>
               <option value="2023">2023</option>
             </select>
@@ -298,12 +339,17 @@ export function VentasDashboard() {
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Todas las sucursales
+              Sucursal
             </label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select 
+              value={filters.sucursal}
+              onChange={(e) => setFilters(prev => ({ ...prev, sucursal: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
               <option value="">Todas las sucursales</option>
-              <option value="n1">N°1</option>
-              <option value="n2">N°2</option>
+              {sucursales.map(sucursal => (
+                <option key={sucursal.id} value={sucursal.id}>{sucursal.nombre}</option>
+              ))}
             </select>
           </div>
           
@@ -313,40 +359,23 @@ export function VentasDashboard() {
             </label>
             <input
               type="text"
+              value={filters.producto}
+              onChange={(e) => setFilters(prev => ({ ...prev, producto: e.target.value }))}
               placeholder="Buscar productos..."
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Producto seleccionado
-            </label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">Seleccionar producto</option>
-              <option value="producto1">Producto 1</option>
-              <option value="producto2">Producto 2</option>
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Cajeros
-            </label>
-            <div className="space-y-2">
-              {['Caja N°1', 'Caja N°2', 'Caja N°3', 'Caja N°4'].map(caja => (
-                <label key={caja} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
-                  <span className="text-sm text-gray-700">{caja}</span>
-                </label>
-              ))}
-            </div>
+          <div className="flex justify-end">
+            <button
+              onClick={() => setShowFilters(false)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Aplicar filtros
+            </button>
           </div>
         </div>
-      </FilterModal>
+      </Modal>
     </div>
   );
 }
