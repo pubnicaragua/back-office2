@@ -8,8 +8,12 @@ export function GestionSolicitudes() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [showSolicitudModal, setShowSolicitudModal] = useState(false);
+  const [selectedSolicitud, setSelectedSolicitud] = useState(null);
 
-  const { data: usuarios, loading, error } = useSupabaseData<any>('usuarios', '*');
+  const { data: solicitudes, loading, error } = useSupabaseData<any>(
+    'solicitudes_vacaciones',
+    '*, usuarios(nombres, apellidos)'
+  );
 
   const columns = [
     { key: 'nombres', label: 'Nombres' },
@@ -19,12 +23,15 @@ export function GestionSolicitudes() {
     { key: 'estado', label: 'Estado' },
   ];
 
-  const processedData = usuarios.slice(0, 3).map((usuario, index) => ({
-    nombres: `${usuario.nombres} ${usuario.apellidos}`,
+  const processedData = solicitudes.map((solicitud) => ({
+    id: solicitud.id,
+    nombres: `${solicitud.usuarios?.nombres || 'Pedro'} ${solicitud.usuarios?.apellidos || 'Perez'}`,
     tipo: 'Vacaciones',
-    numero_solicitud: `251${index + 4}`,
-    fecha: new Date().toLocaleDateString('es-CL'),
-    estado: index === 0 ? 'Pendiente' : index === 1 ? 'Aprobado' : 'Rechazado',
+    numero_solicitud: solicitud.numero_solicitud,
+    fecha: new Date(solicitud.created_at).toLocaleDateString('es-CL'),
+    estado: solicitud.estado === 'pendiente' ? 'Pendiente' : 
+             solicitud.estado === 'aprobado' ? 'Aprobado' : 'Rechazado',
+    solicitud: solicitud
   }));
 
   const filteredData = processedData.filter(item =>
@@ -32,6 +39,10 @@ export function GestionSolicitudes() {
     item.tipo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleViewSolicitud = (solicitud) => {
+    setSelectedSolicitud(solicitud);
+    setShowSolicitudModal(true);
+  };
   if (loading) {
     return <div className="text-center py-4">Cargando solicitudes...</div>;
   }
@@ -75,7 +86,7 @@ export function GestionSolicitudes() {
               <tr 
                 key={index} 
                 className="hover:bg-gray-50 cursor-pointer"
-                onClick={() => setShowSolicitudModal(true)}
+                onClick={() => handleViewSolicitud(row)}
               >
                 <td className="px-4 py-3 text-sm">
                   <div className="flex items-center space-x-3">
@@ -97,6 +108,7 @@ export function GestionSolicitudes() {
       <SolicitudVacacionesModal 
         isOpen={showSolicitudModal} 
         onClose={() => setShowSolicitudModal(false)} 
+        solicitud={selectedSolicitud}
       />
     </div>
   );

@@ -5,15 +5,16 @@ import { useSupabaseUpdate } from '../../hooks/useSupabaseData';
 interface SolicitudVacacionesModalProps {
   isOpen: boolean;
   onClose: () => void;
+  solicitud: any;
 }
 
-export function SolicitudVacacionesModal({ isOpen, onClose }: SolicitudVacacionesModalProps) {
+export function SolicitudVacacionesModal({ isOpen, onClose, solicitud }: SolicitudVacacionesModalProps) {
   const [formData, setFormData] = useState({
-    numero: '2514',
-    remitente: 'Pedro Pérez',
-    descripcion: 'Solicitud de vacaciones para realizar actividades de descanso del 01 de julio al 05 de julio.',
-    estado: 'Pendiente',
-    enviar_respuesta: 'Confirmado'
+    numero: solicitud?.numero_solicitud || '2514',
+    remitente: solicitud?.nombres || 'Pedro Pérez',
+    descripcion: solicitud?.solicitud?.motivo || 'Hola quiero solicitar mis vacaciones de verano desde el 1 de julio hasta el 5 de julio',
+    estado: solicitud?.estado || 'Pendiente',
+    enviar_respuesta: 'aprobado'
   });
 
   const { update, loading } = useSupabaseUpdate('solicitudes_vacaciones');
@@ -21,12 +22,14 @@ export function SolicitudVacacionesModal({ isOpen, onClose }: SolicitudVacacione
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const success = await update('00000000-0000-0000-0000-000000000001', {
+    const success = await update(solicitud?.id || 'sol-vac-001-001-001-001-001001001', {
       estado: formData.enviar_respuesta.toLowerCase()
     });
 
     if (success) {
       onClose();
+      // Refresh the page to show updated data
+      window.location.reload();
     }
   };
 
@@ -34,9 +37,7 @@ export function SolicitudVacacionesModal({ isOpen, onClose }: SolicitudVacacione
     <Modal isOpen={isOpen} onClose={onClose} title="Solicitud de vacaciones" size="md">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            N° 2514
-          </label>
+          <h3 className="text-lg font-medium text-gray-900">N° {formData.numero}</h3>
         </div>
 
         <div>
@@ -72,16 +73,19 @@ export function SolicitudVacacionesModal({ isOpen, onClose }: SolicitudVacacione
             onChange={(e) => setFormData(prev => ({ ...prev, enviar_respuesta: e.target.value }))}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="Confirmado">Confirmado</option>
-            <option value="Rechazado">Rechazado</option>
-            <option value="Pendiente">Pendiente</option>
+            <option value="aprobado">Confirmado</option>
+            <option value="rechazado">Rechazado</option>
+            <option value="pendiente">Pendiente</option>
           </select>
         </div>
 
         <div className="flex justify-center space-x-3">
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => {
+              setFormData(prev => ({ ...prev, enviar_respuesta: 'rechazado' }));
+              handleSubmit(e);
+            }}
             className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
           >
             Rechazar solicitud

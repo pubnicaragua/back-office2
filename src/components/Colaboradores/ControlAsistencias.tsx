@@ -11,7 +11,7 @@ export function ControlAsistencias() {
 
   const { data: asistencias, loading } = useSupabaseData<any>(
     'asistencias',
-    '*, usuarios(nombres), sucursales(nombre)'
+    '*, usuarios(nombres, apellidos, rut)'
   );
 
   const columns = [
@@ -24,12 +24,12 @@ export function ControlAsistencias() {
   ];
 
   const processedData = asistencias.map(asistencia => ({
-    nombres: asistencia.usuarios?.nombres || 'Pedro Pérez',
-    rut: '12.345.678-9',
+    nombres: `${asistencia.usuarios?.nombres || 'Pedro'} ${asistencia.usuarios?.apellidos || 'Pérez'}`,
+    rut: asistencia.usuarios?.rut || '12345678-1',
     fecha_hora: new Date(asistencia.fecha).toLocaleDateString('es-CL') || '02/06/2025',
     ingreso_salida: `${asistencia.hora_ingreso || '08:00'} - ${asistencia.hora_salida || '18:00'}`,
     horas_trabajadas: '8H',
-    sucursal: asistencia.sucursales?.nombre || 'N°1',
+    sucursal: 'N°1',
   }));
 
   const filteredData = processedData.filter(item =>
@@ -74,13 +74,39 @@ export function ControlAsistencias() {
         />
       </div>
 
-      <Table
-        columns={columns}
-        data={filteredData}
-        currentPage={currentPage}
-        totalPages={Math.ceil(filteredData.length / 10)}
-        onPageChange={setCurrentPage}
-      />
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              {columns.map((column) => (
+                <th
+                  key={column.key}
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  {column.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {filteredData.map((row, index) => (
+              <tr key={index} className="hover:bg-gray-50">
+                <td className="px-4 py-3 text-sm">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+                    <span className="text-gray-900">{row.nombres}</span>
+                  </div>
+                </td>
+                {columns.slice(1).map((column) => (
+                  <td key={column.key} className="px-4 py-3 text-sm text-gray-900">
+                    {row[column.key]}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <FilterModal
         isOpen={showFilters}

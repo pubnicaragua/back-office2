@@ -30,10 +30,12 @@ export function GestionUsuarios() {
     const edad = Math.floor(Math.random() * 20) + 25; // Random age between 25-45
     
     return {
+      id: usuario.id,
       nombres: `${usuario.nombres} ${usuario.apellidos}`,
       rut: usuario.rut,
       edad: edad.toString(),
       rol: 'Empleado',
+      usuario: usuario
     };
   });
 
@@ -42,6 +44,9 @@ export function GestionUsuarios() {
     item.rut.includes(searchTerm)
   );
 
+  const handleViewPerfil = (userData) => {
+    setShowPerfilModal(true);
+  };
   if (loading) {
     return <div className="text-center py-4">Cargando usuarios...</div>;
   }
@@ -116,7 +121,7 @@ export function GestionUsuarios() {
               <tr 
                 key={index} 
                 className="hover:bg-gray-50 cursor-pointer"
-                onClick={() => setShowPerfilModal(true)}
+                onClick={() => handleViewPerfil(row)}
               >
                 <td className="px-4 py-3 text-sm">
                   <div className="flex items-center space-x-3">
