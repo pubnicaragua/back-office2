@@ -4,6 +4,14 @@ import { Modal } from '../Common/Modal';
 import { Download, RefreshCw, MessageCircle, Filter } from 'lucide-react';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 
+interface FolioElectronico {
+  id: string;
+  folio: number;
+  tipo_documento: string;
+  usado: boolean;
+  venta_id?: string;
+}
+
 interface MetricsCardProps {
   title: string;
   value: string;
@@ -35,6 +43,7 @@ export function VentasDashboard() {
 
   const { data: ventas, loading } = useSupabaseData<any>('ventas', '*');
   const { data: ventasItems } = useSupabaseData<any>('venta_items', '*');
+  const { data: foliosElectronicos } = useSupabaseData<FolioElectronico[]>('folios_electronicos', '*');
 
   // Calculate real metrics from data
   const calculateMetrics = () => {
@@ -55,7 +64,22 @@ export function VentasDashboard() {
     };
   };
 
+  // Calculate electronic receipts metrics
+  const calculateElectronicMetrics = () => {
+    const totalFolios = foliosElectronicos.length;
+    const foliosUsados = foliosElectronicos.filter(f => f.usado).length;
+    const foliosDisponibles = totalFolios - foliosUsados;
+    
+    return {
+      totalFolios,
+      foliosUsados,
+      foliosDisponibles,
+      porcentajeUso: totalFolios > 0 ? Math.round((foliosUsados / totalFolios) * 100) : 0
+    };
+  };
+
   const metrics = calculateMetrics();
+  const electronicMetrics = calculateElectronicMetrics();
 
   const metricsData = metrics ? [
     { title: 'Ventas totales', value: `$${metrics.totalVentas.toLocaleString('es-CL')}`, change: '+10%', isPositive: true },
@@ -147,6 +171,13 @@ export function VentasDashboard() {
         <div className="lg:col-span-3 bg-white p-6 rounded-lg border border-gray-200">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-medium text-gray-900">Ventas totales</h3>
+            <div className="text-sm text-gray-600">
+              <span className="mr-4">Folios electrónicos: {electronicMetrics.foliosDisponibles} disponibles</span>
+              <span>Uso: {electronicMetrics.porcentajeUso}%</span>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 text-sm">
                 <span className="text-gray-600">Período anterior</span>

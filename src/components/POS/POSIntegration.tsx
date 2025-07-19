@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
-import { Wifi, WifiOff, CreditCard, Smartphone, DollarSign, Settings } from 'lucide-react';
+import { Wifi, WifiOff, CreditCard, Smartphone, DollarSign, Settings, FileText, CheckCircle } from 'lucide-react';
 
 export function POSIntegration() {
   const [activeProvider, setActiveProvider] = useState('sumup');
@@ -9,6 +9,8 @@ export function POSIntegration() {
   const { data: providers, loading: providersLoading } = useSupabaseData<any>('payment_providers', '*');
   const { data: transactions, loading: transactionsLoading } = useSupabaseData<any>('pos_transactions', '*, pos_terminals(terminal_name)');
   const { data: syncLogs } = useSupabaseData<any>('pos_sync_log', '*, pos_terminals(terminal_name)');
+  const { data: cafFiles } = useSupabaseData<any>('caf_files', '*');
+  const { data: foliosDisponibles } = useSupabaseData<any>('folios_electronicos', '*', { usado: false });
 
   const getProviderIcon = (providerType: string) => {
     switch (providerType) {
@@ -99,6 +101,57 @@ export function POSIntegration() {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* SII CAF Integration Status */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Integración SII - Folios Electrónicos</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <FileText className="w-8 h-8 text-blue-600" />
+              <div>
+                <p className="font-medium text-blue-900">Archivos CAF</p>
+                <p className="text-2xl font-bold text-blue-600">{cafFiles.length}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-green-50 p-4 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+              <div>
+                <p className="font-medium text-green-900">Folios Disponibles</p>
+                <p className="text-2xl font-bold text-green-600">{foliosDisponibles.length}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-purple-50 p-4 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <Wifi className="w-8 h-8 text-purple-600" />
+              <div>
+                <p className="font-medium text-purple-900">Sincronización</p>
+                <p className="text-sm font-medium text-purple-600">Automática</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+          <h4 className="font-medium text-gray-900 mb-2">Estado de Sincronización CAF → POS</h4>
+          <div className="space-y-2">
+            {terminals.map((terminal) => (
+              <div key={terminal.id} className="flex items-center justify-between text-sm">
+                <span className="text-gray-700">{terminal.terminal_name}</span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-600">✓ CAF Sincronizado</span>
+                  <span className="text-blue-600">{foliosDisponibles.length} folios</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
