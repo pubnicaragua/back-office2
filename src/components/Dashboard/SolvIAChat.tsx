@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, MessageCircle } from 'lucide-react';
+import { useSupabaseData } from '../../hooks/useSupabaseData';
+import { supabase } from '../../lib/supabase';
 
 interface Message {
   id: string;
@@ -17,7 +19,7 @@ export function SolvIAChat({ isOpen, onClose }: SolvIAChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: '¡Hola! Soy SolvIA, tu asistente personal de Solvendo. ¿En qué puedo ayudarte hoy?',
+      text: '¡Hola! Soy SolvIA, tu asistente inteligente de Solvendo. Tengo acceso completo a todos los datos de tu sistema. ¿En qué puedo ayudarte hoy?',
       isUser: false,
       timestamp: new Date()
     }
@@ -25,6 +27,19 @@ export function SolvIAChat({ isOpen, onClose }: SolvIAChatProps) {
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Obtener datos del sistema para contexto
+  const { data: ventas } = useSupabaseData<any>('ventas', '*');
+  const { data: productos } = useSupabaseData<any>('productos', '*');
+  const { data: usuarios } = useSupabaseData<any>('usuarios', '*');
+  const { data: asistencias } = useSupabaseData<any>('asistencias', '*');
+  const { data: mermas } = useSupabaseData<any>('mermas', '*');
+  const { data: promociones } = useSupabaseData<any>('promociones', '*');
+  const { data: movimientos } = useSupabaseData<any>('movimientos_caja', '*');
+  const { data: posTerminals } = useSupabaseData<any>('pos_terminals', '*');
+  const { data: posTransactions } = useSupabaseData<any>('pos_transactions', '*');
+  const { data: cafFiles } = useSupabaseData<any>('caf_files', '*');
+  const { data: foliosElectronicos } = useSupabaseData<any>('folios_electronicos', '*');
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -34,47 +49,72 @@ export function SolvIAChat({ isOpen, onClose }: SolvIAChatProps) {
     scrollToBottom();
   }, [messages]);
 
-  const simulateResponse = (userMessage: string): string => {
-    const lowerMessage = userMessage.toLowerCase();
-    
-    if (lowerMessage.includes('ventas') || lowerMessage.includes('venta')) {
-      return 'Veo que preguntas sobre ventas. Según los datos actuales, tienes un total de ventas de $179,000 con un margen de $53,700. ¿Te gustaría ver más detalles sobre algún período específico?';
-    }
-    
-    if (lowerMessage.includes('inventario') || lowerMessage.includes('productos')) {
-      return 'En cuanto al inventario, tienes varios productos disponibles. Los más vendidos son las bebidas como Coca Cola. ¿Necesitas información sobre stock específico o movimientos de inventario?';
-    }
-    
-    if (lowerMessage.includes('empleados') || lowerMessage.includes('colaboradores') || lowerMessage.includes('asistencia')) {
-      return 'Sobre los colaboradores, veo que tienes un buen nivel de asistencia. La mayoría está presente, con algunos casos de tardanza. ¿Quieres revisar el reporte de asistencia detallado?';
-    }
-    
-    if (lowerMessage.includes('mermas') || lowerMessage.includes('pérdidas')) {
-      return 'Las mermas reportadas muestran principalmente pérdidas por vencimiento (40%) y robo (35%). Te recomiendo revisar los procesos de control de inventario.';
-    }
-    
-    if (lowerMessage.includes('pedidos') || lowerMessage.includes('proveedores')) {
-      return 'Tienes pedidos pendientes de proveedores como Pola-cola. El estado general es bueno con entregas programadas. ¿Necesitas revisar algún pedido específico?';
-    }
-    
-    if (lowerMessage.includes('promociones') || lowerMessage.includes('ofertas')) {
-      return 'Las promociones activas incluyen descuentos en bebidas y combos. ¿Te gustaría crear una nueva promoción o revisar el rendimiento de las actuales?';
-    }
-    
-    if (lowerMessage.includes('caja') || lowerMessage.includes('pos') || lowerMessage.includes('efectivo')) {
-      return 'Los movimientos de caja muestran un flujo normal de ingresos y retiros. El balance general es positivo. ¿Necesitas revisar algún movimiento específico?';
-    }
-    
-    if (lowerMessage.includes('hola') || lowerMessage.includes('ayuda') || lowerMessage.includes('help')) {
-      return 'Puedo ayudarte con información sobre ventas, inventario, empleados, mermas, pedidos, promociones y movimientos de caja. ¿Sobre qué tema específico te gustaría saber más?';
-    }
-    
-    if (lowerMessage.includes('gracias') || lowerMessage.includes('thank')) {
-      return '¡De nada! Estoy aquí para ayudarte con cualquier consulta sobre tu negocio. ¿Hay algo más en lo que pueda asistirte?';
-    }
-    
-    // Respuesta por defecto
-    return 'Entiendo tu consulta. Como asistente de Solvendo, puedo ayudarte con información sobre ventas, inventario, empleados, mermas, pedidos y más. ¿Podrías ser más específico sobre lo que necesitas?';
+  const getSystemContext = () => {
+    // Calcular métricas en tiempo real
+    const totalVentas = ventas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
+    const totalProductos = productos.length;
+    const totalUsuarios = usuarios.length;
+    const asistenciasHoy = asistencias.filter(a => 
+      new Date(a.fecha).toDateString() === new Date().toDateString()
+    ).length;
+    const totalMermas = mermas.length;
+    const promocionesActivas = promociones.filter(p => p.activo).length;
+    const movimientosHoy = movimientos.filter(m => 
+      new Date(m.fecha).toDateString() === new Date().toDateString()
+    ).length;
+    const terminalesOnline = posTerminals.filter(t => t.status === 'online').length;
+    const transaccionesHoy = posTransactions.filter(t => 
+      new Date(t.created_at).toDateString() === new Date().toDateString()
+    ).length;
+    const foliosDisponibles = foliosElectronicos.filter(f => !f.usado).length;
+
+    return {
+      fecha: new Date().toLocaleDateString('es-CL'),
+      hora: new Date().toLocaleTimeString('es-CL'),
+      empresa: 'ANROLTEC SPA',
+      rut: '78168951-3',
+      metricas: {
+        ventas: {
+          total: totalVentas,
+          cantidad: ventas.length,
+          promedio: ventas.length > 0 ? totalVentas / ventas.length : 0
+        },
+        inventario: {
+          productos: totalProductos,
+          mermas: totalMermas
+        },
+        colaboradores: {
+          total: totalUsuarios,
+          asistenciasHoy: asistenciasHoy
+        },
+        promociones: {
+          activas: promocionesActivas,
+          total: promociones.length
+        },
+        pos: {
+          terminales: posTerminals.length,
+          online: terminalesOnline,
+          transaccionesHoy: transaccionesHoy
+        },
+        sii: {
+          cafFiles: cafFiles.length,
+          foliosDisponibles: foliosDisponibles
+        },
+        caja: {
+          movimientosHoy: movimientosHoy
+        }
+      },
+      productos: productos.slice(0, 5).map(p => ({
+        nombre: p.nombre,
+        precio: p.precio,
+        stock: p.stock
+      })),
+      ultimasVentas: ventas.slice(-3).map(v => ({
+        folio: v.folio,
+        total: v.total,
+        fecha: v.fecha
+      }))
+    };
   };
 
   const handleSendMessage = async () => {
@@ -91,19 +131,44 @@ export function SolvIAChat({ isOpen, onClose }: SolvIAChatProps) {
     setInputText('');
     setIsTyping(true);
 
-    // Simular delay de respuesta
-    setTimeout(() => {
-      const responseText = simulateResponse(inputText);
+    try {
+      // Llamar a la Edge Function con contexto completo
+      const context = getSystemContext();
+      
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/solvia-chat`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: inputText,
+          context: context
+        }),
+      });
+
+      const data = await response.json();
+      
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: responseText,
+        text: data.response || 'Lo siento, no pude procesar tu consulta.',
         isUser: false,
         timestamp: new Date()
       };
       
       setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('Error calling SolvIA:', error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: 'Lo siento, hay un problema de conexión. Por favor intenta de nuevo.',
+        isUser: false,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1000 + Math.random() * 2000); // 1-3 segundos de delay
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -129,7 +194,7 @@ export function SolvIAChat({ isOpen, onClose }: SolvIAChatProps) {
               </div>
               <div>
                 <h3 className="font-semibold">SolvIA</h3>
-                <p className="text-xs text-blue-100">Tu asistente personal</p>
+                <p className="text-xs text-blue-100">Asistente IA con contexto completo</p>
               </div>
             </div>
             <button
@@ -189,7 +254,7 @@ export function SolvIAChat({ isOpen, onClose }: SolvIAChatProps) {
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Escribe tu mensaje..."
+                placeholder="Pregúntame sobre ventas, inventario, empleados..."
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled={isTyping}
               />

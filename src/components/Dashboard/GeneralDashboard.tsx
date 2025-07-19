@@ -257,8 +257,9 @@ export function GeneralDashboard() {
       {/* SolvIA Card - Full Width */}
       <div className="bg-blue-600 text-white p-6 rounded-lg relative overflow-hidden cursor-pointer" onClick={() => setShowChat(true)}>
         <div className="relative z-10">
-          <h3 className="text-xl font-semibold mb-2">¡Hola, soy SolvIA!</h3>
-          <p className="text-blue-100 text-lg">Tu asistente personal.</p>
+          <h3 className="text-xl font-semibold mb-2">¡Hola, soy SolvIA! 🤖</h3>
+          <p className="text-blue-100 text-lg">Tu asistente IA con contexto completo del sistema.</p>
+          <p className="text-blue-200 text-sm mt-2">Pregúntame sobre ventas, inventario, empleados, POS, SII y más...</p>
         </div>
         <div className="absolute bottom-6 right-6">
           <div className="w-12 h-12 bg-black bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition-all">
