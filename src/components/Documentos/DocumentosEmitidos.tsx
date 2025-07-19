@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { Table } from '../Common/Table';
 import { FilterModal } from '../Common/FilterModal';
-import { Filter } from 'lucide-react';
+import { Filter, Eye } from 'lucide-react';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
+import { DocumentoDetalleModal } from './DocumentoDetalleModal';
 
 export function DocumentosEmitidos() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const [showDetalle, setShowDetalle] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState(null);
 
   const { data: ventas, loading } = useSupabaseData<any>(
     'ventas',
-    '*, sucursales(nombre), cajas(nombre)'
+    '*'
   );
 
   const columns = [
@@ -23,13 +25,19 @@ export function DocumentosEmitidos() {
   ];
 
   const processedData = ventas.map(venta => ({
+    id: venta.id,
     tipo: venta.tipo_dte === 'boleta' ? 'Boleta' : venta.tipo_dte === 'factura' ? 'Factura' : 'Nota de Crédito',
     folio: venta.folio,
     fecha: new Date(venta.fecha).toLocaleString('es-CL'),
     monto: `$ ${parseFloat(venta.total || 0).toLocaleString('es-CL')}`,
-    sucursal: venta.sucursales?.nombre || 'N°1',
-    caja: venta.cajas?.nombre || 'N°1',
+    sucursal: 'N°1',
+    caja: 'N°1',
   }));
+
+  const handleViewDetalle = (documento) => {
+    setSelectedDocument(documento);
+    setShowDetalle(true);
+  };
 
   if (loading) {
     return <div className="text-center py-4">Cargando documentos...</div>;
@@ -48,13 +56,44 @@ export function DocumentosEmitidos() {
         </button>
       </div>
 
-      <Table
-        columns={columns}
-        data={processedData}
-        currentPage={currentPage}
-        totalPages={Math.ceil(processedData.length / 10)}
-        onPageChange={setCurrentPage}
-      />
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              {columns.map((column) => (
+                <th
+                  key={column.key}
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  {column.label}
+                </th>
+              ))}
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {processedData.map((row, index) => (
+              <tr key={index} className="hover:bg-gray-50">
+                {columns.map((column) => (
+                  <td key={column.key} className="px-4 py-3 text-sm text-gray-900">
+                    {row[column.key]}
+                  </td>
+                ))}
+                <td className="px-4 py-3 text-sm">
+                  <button 
+                    onClick={() => handleViewDetalle(row)}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <Eye className="w-4 h-4" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <FilterModal
         isOpen={showFilters}
@@ -101,6 +140,12 @@ export function DocumentosEmitidos() {
           </div>
         </div>
       </FilterModal>
+
+      <DocumentoDetalleModal 
+        isOpen={showDetalle} 
+        onClose={() => setShowDetalle(false)}
+        documento={selectedDocument}
+      />
     </div>
   );
 }

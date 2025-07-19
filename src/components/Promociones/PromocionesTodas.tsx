@@ -31,12 +31,12 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
 
   const processedData = promociones.map(promocion => ({
     nombre: promocion.nombre,
-    numero_limite: promocion.limite_cant?.toString() || '50',
+    numero_limite: promocion.numero_limite?.toString() || '50',
     descripcion: promocion.descripcion,
     sucursal: 'N°1',
-    costo: `Costo: ${Math.round((promocion.precio_prom * 0.7))} $`,
+    costo: `Costo: ${Math.round(promocion.costo || 0)} $`,
     precio: `Precio: ${Math.round(promocion.precio_prom)} $`,
-    disponible: promocion.activo ? 'Disponible' : 'No disponible',
+    disponible: promocion.disponible ? 'Disponible' : 'No disponible',
   }));
 
   const filteredData = processedData.filter(item =>
@@ -94,13 +94,49 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
         </div>
       </div>
 
-      <Table
-        columns={columns}
-        data={filteredData}
-        currentPage={currentPage}
-        totalPages={Math.ceil(filteredData.length / 10)}
-        onPageChange={setCurrentPage}
-      />
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              {columns.map((column) => (
+                <th
+                  key={column.key}
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  {column.label}
+                </th>
+              ))}
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {filteredData.map((row, index) => (
+              <tr key={index} className="hover:bg-gray-50">
+                {columns.map((column) => (
+                  <td key={column.key} className="px-4 py-3 text-sm text-gray-900">
+                    {row[column.key]}
+                  </td>
+                ))}
+                <td className="px-4 py-3 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <button 
+                      onClick={() => setShowEditarModal(true)}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      ✏️
+                    </button>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      📥
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <AgregarPromocionModal 
         isOpen={showAgregarModal} 

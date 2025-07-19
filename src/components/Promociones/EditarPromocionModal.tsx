@@ -31,14 +31,19 @@ export function EditarPromocionModal({ isOpen, onClose }: EditarPromocionModalPr
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const success = await update('00000000-0000-0000-0000-000000000001', {
+    const success = await update('promo-001-001-001-001-001001001001', {
       nombre: formData.nombre,
       descripcion: formData.descripcion,
       precio_prom: parseFloat(formData.precio_unitario) || 0,
+      costo: parseFloat(formData.costo_unitario) || 0,
+      numero_limite: parseInt(formData.numero_limite) || 50,
+      disponible: true
     });
 
     if (success) {
       onClose();
+      // Refresh the data
+      window.location.reload();
     }
   };
 

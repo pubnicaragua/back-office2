@@ -35,7 +35,9 @@ export function AgregarPromocionModal({ isOpen, onClose }: AgregarPromocionModal
       nombre: formData.nombre,
       descripcion: formData.descripcion,
       precio_prom: parseFloat(formData.precio_unitario),
-      limite_cant: 50,
+      numero_limite: 50,
+      costo: parseFloat(formData.costo_unitario) || 0,
+      disponible: true,
       empresa_id: '00000000-0000-0000-0000-000000000001',
       sucursal_id: '00000000-0000-0000-0000-000000000001',
       activo: true
@@ -43,6 +45,8 @@ export function AgregarPromocionModal({ isOpen, onClose }: AgregarPromocionModal
 
     if (success) {
       onClose();
+      // Refresh the data
+      window.location.reload();
       setFormData({
         nombre: '',
         descripcion: '',
