@@ -3,6 +3,7 @@ import { MovimientosEfectivo } from './MovimientosEfectivo';
 import { Devoluciones } from './Devoluciones';
 import { OpcionesCaja } from './OpcionesCaja';
 import { POSIntegration } from './POSIntegration';
+import { POSApiDocumentation } from './POSApiDocumentation';
 import { Filter } from 'lucide-react';
 
 export function POSInfo() {
@@ -12,6 +13,7 @@ export function POSInfo() {
     { id: 'movimientos', label: 'Movimientos de efectivo' },
     { id: 'devoluciones', label: 'Devoluciones' },
     { id: 'integracion', label: 'Integración POS' },
+    { id: 'api', label: 'API POS' },
     { id: 'opciones', label: 'Opciones de caja' },
   ];
 
@@ -23,6 +25,8 @@ export function POSInfo() {
         return <Devoluciones />;
       case 'integracion':
         return <POSIntegration />;
+      case 'api':
+        return <POSApiDocumentation />;
       case 'opciones':
         return <OpcionesCaja />;
       default:
