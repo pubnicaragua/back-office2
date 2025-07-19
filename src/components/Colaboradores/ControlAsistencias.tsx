@@ -24,12 +24,13 @@ export function ControlAsistencias() {
   ];
 
   const processedData = asistencias.map(asistencia => ({
-    nombres: `${asistencia.usuarios?.nombres || 'Pedro'} ${asistencia.usuarios?.apellidos || 'Pérez'}`,
-    rut: asistencia.usuarios?.rut || '12345678-1',
-    fecha_hora: new Date(asistencia.fecha).toLocaleDateString('es-CL') || '02/06/2025',
+    nombres: `${asistencia.usuarios?.nombres || ''} ${asistencia.usuarios?.apellidos || ''}`.trim() || 'Usuario',
+    rut: asistencia.usuarios?.rut || 'Sin RUT',
+    fecha_hora: new Date(asistencia.fecha).toLocaleDateString('es-CL'),
     ingreso_salida: `${asistencia.hora_ingreso || '08:00'} - ${asistencia.hora_salida || '18:00'}`,
-    horas_trabajadas: '8H',
-    sucursal: 'N°1',
+    horas_trabajadas: asistencia.hora_ingreso && asistencia.hora_salida ? 
+      `${Math.round((new Date(`1970-01-01T${asistencia.hora_salida}`) - new Date(`1970-01-01T${asistencia.hora_ingreso}`)) / (1000 * 60 * 60))}H` : '0H',
+    sucursal: asistencia.sucursales?.nombre || 'Sin sucursal',
   }));
 
   const filteredData = processedData.filter(item =>

@@ -11,13 +11,20 @@ import { PerfilEmpleadoModal } from './PerfilEmpleadoModal';
 export function GestionUsuarios() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    sucursal: '',
+    fecha: '',
+    hora: ''
+  });
   const [showAgregarModal, setShowAgregarModal] = useState(false);
   const [showTiempoModal, setShowTiempoModal] = useState(false);
   const [showComunicadoModal, setShowComunicadoModal] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [showPerfilModal, setShowPerfilModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  const { data: usuarios, loading, error } = useSupabaseData<any>('usuarios', '*');
+  const { data: usuarios, loading, error, refetch } = useSupabaseData<any>('usuarios', '*');
+  const { data: sucursales } = useSupabaseData<any>('sucursales', '*');
 
   const columns = [
     { key: 'nombres', label: 'Nombres' },
@@ -27,14 +34,16 @@ export function GestionUsuarios() {
   ];
 
   const processedData = usuarios.map(usuario => {
-    const edad = Math.floor(Math.random() * 20) + 25; // Random age between 25-45
+    // Calculate age from birth date or use a default
+    const birthYear = usuario.fecha_nacimiento ? new Date(usuario.fecha_nacimiento).getFullYear() : 1990;
+    const edad = new Date().getFullYear() - birthYear;
     
     return {
       id: usuario.id,
-      nombres: `${usuario.nombres} ${usuario.apellidos}`,
+      nombres: `${usuario.nombres || ''} ${usuario.apellidos || ''}`.trim(),
       rut: usuario.rut,
       edad: edad.toString(),
-      rol: 'Empleado',
+      rol: usuario.rol || 'Empleado',
       usuario: usuario
     };
   });
@@ -45,6 +54,7 @@ export function GestionUsuarios() {
   );
 
   const handleViewPerfil = (userData) => {
+    setSelectedUser(userData);
     setShowPerfilModal(true);
   };
   if (loading) {

@@ -25,7 +25,7 @@ export function GestionSolicitudes() {
 
   const processedData = solicitudes.map((solicitud) => ({
     id: solicitud.id,
-    nombres: `${solicitud.usuarios?.nombres || 'Pedro'} ${solicitud.usuarios?.apellidos || 'Perez'}`,
+    nombres: `${solicitud.usuarios?.nombres || ''} ${solicitud.usuarios?.apellidos || ''}`.trim() || 'Usuario',
     tipo: 'Vacaciones',
     numero_solicitud: solicitud.numero_solicitud,
     fecha: new Date(solicitud.created_at).toLocaleDateString('es-CL'),
@@ -35,6 +35,7 @@ export function GestionSolicitudes() {
   }));
 
   const filteredData = processedData.filter(item =>
+    searchTerm === '' || 
     item.nombres.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.tipo.toLowerCase().includes(searchTerm.toLowerCase())
   );

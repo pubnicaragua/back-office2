@@ -60,8 +60,8 @@ export function VentasDashboard() {
 
     // Aplicar filtros a las ventas
     const filteredVentas = ventas.filter(venta => {
-      if (filters.sucursal && venta.sucursal_id !== filters.sucursal) return false;
-      if (filters.periodo && !venta.fecha.includes(filters.periodo)) return false;
+      if (filters.sucursal && filters.sucursal !== '' && venta.sucursal_id !== filters.sucursal) return false;
+      if (filters.periodo && filters.periodo !== '' && !new Date(venta.fecha).toISOString().includes(filters.periodo)) return false;
       return true;
     });
 

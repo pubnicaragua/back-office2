@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Table } from '../Common/Table';
-import { FilterModal } from '../Common/FilterModal';
 import { Filter, Search, Plus, Edit, Download } from 'lucide-react';
-import { useSupabaseData } from '../../hooks/useSupabaseData';
+import { useSupabaseData, useSupabaseUpdate } from '../../hooks/useSupabaseData';
 import { AgregarPromocionModal } from './AgregarPromocionModal';
 import { EditarPromocionModal } from './EditarPromocionModal';
+import { Modal } from '../Common/Modal';
 
 interface PromocionesTodasProps {
   onShowModal: () => void;
@@ -16,8 +16,11 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
   const [showFilters, setShowFilters] = useState(false);
   const [showAgregarModal, setShowAgregarModal] = useState(false);
   const [showEditarModal, setShowEditarModal] = useState(false);
+  const [selectedPromocion, setSelectedPromocion] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const { data: promociones, loading, error } = useSupabaseData<any>('promociones', '*');
+  const { data: promociones, loading, error, refetch } = useSupabaseData<any>('promociones', '*, sucursales(nombre)');
+  const { update: updatePromocion } = useSupabaseUpdate('promociones');
 
   const columns = [
     { key: 'nombre', label: 'Promoción' },
@@ -30,20 +33,43 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
   ];
 
   const processedData = promociones.map(promocion => ({
+    id: promocion.id,
     nombre: promocion.nombre,
     numero_limite: promocion.numero_limite?.toString() || '50',
     descripcion: promocion.descripcion,
-    sucursal: 'N°1',
+    sucursal: promocion.sucursales?.nombre || 'N°1',
     costo: `Costo: ${Math.round(promocion.costo || 0)} $`,
     precio: `Precio: ${Math.round(promocion.precio_prom)} $`,
     disponible: promocion.disponible ? 'Disponible' : 'No disponible',
+    promocion: promocion
   }));
 
   const filteredData = processedData.filter(item =>
-    item.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
+    (searchTerm === '' || 
+     item.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  const handleEditPromocion = (promocion) => {
+    setSelectedPromocion(promocion);
+    setShowEditarModal(true);
+  };
+
+  const handleDeletePromocion = (promocion) => {
+    setSelectedPromocion(promocion);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedPromocion) {
+      const success = await updatePromocion(selectedPromocion.id, { activo: false });
+      if (success) {
+        setShowDeleteModal(false);
+        setSelectedPromocion(null);
+        refetch();
+      }
+    }
+  };
   if (loading) {
     return <div className="text-center py-4">Cargando promociones...</div>;
   }
@@ -122,12 +148,18 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
                 <td className="px-4 py-3 text-sm">
                   <div className="flex items-center space-x-2">
                     <button 
-                      onClick={() => setShowEditarModal(true)}
+                      onClick={() => handleEditPromocion(row)}
                       className="text-blue-600 hover:text-blue-800"
                     >
                       ✏️
                     </button>
-                    <button className="text-blue-600 hover:text-blue-800">
+                    <button 
+                      onClick={() => handleDeletePromocion(row)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      🗑️
+                    </button>
+                    <button className="text-green-600 hover:text-green-800">
                       📥
                     </button>
                   </div>
@@ -146,32 +178,40 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
       <EditarPromocionModal 
         isOpen={showEditarModal} 
         onClose={() => setShowEditarModal(false)} 
+        promocion={selectedPromocion}
+        onSuccess={() => {
+          setShowEditarModal(false);
+          setSelectedPromocion(null);
+          refetch();
+        }}
       />
 
-      <FilterModal
-        isOpen={showFilters}
-        onClose={() => setShowFilters(false)}
-        title="Filtros"
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        title="Eliminar Promoción"
+        size="sm"
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Sucursal
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {['N°1', 'N°2', 'N°3', 'N°4'].map(sucursal => (
-                <label key={sucursal} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
-                  <span className="text-sm text-gray-700">{sucursal}</span>
-                </label>
-              ))}
-            </div>
+        <div className="text-center space-y-4">
+          <p className="text-gray-600">
+            ¿Estás seguro de que deseas eliminar la promoción "{selectedPromocion?.nombre}"?
+          </p>
+          <div className="flex justify-center space-x-3">
+            <button
+              onClick={() => setShowDeleteModal(false)}
+              className="px-4 py-2 text-gray-600 hover:text-gray-800"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={confirmDelete}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            >
+              Eliminar
+            </button>
           </div>
         </div>
-      </FilterModal>
+      </Modal>
     </div>
   );
 }

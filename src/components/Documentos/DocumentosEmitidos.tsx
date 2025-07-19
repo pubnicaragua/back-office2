@@ -6,14 +6,22 @@ import { DocumentoDetalleModal } from './DocumentoDetalleModal';
 
 export function DocumentosEmitidos() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState({
+    fecha: '',
+    sucursal: '',
+    caja: '',
+    tipo: ''
+  });
   const [showFilters, setShowFilters] = useState(false);
   const [showDetalle, setShowDetalle] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(null);
 
   const { data: ventas, loading } = useSupabaseData<any>(
     'ventas',
-    '*'
+    '*, sucursales(nombre), cajas(nombre)'
   );
+  const { data: sucursales } = useSupabaseData<any>('sucursales', '*');
+  const { data: cajas } = useSupabaseData<any>('cajas', '*');
 
   const columns = [
     { key: 'tipo', label: 'Tipo de doc.' },
@@ -24,14 +32,22 @@ export function DocumentosEmitidos() {
     { key: 'caja', label: 'Caja' },
   ];
 
-  const processedData = ventas.map(venta => ({
+  // Aplicar filtros
+  const filteredVentas = ventas.filter(venta => {
+    if (filters.fecha && !new Date(venta.fecha).toISOString().includes(filters.fecha)) return false;
+    if (filters.sucursal && venta.sucursal_id !== filters.sucursal) return false;
+    if (filters.tipo && venta.tipo_dte !== filters.tipo) return false;
+    return true;
+  });
+
+  const processedData = filteredVentas.map(venta => ({
     id: venta.id,
     tipo: venta.tipo_dte === 'boleta' ? 'Boleta' : venta.tipo_dte === 'factura' ? 'Factura' : 'Nota de Crédito',
     folio: venta.folio,
     fecha: new Date(venta.fecha).toLocaleString('es-CL'),
     monto: `$ ${parseFloat(venta.total || 0).toLocaleString('es-CL')}`,
-    sucursal: 'N°1',
-    caja: 'N°1',
+    sucursal: venta.sucursales?.nombre || 'N°1',
+    caja: venta.cajas?.nombre || 'N°1',
   }));
 
   const handleViewDetalle = (documento) => {
@@ -95,10 +111,11 @@ export function DocumentosEmitidos() {
         </table>
       </div>
 
-      <FilterModal
+      <Modal
         isOpen={showFilters}
         onClose={() => setShowFilters(false)}
         title="Filtros"
+        size="md"
       >
         <div className="space-y-4">
           <div>
@@ -107,6 +124,8 @@ export function DocumentosEmitidos() {
             </label>
             <input
               type="date"
+              value={filters.fecha}
+              onChange={(e) => setFilters(prev => ({ ...prev, fecha: e.target.value }))}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -115,10 +134,15 @@ export function DocumentosEmitidos() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Sucursal
             </label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select 
+              value={filters.sucursal}
+              onChange={(e) => setFilters(prev => ({ ...prev, sucursal: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
               <option value="">Todas las sucursales</option>
-              <option value="n1">N°1</option>
-              <option value="n2">N°2</option>
+              {sucursales.map(sucursal => (
+                <option key={sucursal.id} value={sucursal.id}>{sucursal.nombre}</option>
+              ))}
             </select>
           </div>
           
@@ -126,20 +150,28 @@ export function DocumentosEmitidos() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Cajas
             </label>
-            <div className="space-y-2">
-              {['Caja N°1', 'Caja N°2', 'Caja N°3', 'Caja N°4'].map(caja => (
-                <label key={caja} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
-                  <span className="text-sm text-gray-700">{caja}</span>
-                </label>
+            <select 
+              value={filters.caja}
+              onChange={(e) => setFilters(prev => ({ ...prev, caja: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Todas las cajas</option>
+              {cajas.map(caja => (
+                <option key={caja.id} value={caja.id}>{caja.nombre}</option>
               ))}
-            </div>
+            </select>
+          </div>
+          
+          <div className="flex justify-end">
+            <button
+              onClick={() => setShowFilters(false)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Aplicar filtros
+            </button>
           </div>
         </div>
-      </FilterModal>
+      </Modal>
 
       <DocumentoDetalleModal 
         isOpen={showDetalle} 

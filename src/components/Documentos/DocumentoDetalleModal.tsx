@@ -10,23 +10,17 @@ interface DocumentoDetalleModalProps {
 }
 
 export function DocumentoDetalleModal({ isOpen, onClose, documento }: DocumentoDetalleModalProps) {
-  const { data: documentosDetalle, loading } = useSupabaseData<any>(
-    'documentos_detalle',
+  const { data: ventaItems, loading } = useSupabaseData<any>(
+    'venta_items',
     '*, productos(nombre)',
-    documento ? { venta_id: documento.id } : {}
+    documento?.id ? { venta_id: documento.id } : null
   );
 
   if (!documento) return null;
 
-  const productos = documentosDetalle.length > 0 ? documentosDetalle : [
-    { productos: { nombre: 'Pola - cola 500ml' }, cantidad: 20, precio_unitario: 125, subtotal: 2500 },
-    { productos: { nombre: 'Pola - cola 1L' }, cantidad: 15, precio_unitario: 25, subtotal: 375 },
-    { productos: { nombre: 'Pola - cola 1.5L' }, cantidad: 30, precio_unitario: 5, subtotal: 150 },
-    { productos: { nombre: 'Pola - cola 3L' }, cantidad: 10, precio_unitario: 5, subtotal: 50 },
-    { productos: { nombre: 'Pola - cola 3L' }, cantidad: 10, precio_unitario: 5, subtotal: 50 },
-  ];
+  const productos = ventaItems || [];
 
-  const total = productos.reduce((sum, item) => sum + (item.subtotal || 0), 0);
+  const total = productos.reduce((sum, item) => sum + (parseFloat(item.subtotal) || 0), 0);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Detalle del Documento" size="xl">
@@ -48,8 +42,8 @@ export function DocumentoDetalleModal({ isOpen, onClose, documento }: DocumentoD
                   <div className="grid grid-cols-4 gap-4 text-sm">
                     <span className="text-gray-900">{item.productos?.nombre || 'Producto'}</span>
                     <span className="text-gray-600">{item.cantidad}</span>
-                    <span className="text-gray-600">${item.precio_unitario}</span>
-                    <span className="text-gray-900 font-medium">${item.subtotal}</span>
+                    <span className="text-gray-600">${parseFloat(item.precio_unitario || 0).toLocaleString('es-CL')}</span>
+                    <span className="text-gray-900 font-medium">${parseFloat(item.subtotal || 0).toLocaleString('es-CL')}</span>
                   </div>
                 </div>
               ))}
@@ -57,7 +51,7 @@ export function DocumentoDetalleModal({ isOpen, onClose, documento }: DocumentoD
             <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
               <div className="flex justify-between items-center">
                 <span className="text-lg font-semibold text-gray-900">Total</span>
-                <span className="text-lg font-semibold text-gray-900">${total}</span>
+                <span className="text-lg font-semibold text-gray-900">${total.toLocaleString('es-CL')}</span>
               </div>
             </div>
           </div>

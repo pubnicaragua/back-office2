@@ -10,15 +10,22 @@ import { AgregarProductoModal } from './AgregarProductoModal';
 export function ProductosTotales() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    sucursal: '',
+    categoria: '',
+    disponibilidad: ''
+  });
   const [showMermasModal, setShowMermasModal] = useState(false);
   const [showInventarioModal, setShowInventarioModal] = useState(false);
   const [showProductoModal, setShowProductoModal] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
-  const { data: productos, loading } = useSupabaseData<any>(
+  const { data: productos, loading, refetch } = useSupabaseData<any>(
     'productos',
     '*, categorias(nombre)'
   );
+  const { data: sucursales } = useSupabaseData<any>('sucursales', '*');
+  const { data: categorias } = useSupabaseData<any>('categorias', '*');
 
   const columns = [
     { key: 'producto', label: 'Producto' },
@@ -31,7 +38,16 @@ export function ProductosTotales() {
     { key: 'disponible', label: 'Disponible' },
   ];
 
-  const processedData = productos.map(producto => ({
+  // Aplicar filtros
+  const filteredProductos = productos.filter(producto => {
+    if (filters.categoria && filters.categoria !== '' && producto.categoria_id !== filters.categoria) return false;
+    if (filters.disponibilidad === 'disponibles' && (producto.stock || 0) <= 0) return false;
+    if (filters.disponibilidad === 'agotados' && (producto.stock || 0) > 0) return false;
+    return true;
+  });
+
+  const processedData = filteredProductos.map(producto => ({
+    id: producto.id,
     producto: producto.nombre,
     stock: producto.stock?.toString() || '0',
     categoria: producto.categorias?.nombre || 'Sin categoría',
