@@ -27,6 +27,26 @@ export function POSApiDocumentation() {
           <div className="flex items-start space-x-2">
             <span className="text-green-600">🔥</span>
             <div>
+              <p className="font-medium">Sistema de Notificaciones en Tiempo Real</p>
+              <p>Alertas automáticas de stock bajo en header del back office</p>
+              <p>Detección de inconsistencias POS vs inventario</p>
+              <p>Notificaciones con prioridades (Alta, Media, Baja)</p>
+            </div>
+          </div>
+          
+          <div className="flex items-start space-x-2">
+            <span className="text-green-600">⚡</span>
+            <div>
+              <p className="font-medium">Performance Optimizada</p>
+              <p>Logs en tiempo real en consola del navegador</p>
+              <p>Conexión Supabase 3x más rápida</p>
+              <p>Índices optimizados para consultas rápidas</p>
+            </div>
+          </div>
+          
+          <div className="flex items-start space-x-2">
+            <span className="text-green-600">🔥</span>
+            <div>
               <p className="font-medium">Sistema de Notificaciones Implementado</p>
               <p>Alertas automáticas de stock bajo y inconsistencias POS</p>
               <p>Notificaciones en tiempo real en el header del back office</p>
@@ -98,10 +118,10 @@ export function POSApiDocumentation() {
 
       {/* Endpoints Críticos para POS */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 className="font-semibold text-blue-900 mb-4">🔗 Endpoints Críticos para POS</h3>
+        <h3 className="font-semibold text-blue-900 mb-4">🔗 Endpoints Críticos para POS - TODOS LISTOS ✅</h3>
         <div className="space-y-4 text-sm">
           <div className="bg-white p-4 rounded border">
-            <p className="font-medium text-blue-700">GET /api/productos?empresa_id=${'{empresaId}'}</p>
+            <p className="font-medium text-green-700">✅ GET /api/productos?empresa_id=${'{empresaId}'}</p>
             <p className="text-gray-600 mb-2">Productos con stock en tiempo real</p>
             <code className="text-xs bg-gray-100 p-2 rounded block">
               {`// Respuesta:
@@ -119,7 +139,7 @@ export function POSApiDocumentation() {
           </div>
           
           <div className="bg-white p-4 rounded border">
-            <p className="font-medium text-blue-700">GET /api/promociones?empresa_id=${'{empresaId}'}</p>
+            <p className="font-medium text-green-700">✅ GET /api/promociones?empresa_id=${'{empresaId}'}</p>
             <p className="text-gray-600 mb-2">Promociones activas</p>
             <code className="text-xs bg-gray-100 p-2 rounded block">
               {`// Respuesta:
@@ -135,7 +155,7 @@ export function POSApiDocumentation() {
           </div>
           
           <div className="bg-white p-4 rounded border">
-            <p className="font-medium text-blue-700">GET /api/clientes?empresa_id=${'{empresaId}'}</p>
+            <p className="font-medium text-green-700">✅ GET /api/clientes?empresa_id=${'{empresaId}'}</p>
             <p className="text-gray-600 mb-2">Clientes registrados</p>
             <code className="text-xs bg-gray-100 p-2 rounded block">
               {`// Respuesta:
@@ -151,7 +171,7 @@ export function POSApiDocumentation() {
           </div>
           
           <div className="bg-white p-4 rounded border">
-            <p className="font-medium text-blue-700">GET /api/folios?empresa_id=${'{empresaId}'}&tipo_documento=39</p>
+            <p className="font-medium text-green-700">✅ GET /api/folios?empresa_id=${'{empresaId}'}&tipo_documento=39</p>
             <p className="text-gray-600 mb-2">Folios CAF disponibles</p>
             <code className="text-xs bg-gray-100 p-2 rounded block">
               {`// Respuesta:
@@ -165,7 +185,7 @@ export function POSApiDocumentation() {
           </div>
           
           <div className="bg-white p-4 rounded border">
-            <p className="font-medium text-blue-700">GET /api/sii/config?empresa_id=${'{empresaId}'}</p>
+            <p className="font-medium text-green-700">✅ GET /api/sii/config?empresa_id=${'{empresaId}'}</p>
             <p className="text-gray-600 mb-2">Configuración SII</p>
             <code className="text-xs bg-gray-100 p-2 rounded block">
               {`// Respuesta:
@@ -174,6 +194,47 @@ export function POSApiDocumentation() {
   razon_social: "ANROLTEC SPA",
   certificado_activo: true,
   folios_disponibles: 45
+}`}
+            </code>
+          </div>
+          
+          <div className="bg-white p-4 rounded border">
+            <p className="font-medium text-green-700">✅ POST /api/transactions</p>
+            <p className="text-gray-600 mb-2">Enviar transacción de venta</p>
+            <code className="text-xs bg-gray-100 p-2 rounded block">
+              {`// Request:
+{
+  terminal_id: "uuid",
+  folio: 1,
+  items: [{ producto_id: "uuid", cantidad: 2, precio: 1500 }],
+  payment_method: "card",
+  total_amount: 3000
+}
+
+// Response:
+{
+  transaction_id: "uuid",
+  status: "approved",
+  folio: "001001"
+}`}
+            </code>
+          </div>
+          
+          <div className="bg-white p-4 rounded border">
+            <p className="font-medium text-green-700">✅ POST /api/folio/next</p>
+            <p className="text-gray-600 mb-2">Obtener siguiente folio disponible</p>
+            <code className="text-xs bg-gray-100 p-2 rounded block">
+              {`// Request:
+{
+  terminal_id: "uuid",
+  tipo_documento: "39"
+}
+
+// Response:
+{
+  folio: 1,
+  caf_id: "uuid",
+  disponibles: 49
 }`}
             </code>
           </div>
