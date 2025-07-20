@@ -1,13 +1,14 @@
 import React from 'react';
-import { AlertTriangle, Package, Monitor, X } from 'lucide-react';
+import { AlertTriangle, Package, Monitor, X, RefreshCw } from 'lucide-react';
 import { useSupabaseUpdate } from '../../hooks/useSupabaseData';
 
 interface NotificationsPanelProps {
   notifications: any[];
   onClose: () => void;
+  onRefresh: () => void;
 }
 
-export function NotificationsPanel({ notifications, onClose }: NotificationsPanelProps) {
+export function NotificationsPanel({ notifications, onClose, onRefresh }: NotificationsPanelProps) {
   const { update } = useSupabaseUpdate('notificaciones');
 
   const getIcon = (tipo: string) => {
@@ -34,18 +35,34 @@ export function NotificationsPanel({ notifications, onClose }: NotificationsPane
 
   const markAsRead = async (notificationId: string) => {
     await update(notificationId, { leida: true });
+    onRefresh();
   };
 
   return (
     <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
-        <h3 className="font-medium text-gray-900">Notificaciones</h3>
-        <button
-          onClick={onClose}
-          className="p-1 rounded-md hover:bg-gray-100"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        <h3 className="font-medium text-gray-900">
+          Notificaciones {notifications.length > 0 && (
+            <span className="ml-2 px-2 py-1 bg-red-100 text-red-600 text-xs rounded-full">
+              {notifications.length}
+            </span>
+          )}
+        </h3>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={onRefresh}
+            className="p-1 rounded-md hover:bg-gray-100"
+            title="Actualizar notificaciones"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </button>
+          <button
+            onClick={onClose}
+            className="p-1 rounded-md hover:bg-gray-100"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
       </div>
       
       <div className="max-h-96 overflow-y-auto">
@@ -88,6 +105,7 @@ export function NotificationsPanel({ notifications, onClose }: NotificationsPane
               for (const notification of notifications) {
                 await markAsRead(notification.id);
               }
+              onRefresh();
               onClose();
             }}
             className="w-full text-sm text-blue-600 hover:text-blue-700"

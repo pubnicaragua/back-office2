@@ -14,7 +14,15 @@ export function Header({ onMenuToggle, currentView }: HeaderProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showNotifications, setShowNotifications] = useState(false);
   
-  const { data: notificaciones, loading: notifLoading } = useSupabaseData<any>('notificaciones', '*', { leida: false });
+  const { data: notificaciones, loading: notifLoading, refetch: refetchNotifications } = useSupabaseData<any>('notificaciones', '*', { leida: false });
+
+  // Auto-refresh notifications every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetchNotifications();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [refetchNotifications]);
 
   // Update time every second
   useEffect(() => {
@@ -78,11 +86,11 @@ export function Header({ onMenuToggle, currentView }: HeaderProps) {
           <div className="relative">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative p-2 rounded-md hover:bg-gray-100 ${notifLoading ? 'animate-pulse' : ''}`}
+              className={`relative p-2 rounded-md hover:bg-gray-100 transition-all ${notifLoading ? 'animate-pulse' : ''}`}
             >
               <Bell className="w-5 h-5 text-gray-700" />
               {notificaciones.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-bounce">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
                   {notificaciones.length}
                 </span>
               )}
@@ -92,6 +100,7 @@ export function Header({ onMenuToggle, currentView }: HeaderProps) {
               <NotificationsPanel 
                 notifications={notificaciones}
                 onClose={() => setShowNotifications(false)}
+                onRefresh={refetchNotifications}
               />
             )}
           </div>
