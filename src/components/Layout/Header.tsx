@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Clock, User } from 'lucide-react';
+import { Menu, Clock, User, Bell } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSupabaseData } from '../../hooks/useSupabaseData';
+import { NotificationsPanel } from './NotificationsPanel';
 
 interface HeaderProps {
   onMenuToggle: () => void;
@@ -10,6 +12,9 @@ interface HeaderProps {
 export function Header({ onMenuToggle, currentView }: HeaderProps) {
   const { user, signOut } = useAuth();
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showNotifications, setShowNotifications] = useState(false);
+  
+  const { data: notificaciones } = useSupabaseData<any>('notificaciones', '*', { leida: false });
 
   // Update time every second
   useEffect(() => {
@@ -69,6 +74,28 @@ export function Header({ onMenuToggle, currentView }: HeaderProps) {
         
         {/* Right side - Time and User */}
         <div className="flex items-center space-x-6 flex-1 justify-end">
+          {/* Notifications */}
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative p-2 rounded-md hover:bg-gray-100"
+            >
+              <Bell className="w-5 h-5 text-gray-700" />
+              {notificaciones.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                  {notificaciones.length}
+                </span>
+              )}
+            </button>
+            
+            {showNotifications && (
+              <NotificationsPanel 
+                notifications={notificaciones}
+                onClose={() => setShowNotifications(false)}
+              />
+            )}
+          </div>
+          
           <div className="flex items-center space-x-2 text-sm text-gray-600">
             <span className="font-medium">{formatTime(currentTime)}</span>
             <Clock className="w-4 h-4" />

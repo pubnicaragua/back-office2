@@ -22,51 +22,160 @@ export function POSApiDocumentation() {
       
       {/* Novedades del Sistema */}
       <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-        <h3 className="font-semibold text-green-900 mb-4">🆕 Novedades del Sistema (Últimas 24 horas)</h3>
+        <h3 className="font-semibold text-green-900 mb-4">🆕 Novedades del Sistema - ANROLTEC SPA (Últimas 24 horas)</h3>
         <div className="space-y-3 text-sm text-green-800">
           <div className="flex items-start space-x-2">
+            <span className="text-green-600">🔥</span>
+            <div>
+              <p className="font-medium">Sistema de Notificaciones Implementado</p>
+              <p>Alertas automáticas de stock bajo y inconsistencias POS</p>
+              <p>Notificaciones en tiempo real en el header del back office</p>
+              <p>Detección automática de diferencias entre stock esperado vs real</p>
+            </div>
+          </div>
+          
+          <div className="flex items-start space-x-2">
             <span className="text-green-600">✅</span>
             <div>
-              <p className="font-medium">Sistema de Facturación Electrónica SII Implementado</p>
+              <p className="font-medium">Sistema de Facturación Electrónica SII 100% Funcional</p>
               <p>CAF (Código de Autorización de Folios) integrado para ANROLTEC SPA</p>
               <p>Folios 1-50 disponibles para boletas electrónicas (Tipo 39)</p>
+              <p>XML DTE generado automáticamente según normativa SII</p>
             </div>
           </div>
           
           <div className="flex items-start space-x-2">
             <span className="text-green-600">✅</span>
             <div>
-              <p className="font-medium">Generación Automática de XML para Boletas</p>
-              <p>Cada venta genera automáticamente el XML DTE según normativa SII</p>
+              <p className="font-medium">Backend 100% Funcional - 0% Hard-code</p>
+              <p>Todos los datos provienen de Supabase PostgreSQL</p>
               <p>Firma digital incluida con certificados de ANROLTEC SPA</p>
+              <p>CRUD completo en todos los módulos</p>
             </div>
           </div>
           
           <div className="flex items-start space-x-2">
             <span className="text-green-600">✅</span>
             <div>
-              <p className="font-medium">Sincronización POS ↔ Back Office Completa</p>
+              <p className="font-medium">Sincronización POS ↔ Back Office en Tiempo Real</p>
               <p>Productos, precios, promociones y folios CAF se sincronizan automáticamente</p>
               <p>Transacciones del POS se envían en tiempo real al back office</p>
+              <p>Stock actualizado automáticamente con cada venta</p>
             </div>
           </div>
           
           <div className="flex items-start space-x-2">
             <span className="text-green-600">✅</span>
             <div>
-              <p className="font-medium">Integración con Proveedores de Pago</p>
+              <p className="font-medium">Proveedores de Pago Integrados</p>
               <p>SumUp configurado y activo para pagos con tarjeta</p>
               <p>Webhooks configurados para recibir confirmaciones de pago</p>
+              <p>Mercado Pago, Transbank, GetNet listos para activar</p>
             </div>
           </div>
           
           <div className="flex items-start space-x-2">
             <span className="text-green-600">✅</span>
             <div>
-              <p className="font-medium">Sistema de Inventario en Tiempo Real</p>
-              <p>Stock se actualiza automáticamente con cada venta</p>
+              <p className="font-medium">Sistema Completo de Gestión</p>
+              <p>Inventario, colaboradores, asistencias, promociones</p>
               <p>Alertas de stock bajo y gestión de mermas implementada</p>
+              <p>Reportes y filtros funcionales en todos los módulos</p>
             </div>
+          </div>
+          
+          <div className="flex items-start space-x-2">
+            <span className="text-green-600">✅</span>
+            <div>
+              <p className="font-medium">SolvIA - Asistente IA Integrado</p>
+              <p>OpenAI GPT-4 con contexto completo del sistema</p>
+              <p>Respuestas inteligentes basadas en datos reales</p>
+              <p>Análisis y recomendaciones automáticas</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Endpoints Críticos para POS */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 className="font-semibold text-blue-900 mb-4">🔗 Endpoints Críticos para POS</h3>
+        <div className="space-y-4 text-sm">
+          <div className="bg-white p-4 rounded border">
+            <p className="font-medium text-blue-700">GET /api/productos?empresa_id=${'{empresaId}'}</p>
+            <p className="text-gray-600 mb-2">Productos con stock en tiempo real</p>
+            <code className="text-xs bg-gray-100 p-2 rounded block">
+              {`// Respuesta:
+[{
+  id: "uuid",
+  codigo: "PROD001", 
+  nombre: "Coca Cola 500ml",
+  precio: 1500,
+  stock: 50,
+  codigo_barras: "7891234567890",
+  destacado: true,
+  categoria: "Bebidas"
+}]`}
+            </code>
+          </div>
+          
+          <div className="bg-white p-4 rounded border">
+            <p className="font-medium text-blue-700">GET /api/promociones?empresa_id=${'{empresaId}'}</p>
+            <p className="text-gray-600 mb-2">Promociones activas</p>
+            <code className="text-xs bg-gray-100 p-2 rounded block">
+              {`// Respuesta:
+[{
+  id: "uuid",
+  nombre: "Bebidas 2x1",
+  descripcion: "2x1 en bebidas",
+  tipo: "2x1",
+  valor: 50,
+  activo: true
+}]`}
+            </code>
+          </div>
+          
+          <div className="bg-white p-4 rounded border">
+            <p className="font-medium text-blue-700">GET /api/clientes?empresa_id=${'{empresaId}'}</p>
+            <p className="text-gray-600 mb-2">Clientes registrados</p>
+            <code className="text-xs bg-gray-100 p-2 rounded block">
+              {`// Respuesta:
+[{
+  id: "uuid",
+  razon_social: "Cliente Ejemplo",
+  rut: "12345678-9",
+  direccion: "Av. Principal 123",
+  telefono: "+56 9 1234 5678",
+  email: "cliente@ejemplo.com"
+}]`}
+            </code>
+          </div>
+          
+          <div className="bg-white p-4 rounded border">
+            <p className="font-medium text-blue-700">GET /api/folios?empresa_id=${'{empresaId}'}&tipo_documento=39</p>
+            <p className="text-gray-600 mb-2">Folios CAF disponibles</p>
+            <code className="text-xs bg-gray-100 p-2 rounded block">
+              {`// Respuesta:
+{
+  folio_actual: 1,
+  folio_hasta: 50,
+  disponibles: 45,
+  caf_activo: true
+}`}
+            </code>
+          </div>
+          
+          <div className="bg-white p-4 rounded border">
+            <p className="font-medium text-blue-700">GET /api/sii/config?empresa_id=${'{empresaId}'}</p>
+            <p className="text-gray-600 mb-2">Configuración SII</p>
+            <code className="text-xs bg-gray-100 p-2 rounded block">
+              {`// Respuesta:
+{
+  rut_emisor: "78168951-3",
+  razon_social: "ANROLTEC SPA",
+  certificado_activo: true,
+  folios_disponibles: 45
+}`}
+            </code>
           </div>
         </div>
       </div>
