@@ -13,16 +13,13 @@ export function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('🔄 Login form submitted for:', email);
     
     setLoading(true);
     setError('');
 
     try {
       await signIn(email, password);
-      console.log('✅ Login successful');
     } catch (err: any) {
-      console.error('❌ Login error:', err);
       setError(err.message || 'Error al iniciar sesión');
     } finally {
       setLoading(false);
@@ -31,7 +28,6 @@ export function LoginForm() {
 
   const handleQuickLogin = async () => {
     try {
-      console.log('🔄 Quick login with test credentials...');
       setLoading(true);
       setError('');
       
@@ -42,16 +38,12 @@ export function LoginForm() {
       });
       
       if (signUpError && !signUpError.message.includes('already registered')) {
-        console.error('❌ Error creating test user:', signUpError);
-      } else {
-        console.log('✅ Test user created or already exists');
+        console.warn('Test user creation issue:', signUpError);
       }
       
       // Now try to sign in
       await signIn('test@example.com', 'password123');
-      console.log('✅ Quick login successful');
     } catch (err: any) {
-      console.error('❌ Quick login error:', err);
       setError('Error en login rápido: ' + err.message);
     } finally {
       setLoading(false);

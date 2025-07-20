@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 
 // Cache para evitar consultas repetidas
 const queryCache = new Map();
-const CACHE_DURATION = 30000; // 30 segundos
+const CACHE_DURATION = 10000; // 10 segundos para mejor performance
 
 export function useSupabaseData<T>(
   table: string,
@@ -45,7 +45,6 @@ export function useSupabaseData<T>(
       const { data: result, error } = await query;
       
       if (error) {
-        console.error(`Error fetching ${table}:`, error);
         setError(error.message);
         setData([]); // Set empty array on error
       } else {
@@ -59,7 +58,6 @@ export function useSupabaseData<T>(
         });
       }
     } catch (err: any) {
-      console.error(`Error fetching ${table}:`, err);
       setError(err.message);
       setData([]); // Set empty array on error
     } finally {
@@ -88,13 +86,11 @@ export function useSupabaseInsert<T>(table: string) {
       const { error } = await supabase.from(table).insert(data);
       
       if (error) {
-        console.error(`Error inserting into ${table}:`, error);
         setError(error.message);
         return false;
       }
       return true;
     } catch (err: any) {
-      console.error(`Error inserting into ${table}:`, err);
       setError(err.message);
       return false;
     } finally {
@@ -117,13 +113,11 @@ export function useSupabaseUpdate<T>(table: string) {
       const { error } = await supabase.from(table).update(data).eq('id', id);
       
       if (error) {
-        console.error(`Error updating ${table}:`, error);
         setError(error.message);
         return false;
       }
       return true;
     } catch (err: any) {
-      console.error(`Error updating ${table}:`, err);
       setError(err.message);
       return false;
     } finally {

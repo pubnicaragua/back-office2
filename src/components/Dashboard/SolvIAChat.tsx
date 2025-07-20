@@ -69,10 +69,20 @@ export function SolvIAChat({ isOpen, onClose }: SolvIAChatProps) {
     const foliosDisponibles = foliosElectronicos.filter(f => !f.usado).length;
 
     return {
+      sistema: 'Solvendo Back Office',
+      version: '2.0',
       fecha: new Date().toLocaleDateString('es-CL'),
       hora: new Date().toLocaleTimeString('es-CL'),
       empresa: 'ANROLTEC SPA',
       rut: '78168951-3',
+      novedades: [
+        'Sistema de Facturación Electrónica SII implementado',
+        'CAF integrado para boletas electrónicas (Folios 1-50)',
+        'Sincronización POS ↔ Back Office en tiempo real',
+        'Integración con SumUp para pagos con tarjeta',
+        'Sistema de inventario en tiempo real',
+        'Gestión completa de colaboradores y asistencias'
+      ],
       metricas: {
         ventas: {
           total: totalVentas,

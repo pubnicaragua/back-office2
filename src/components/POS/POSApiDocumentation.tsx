@@ -8,11 +8,64 @@ export function POSApiDocumentation() {
         <div className="flex items-start space-x-3">
           <Database className="w-6 h-6 text-blue-600 mt-1" />
           <div>
-            <h3 className="font-semibold text-blue-900 mb-2">🔗 Conexión del POS al Back Office</h3>
+            <h3 className="font-semibold text-blue-900 mb-2">🔗 Conexión del POS al Back Office - ANROLTEC SPA</h3>
             <div className="text-blue-800 space-y-2">
               <p><strong>URL Base:</strong> <code className="bg-blue-100 px-2 py-1 rounded">{window.location.origin}/api/pos</code></p>
               <p><strong>Base de Datos:</strong> Supabase PostgreSQL</p>
               <p><strong>Autenticación:</strong> Bearer Token + Terminal Code</p>
+              <p><strong>Empresa:</strong> ANROLTEC SPA (RUT: 78168951-3)</p>
+              <p><strong>Folios CAF:</strong> Tipo 39 (Boletas) - Folios 1-50 disponibles</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Novedades del Sistema */}
+      <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+        <h3 className="font-semibold text-green-900 mb-4">🆕 Novedades del Sistema (Últimas 24 horas)</h3>
+        <div className="space-y-3 text-sm text-green-800">
+          <div className="flex items-start space-x-2">
+            <span className="text-green-600">✅</span>
+            <div>
+              <p className="font-medium">Sistema de Facturación Electrónica SII Implementado</p>
+              <p>CAF (Código de Autorización de Folios) integrado para ANROLTEC SPA</p>
+              <p>Folios 1-50 disponibles para boletas electrónicas (Tipo 39)</p>
+            </div>
+          </div>
+          
+          <div className="flex items-start space-x-2">
+            <span className="text-green-600">✅</span>
+            <div>
+              <p className="font-medium">Generación Automática de XML para Boletas</p>
+              <p>Cada venta genera automáticamente el XML DTE según normativa SII</p>
+              <p>Firma digital incluida con certificados de ANROLTEC SPA</p>
+            </div>
+          </div>
+          
+          <div className="flex items-start space-x-2">
+            <span className="text-green-600">✅</span>
+            <div>
+              <p className="font-medium">Sincronización POS ↔ Back Office Completa</p>
+              <p>Productos, precios, promociones y folios CAF se sincronizan automáticamente</p>
+              <p>Transacciones del POS se envían en tiempo real al back office</p>
+            </div>
+          </div>
+          
+          <div className="flex items-start space-x-2">
+            <span className="text-green-600">✅</span>
+            <div>
+              <p className="font-medium">Integración con Proveedores de Pago</p>
+              <p>SumUp configurado y activo para pagos con tarjeta</p>
+              <p>Webhooks configurados para recibir confirmaciones de pago</p>
+            </div>
+          </div>
+          
+          <div className="flex items-start space-x-2">
+            <span className="text-green-600">✅</span>
+            <div>
+              <p className="font-medium">Sistema de Inventario en Tiempo Real</p>
+              <p>Stock se actualiza automáticamente con cada venta</p>
+              <p>Alertas de stock bajo y gestión de mermas implementada</p>
             </div>
           </div>
         </div>

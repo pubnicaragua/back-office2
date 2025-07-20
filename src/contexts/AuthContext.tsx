@@ -16,29 +16,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('🔄 AuthProvider: Initializing...');
-    
     // Get initial session
     const initializeAuth = async () => {
       try {
-        console.log('🔍 Checking initial session...');
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error('❌ Error getting session:', error);
           setLoading(false);
           return;
         }
 
         if (session?.user) {
-          console.log('✅ Found existing session for user:', session.user.email);
           await fetchUserProfile(session.user.id, session.user.email);
         } else {
-          console.log('ℹ️ No existing session found');
           setLoading(false);
         }
       } catch (error) {
-        console.error('❌ Error initializing auth:', error);
         setLoading(false);
       }
     };
@@ -47,8 +40,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔄 Auth state changed:', event, session?.user?.email);
-      
       if (session?.user) {
         await fetchUserProfile(session.user.id, session.user.email);
       } else {
@@ -58,46 +49,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => {
-      console.log('🧹 Cleaning up auth subscription');
       subscription.unsubscribe();
     };
   }, []);
 
   const fetchUserProfile = async (userId: string, userEmail?: string) => {
     try {
-      console.log('🔍 Fetching user profile for:', userId);
       setLoading(true);
       
-      // Set a timeout to prevent infinite loading
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Database query timeout')), 10000);
-      });
-
-      // Try usuarios table first with timeout
+      // Try usuarios table first
       const usuarioPromise = supabase
         .from('usuarios')
         .select('*')
         .eq('id', userId)
         .single();
 
-      try {
-        const { data: usuarioData, error: usuarioError } = await Promise.race([
-          usuarioPromise,
-          timeoutPromise
-        ]) as any;
+      const { data: usuarioData, error: usuarioError } = await usuarioPromise;
 
-        if (usuarioData && !usuarioError) {
-          console.log('✅ Found user in usuarios table:', usuarioData.email);
-          setUser(usuarioData);
-          setLoading(false);
-          return;
-        }
-      } catch (timeoutError) {
-        console.log('⏰ Database query timed out, creating fallback user');
+      if (usuarioData && !usuarioError) {
+        setUser(usuarioData);
+        setLoading(false);
+        return;
       }
 
-      console.log('ℹ️ Creating fallback user profile...');
-      
       // Create basic user object from auth data
       const basicUser: User = {
         id: userId,
@@ -111,14 +85,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         created_at: new Date().toISOString()
       };
 
-      console.log('✅ Created fallback user profile for:', basicUser.email);
       setUser(basicUser);
       setLoading(false);
 
       // Try to create the user in the database in the background
       setTimeout(async () => {
         try {
-          console.log('🔄 Background: Attempting to upsert user record...');
           const { error: upsertError } = await supabase
             .from('usuarios')
             .upsert({
@@ -132,19 +104,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               onConflict: 'id'
             });
 
-          if (upsertError) {
-            console.log('ℹ️ Background: Could not upsert user record:', upsertError.message);
-          } else {
-            console.log('✅ Background: User record upserted successfully');
-          }
+          if (upsertError) console.warn('Could not upsert user:', upsertError.message);
         } catch (bgError) {
-          console.log('ℹ️ Background: Database upsert failed:', bgError);
+          console.warn('Background upsert failed:', bgError);
         }
       }, 1000);
 
     } catch (error) {
-      console.error('❌ Error fetching user profile:', error);
-      
       // Always create a fallback user to prevent infinite loading
       const fallbackUser: User = {
         id: userId,
@@ -158,7 +124,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         created_at: new Date().toISOString()
       };
       
-      console.log('🆘 Using emergency fallback user profile');
       setUser(fallbackUser);
       setLoading(false);
     }
@@ -166,7 +131,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      console.log('🔄 Attempting sign in for:', email);
       setLoading(true);
       
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -175,15 +139,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       
       if (error) {
-        console.error('❌ Sign in error:', error);
         setLoading(false);
         throw error;
       }
-      
-      console.log('✅ Sign in successful for:', email);
       // Don't set loading to false here - let the auth state change handle it
     } catch (error) {
-      console.error('❌ Sign in failed:', error);
       setLoading(false);
       throw error;
     }
@@ -191,15 +151,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      console.log('🔄 Signing out...');
       const { error } = await supabase.auth.signOut();
       if (error) {
-        console.error('❌ Sign out error:', error);
         throw error;
       }
-      console.log('✅ Sign out successful');
     } catch (error) {
-      console.error('❌ Sign out failed:', error);
       throw error;
     }
   };
