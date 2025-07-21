@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { PromocionesTodas } from './PromocionesTodas';
+import { DescuentosTodas } from './DescuentosTodas';
+import { CuponesTodas } from './CuponesTodas';
 import { PromocionesModal } from './PromocionesModal';
 
 export function Promociones() {
@@ -8,12 +10,18 @@ export function Promociones() {
 
   const tabs = [
     { id: 'todas', label: 'Promociones de todas las tiendas' },
+    { id: 'descuentos', label: 'Descuentos' },
+    { id: 'cupones', label: 'Cupones' },
   ];
 
   const renderContent = () => {
     switch (activeTab) {
       case 'todas':
         return <PromocionesTodas onShowModal={() => setShowModal(true)} />;
+      case 'descuentos':
+        return <DescuentosTodas />;
+      case 'cupones':
+        return <CuponesTodas />;
       default:
         return <PromocionesTodas onShowModal={() => setShowModal(true)} />;
     }

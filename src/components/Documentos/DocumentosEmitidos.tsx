@@ -18,10 +18,9 @@ export function DocumentosEmitidos() {
 
   const { data: ventas, loading } = useSupabaseData<any>(
     'ventas',
-    '*, sucursales(nombre), cajas(nombre)'
+    '*, sucursales(nombre)'
   );
   const { data: sucursales } = useSupabaseData<any>('sucursales', '*');
-  const { data: cajas } = useSupabaseData<any>('cajas', '*');
 
   const columns = [
     { key: 'tipo', label: 'Tipo de doc.' },
@@ -47,7 +46,7 @@ export function DocumentosEmitidos() {
     fecha: new Date(venta.fecha).toLocaleString('es-CL'),
     monto: `$ ${parseFloat(venta.total || 0).toLocaleString('es-CL')}`,
     sucursal: venta.sucursales?.nombre || 'N°1',
-    caja: venta.cajas?.nombre || 'N°1',
+    caja: 'N°1',
   }));
 
   const handleViewDetalle = (documento) => {

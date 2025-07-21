@@ -152,22 +152,24 @@ export function VentasDashboard() {
   const maxValue = Math.max(...chartData.map(d => d.value));
 
   const handleDownloadReport = () => {
-    const reportData = {
-      fecha: new Date().toLocaleDateString('es-CL'),
-      ventas: ventas.map(v => ({
-        folio: v.folio,
-        fecha: v.fecha,
-        total: v.total,
-        sucursal: v.sucursales?.nombre
-      })),
-      resumen: metrics
-    };
+    // Create Excel-compatible CSV data
+    const headers = ['Folio', 'Fecha', 'Total', 'Sucursal', 'Método Pago'];
+    const csvData = [
+      headers.join(','),
+      ...ventas.map(v => [
+        v.folio,
+        new Date(v.fecha).toLocaleDateString('es-CL'),
+        v.total,
+        v.sucursales?.nombre || 'N/A',
+        v.metodo_pago || 'N/A'
+      ].join(','))
+    ].join('\n');
     
-    const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `reporte_ventas_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `reporte_ventas_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     setShowDownloadModal(false);
   };

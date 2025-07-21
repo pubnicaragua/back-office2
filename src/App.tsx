@@ -4,14 +4,11 @@ import { LoginForm } from './components/Auth/LoginForm';
 import { Sidebar } from './components/Layout/Sidebar';
 import { Header } from './components/Layout/Header';
 import { GeneralDashboard } from './components/Dashboard/GeneralDashboard';
-import { POSInfo } from './components/POS/POSInfo';
 import { Documentos } from './components/Documentos/Documentos';
 import { Promociones } from './components/Promociones/Promociones';
 import { Colaboradores } from './components/Colaboradores/Colaboradores';
 import { VentasDashboard } from './components/Ventas/VentasDashboard';
 import { ProductosTotales } from './components/Inventario/ProductosTotales';
-import { RecepcionPedidos } from './components/Pedidos/RecepcionPedidos';
-import { GestionDespachos } from './components/GestionDespachos/GestionDespachos';
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -41,12 +38,6 @@ function AppContent() {
         return <VentasDashboard />;
       case 'inventario':
         return <ProductosTotales />;
-      case 'pedidos':
-        return <RecepcionPedidos />;
-      case 'despachos':
-        return <GestionDespachos />;
-      case 'pos':
-        return <POSInfo />;
       case 'documentos':
         return <Documentos />;
       case 'promociones':
