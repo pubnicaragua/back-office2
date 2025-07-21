@@ -15,13 +15,9 @@ export function useSupabaseData<T>(
   }, [table, select, JSON.stringify(filters)]);
 
   const fetchData = async () => {
-    const startTime = Date.now();
-    
     try {
       setLoading(true);
       setError(null);
-      
-      console.log(`📊 Fetching ${table}:`, { select, filters });
       
       let query = supabase.from(table).select(select);
       
@@ -33,14 +29,6 @@ export function useSupabaseData<T>(
       
       const { data: result, error } = await query;
       
-      const duration = Date.now() - startTime;
-      
-      console.log(`✅ ${table} loaded:`, {
-        records: result?.length || 0,
-        duration: `${duration}ms`,
-        error: error?.message
-      });
-      
       if (error) {
         setError(error.message);
         setData([]);
@@ -49,7 +37,6 @@ export function useSupabaseData<T>(
         setData(finalData);
       }
     } catch (err: any) {
-      console.error(`❌ ${table} error:`, err.message);
       setError(err.message);
       setData([]);
     } finally {
@@ -58,7 +45,6 @@ export function useSupabaseData<T>(
   };
 
   const refetch = () => {
-    console.log(`🔄 Refetching ${table}`);
     fetchData();
   };
 

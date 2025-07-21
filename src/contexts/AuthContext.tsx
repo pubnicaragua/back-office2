@@ -57,21 +57,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       
-      // Try usuarios table first
-      const usuarioPromise = supabase
-        .from('usuarios')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      const { data: usuarioData, error: usuarioError } = await usuarioPromise;
-
-      if (usuarioData && !usuarioError) {
-        setUser(usuarioData);
-        setLoading(false);
-        return;
-      }
-
       // Create basic user object from auth data
       const basicUser: User = {
         id: userId,
@@ -87,28 +72,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setUser(basicUser);
       setLoading(false);
-
-      // Try to create the user in the database in the background
-      setTimeout(async () => {
-        try {
-          const { error: upsertError } = await supabase
-            .from('usuarios')
-            .upsert({
-              id: userId,
-              email: userEmail || 'usuario@ejemplo.com',
-              nombres: 'Usuario',
-              apellidos: '',
-              rut: `${Math.floor(Math.random() * 99999999)}-${Math.floor(Math.random() * 9)}`,
-              activo: true
-            }, {
-              onConflict: 'id'
-            });
-
-          if (upsertError) console.warn('Could not upsert user:', upsertError.message);
-        } catch (bgError) {
-          console.warn('Background upsert failed:', bgError);
-        }
-      }, 1000);
 
     } catch (error) {
       // Always create a fallback user to prevent infinite loading

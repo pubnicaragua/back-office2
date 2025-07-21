@@ -16,14 +16,6 @@ export function Header({ onMenuToggle, currentView }: HeaderProps) {
   
   const { data: notificaciones, loading: notifLoading, refetch: refetchNotifications } = useSupabaseData<any>('notificaciones', '*', { leida: false });
 
-  // Auto-refresh notifications every 30 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refetchNotifications();
-    }, 30000);
-    return () => clearInterval(interval);
-  }, [refetchNotifications]);
-
   // Update time every second
   useEffect(() => {
     const timer = setInterval(() => {
