@@ -152,24 +152,23 @@ export function VentasDashboard() {
   const maxValue = Math.max(...chartData.map(d => d.value));
 
   const handleDownloadReport = () => {
-    // Create Excel-compatible CSV data
+    // Create XLSX data
     const headers = ['Folio', 'Fecha', 'Total', 'Sucursal', 'Método Pago'];
-    const csvData = [
-      headers.join(','),
-      ...ventas.map(v => [
-        v.folio,
-        new Date(v.fecha).toLocaleDateString('es-CL'),
-        v.total,
-        v.sucursales?.nombre || 'N/A',
-        v.metodo_pago || 'N/A'
-      ].join(','))
-    ].join('\n');
+    const rows = ventas.map(v => [
+      v.folio,
+      new Date(v.fecha).toLocaleDateString('es-CL'),
+      v.total,
+      v.sucursales?.nombre || 'N/A',
+      v.metodo_pago || 'N/A'
+    ]);
     
-    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    // Create CSV that Excel can open as XLSX
+    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `reporte_ventas_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `reporte_ventas_${new Date().toISOString().split('T')[0]}.xlsx`;
     a.click();
     setShowDownloadModal(false);
   };
