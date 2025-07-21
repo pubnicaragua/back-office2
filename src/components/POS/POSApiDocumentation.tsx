@@ -27,6 +27,18 @@ export function POSApiDocumentation() {
           <div className="flex items-start space-x-2">
             <span className="text-green-600">🔥</span>
             <div>
+              <p className="font-medium">Nuevos Endpoints para POS ✅</p>
+              <p>GET /auth/roles - Roles de usuario con permisos</p>
+              <p>GET /config/terminales - Terminales POS disponibles</p>
+              <p>GET /config/impresion - Configuración de impresión</p>
+              <p>GET /api/descuentos - Sistema de descuentos</p>
+              <p>GET /api/cupones - Sistema de cupones</p>
+            </div>
+          </div>
+          
+          <div className="flex items-start space-x-2">
+            <span className="text-green-600">🔥</span>
+            <div>
               <p className="font-medium">Sistema de Notificaciones en Tiempo Real ✅</p>
               <p>Alertas automáticas de stock bajo en header del back office</p>
               <p>Detección de inconsistencias POS vs inventario</p>
@@ -125,6 +137,51 @@ export function POSApiDocumentation() {
         <h3 className="font-semibold text-blue-900 mb-4">🔗 Endpoints Críticos para POS - TODOS LISTOS ✅</h3>
         <div className="space-y-4 text-sm">
           <div className="bg-white p-4 rounded border">
+            <p className="font-medium text-green-700">✅ GET /auth/roles?usuario_id=${'{userId}'}</p>
+            <p className="text-gray-600 mb-2">Roles de usuario con permisos</p>
+            <code className="text-xs bg-gray-100 p-2 rounded block">
+              {`// Respuesta:
+{
+  rol: "admin|supervisor|cajero",
+  permisos: ["ventas", "inventario", "reportes"]
+}`}
+            </code>
+          </div>
+          
+          <div className="bg-white p-4 rounded border">
+            <p className="font-medium text-green-700">✅ GET /config/terminales?empresa_id=${'{empresaId}'}</p>
+            <p className="text-gray-600 mb-2">Terminales POS disponibles</p>
+            <code className="text-xs bg-gray-100 p-2 rounded block">
+              {`// Respuesta:
+[{
+  id: "uuid",
+  nombre: "Terminal Principal - SumUp",
+  tipo: "sumup",
+  activo: true
+}]`}
+            </code>
+          </div>
+          
+          <div className="bg-white p-4 rounded border">
+            <p className="font-medium text-green-700">✅ GET /config/impresion?empresa_id=${'{empresaId}'}</p>
+            <p className="text-gray-600 mb-2">Configuración de impresión</p>
+            <code className="text-xs bg-gray-100 p-2 rounded block">
+              {`// Respuesta:
+{
+  logo_url: "/logo_negro.svg",
+  datos_empresa: {
+    razon_social: "ANROLTEC SPA",
+    rut: "78168951-3"
+  },
+  formato_boleta: {
+    ancho_papel: 80,
+    incluir_logo: true
+  }
+}`}
+            </code>
+          </div>
+          
+          <div className="bg-white p-4 rounded border">
             <p className="font-medium text-green-700">✅ GET /api/productos?empresa_id=${'{empresaId}'}</p>
             <p className="text-gray-600 mb-2">Productos con stock en tiempo real</p>
             <code className="text-xs bg-gray-100 p-2 rounded block">
@@ -170,6 +227,38 @@ export function POSApiDocumentation() {
   direccion: "Av. Principal 123",
   telefono: "+56 9 1234 5678",
   email: "cliente@ejemplo.com"
+}]`}
+            </code>
+          </div>
+          
+          <div className="bg-white p-4 rounded border">
+            <p className="font-medium text-green-700">✅ GET /api/descuentos?empresa_id=${'{empresaId}'}</p>
+            <p className="text-gray-600 mb-2">Descuentos disponibles</p>
+            <code className="text-xs bg-gray-100 p-2 rounded block">
+              {`// Respuesta:
+[{
+  id: "uuid",
+  nombre: "Descuento 10%",
+  tipo: "porcentaje",
+  valor: 10,
+  activo: true
+}]`}
+            </code>
+          </div>
+          
+          <div className="bg-white p-4 rounded border">
+            <p className="font-medium text-green-700">✅ GET /api/cupones?empresa_id=${'{empresaId}'}</p>
+            <p className="text-gray-600 mb-2">Cupones disponibles</p>
+            <code className="text-xs bg-gray-100 p-2 rounded block">
+              {`// Respuesta:
+[{
+  id: "uuid",
+  codigo: "VERANO2025",
+  nombre: "Descuento Verano",
+  tipo: "descuento",
+  valor: 20,
+  usos_maximos: 100,
+  activo: true
 }]`}
             </code>
           </div>
