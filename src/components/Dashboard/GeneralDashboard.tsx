@@ -100,6 +100,7 @@ function DonutChart({ title, data }: DonutChartProps) {
 
 export function GeneralDashboard() {
   const [showChat, setShowChat] = React.useState(false);
+  const [showChat, setShowChat] = React.useState(false);
   
   const { data: ventas, loading: ventasLoading } = useSupabaseData<any>('ventas', '*');
   const { data: ventaItems } = useSupabaseData<any>('venta_items', '*');
@@ -254,6 +255,18 @@ export function GeneralDashboard() {
         />
       </div>
 
+      {/* SolvIA Chat Button */}
+      <div className="fixed bottom-6 right-6">
+        <button
+          onClick={() => setShowChat(true)}
+          className="bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all"
+        >
+          <MessageCircle className="w-6 h-6" />
+        </button>
+      </div>
+
+      {/* SolvIA Chat Modal */}
+      <SolvIAChat isOpen={showChat} onClose={() => setShowChat(false)} />
     </div>
   );
 }
