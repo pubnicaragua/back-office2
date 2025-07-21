@@ -546,7 +546,124 @@ async function processSale() {
 
       {/* Configuración de Red */}
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-        <h3 className="font-semibold text-yellow-900 mb-3">⚙️ Configuración de Red para POS</h3>
+        <h3 className="font-semibold text-yellow-900 mb-3">🔗 Integración POS Transbank/SumUp - Guía Completa</h3>
+        
+        {/* Configuración Modo Integrado */}
+        <div className="mb-6">
+          <h4 className="font-medium text-yellow-800 mb-3">📋 Configuración Modo Integrado POS:</h4>
+          <div className="bg-white p-4 rounded border space-y-3 text-sm">
+            <div className="border-l-4 border-blue-500 pl-3">
+              <p className="font-medium text-blue-700">1. Activar Modo Integrado:</p>
+              <ul className="text-gray-700 mt-1 space-y-1">
+                <li>• Menú Comercio → Opción en pantalla POS</li>
+                <li>• Ingresar Password Supervisor: <code className="bg-gray-100 px-1">123456</code></li>
+                <li>• Confirmar con Enter (tecla verde)</li>
+                <li>• Seleccionar "POS Integrado" en pantalla 2-2</li>
+                <li>• Presionar Enter para acceder a pantalla 2</li>
+                <li>• Ingresar Password Supervisor nuevamente</li>
+                <li>• Seleccionar "Conectar Caja"</li>
+                <li>• El equipo indicará que se está activando modo integrado</li>
+              </ul>
+            </div>
+            
+            <div className="border-l-4 border-green-500 pl-3">
+              <p className="font-medium text-green-700">2. Configurar IP Fija:</p>
+              <ul className="text-gray-700 mt-1 space-y-1">
+                <li>• Con equipo en modo normal: Menú Técnico (pantalla 2-2)</li>
+                <li>• Presionar Enter (verde) para acceder a pantalla 2</li>
+                <li>• Seleccionar "Func. Instalación"</li>
+                <li>• Ingresar RUT y código técnico</li>
+                <li>• Seleccionar "Mod Param Conexión" → "Ethernet"</li>
+                <li>• En menú Ethernet: "Conf IP Comercio"</li>
+                <li>• Seleccionar "IP Fija" e ingresar:</li>
+                <li>&nbsp;&nbsp;- IP: 192.168.1.100 (ejemplo)</li>
+                <li>&nbsp;&nbsp;- Netmask: 255.255.255.0</li>
+                <li>&nbsp;&nbsp;- Gateway: 192.168.1.1</li>
+              </ul>
+            </div>
+            
+            <div className="border-l-4 border-purple-500 pl-3">
+              <p className="font-medium text-purple-700">3. Configurar Comunicación POS-Caja:</p>
+              <ul className="text-gray-700 mt-1 space-y-1">
+                <li>• Menú Comercio (tecla 3) → Menú Técnico</li>
+                <li>• Acceder menú 2/2 con Enter (verde)</li>
+                <li>• Ingresar "INTEGRATED POS" (número 2)</li>
+                <li>• Gestionar opciones comunicación: "COM SETTING"</li>
+                <li>• Seleccionar tipo: <strong>USB</strong> o <strong>SERIAL</strong></li>
+                <li>• Configurar velocidad comunicación desde menú INTEGRATED POS</li>
+              </ul>
+            </div>
+            
+            <div className="border-l-4 border-red-500 pl-3">
+              <p className="font-medium text-red-700">4. Volver a Modo Normal:</p>
+              <ul className="text-gray-700 mt-1 space-y-1">
+                <li>• Presionar tecla Asterisco (*)</li>
+                <li>• Ingresar password supervisor: <code className="bg-gray-100 px-1">123456</code></li>
+                <li>• Seleccionar "Desconectar Caja"</li>
+                <li>• El equipo volverá a modo Normal</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        {/* Arquitectura de Conexión */}
+        <div className="mb-6">
+          <h4 className="font-medium text-yellow-800 mb-3">🏗️ Arquitectura de Conexión:</h4>
+          <div className="bg-white p-4 rounded border">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                  <span className="text-blue-600 font-bold">POS</span>
+                </div>
+                <p className="font-medium">Terminal Transbank/SumUp</p>
+                <p className="text-gray-600">Modo Integrado</p>
+                <p className="text-xs text-gray-500">IP: 192.168.1.100</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                  <span className="text-green-600 font-bold">USB</span>
+                </div>
+                <p className="font-medium">Conexión Física</p>
+                <p className="text-gray-600">USB/Serial</p>
+                <p className="text-xs text-gray-500">COM1/COM2</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                  <span className="text-purple-600 font-bold">BO</span>
+                </div>
+                <p className="font-medium">Back Office</p>
+                <p className="text-gray-600">Solvendo</p>
+                <p className="text-xs text-gray-500">API REST</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Flujo de Datos */}
+        <div className="mb-6">
+          <h4 className="font-medium text-yellow-800 mb-3">📊 Flujo de Datos POS ↔ Back Office:</h4>
+          <div className="bg-white p-4 rounded border space-y-3 text-sm">
+            <div className="flex items-center space-x-3">
+              <span className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs">1</span>
+              <span><strong>POS → Back Office:</strong> Ventas, transacciones, pagos</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs">2</span>
+              <span><strong>Back Office → POS:</strong> Productos, precios, promociones</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs">3</span>
+              <span><strong>SII Integration:</strong> Folios CAF, boletas electrónicas</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs">4</span>
+              <span><strong>Proveedores Pago:</strong> Confirmaciones Transbank/SumUp</span>
+            </div>
+          </div>
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
             <p className="font-medium text-yellow-800">Conexión a Internet:</p>
