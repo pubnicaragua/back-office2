@@ -11,10 +11,7 @@ export function MovimientosEfectivo() {
     fecha: ''
   });
   
-  const { data: movimientos, loading, error } = useSupabaseData<any>(
-    'movimientos_caja',
-    '*'
-  );
+  const { data: movimientos, loading, error } = useSupabaseData<any>('movimientos_caja', '*');
 
   // Apply filters
   const filteredMovimientos = (movimientos || []).filter(movimiento => {

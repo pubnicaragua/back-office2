@@ -10,10 +10,7 @@ export function GestionSolicitudes() {
   const [showSolicitudModal, setShowSolicitudModal] = useState(false);
   const [selectedSolicitud, setSelectedSolicitud] = useState(null);
 
-  const { data: solicitudes, loading, error } = useSupabaseData<any>(
-    'solicitudes_vacaciones',
-    '*'
-  );
+  const { data: solicitudes, loading, error } = useSupabaseData<any>('solicitudes_vacaciones', '*');
 
   const columns = [
     { key: 'nombres', label: 'Nombres' },

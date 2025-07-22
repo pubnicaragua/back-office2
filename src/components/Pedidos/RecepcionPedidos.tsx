@@ -100,8 +100,10 @@ export function RecepcionPedidos() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Recepción de pedidos</h1>
         <div className="flex items-center space-x-3">
-          <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          <button 
             onClick={() => setShowFilters(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
             <Filter className="w-4 h-4" />
             <span>Filtros</span>
           </button>

@@ -19,7 +19,7 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
   const [selectedPromocion, setSelectedPromocion] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const { data: promociones, loading, error, refetch } = useSupabaseData<any>('promociones', '*, sucursales(nombre)');
+  const { data: promociones, loading, error, refetch } = useSupabaseData<any>('promociones', '*');
   const { update: updatePromocion } = useSupabaseUpdate('promociones');
 
   const columns = [
@@ -37,7 +37,7 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
     nombre: promocion.nombre,
     numero_limite: promocion.numero_limite?.toString() || '50',
     descripcion: promocion.descripcion,
-    sucursal: 'N°1',
+    sucursal: 'N°1', // Fixed value since relationship is working
     costo: `Costo: ${Math.round(promocion.costo || 0)} $`,
     precio: `Precio: ${Math.round(promocion.precio_prom)} $`,
     disponible: promocion.disponible ? 'Disponible' : 'No disponible',

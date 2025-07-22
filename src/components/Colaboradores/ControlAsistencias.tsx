@@ -9,10 +9,7 @@ export function ControlAsistencias() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
-  const { data: asistencias, loading } = useSupabaseData<any>(
-    'asistencias',
-    '*'
-  );
+  const { data: asistencias, loading } = useSupabaseData<any>('asistencias', '*');
 
   const columns = [
     { key: 'nombres', label: 'Nombres' },

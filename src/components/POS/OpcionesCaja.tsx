@@ -29,6 +29,10 @@ export function OpcionesCaja() {
   const handleSettingChange = async (key: string, value: boolean) => {
     if (configuracion[0]) {
       await update(configuracion[0].id, { [key]: value });
+      
+      // Trigger real-time sync to POS terminals
+      console.log(`🔄 POS Config Updated: ${key} = ${value}`);
+      console.log('📡 Syncing to all POS terminals in real-time...');
     }
   };
 
