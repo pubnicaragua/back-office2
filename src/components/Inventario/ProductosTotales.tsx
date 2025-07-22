@@ -130,65 +130,66 @@ export function ProductosTotales() {
               currentPage={currentPage}
               totalPages={Math.ceil(filteredData.length / 10)}
               onPageChange={setCurrentPage}
+            />
 
-        <ReporteMermas 
-          isOpen={showMermasModal} 
-          onClose={() => setShowMermasModal(false)} 
-        />
-        
-        <ActualizarInventario 
-          isOpen={showInventarioModal} 
-          onClose={() => setShowInventarioModal(false)} 
-        />
-        
-        <AgregarProductoModal 
-          isOpen={showProductoModal} 
-          onClose={() => setShowProductoModal(false)} 
-        />
+            <ReporteMermas 
+              isOpen={showMermasModal} 
+              onClose={() => setShowMermasModal(false)} 
+            />
+            
+            <ActualizarInventario 
+              isOpen={showInventarioModal} 
+              onClose={() => setShowInventarioModal(false)} 
+            />
+            
+            <AgregarProductoModal 
+              isOpen={showProductoModal} 
+              onClose={() => setShowProductoModal(false)} 
+            />
 
-        <FilterModal
-          isOpen={showFilters}
-          onClose={() => setShowFilters(false)}
-          title="Filtros"
-        >
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Todas las sucursales
-              </label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">Todas las sucursales</option>
-                <option value="n1">N°1</option>
-                <option value="n2">N°2</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Productos totales
-              </label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">Productos totales</option>
-                <option value="disponibles">Disponibles</option>
-                <option value="agotados">Agotados</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Categorías
-              </label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">Todas las categorías</option>
-                <option value="bebidas">Bebidas</option>
-                <option value="snacks">Snacks</option>
-              </select>
-            </div>
+            <FilterModal
+              isOpen={showFilters}
+              onClose={() => setShowFilters(false)}
+              title="Filtros"
+            >
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Todas las sucursales
+                  </label>
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Todas las sucursales</option>
+                    <option value="n1">N°1</option>
+                    <option value="n2">N°2</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Productos totales
+                  </label>
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Productos totales</option>
+                    <option value="disponibles">Disponibles</option>
+                    <option value="agotados">Agotados</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Categorías
+                  </label>
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Todas las categorías</option>
+                    <option value="bebidas">Bebidas</option>
+                    <option value="snacks">Snacks</option>
+                  </select>
+                </div>
+              </div>
+            </FilterModal>
           </div>
-        </FilterModal>
+        </div>
       </div>
     </div>
-  )
   );
-  )
 }
