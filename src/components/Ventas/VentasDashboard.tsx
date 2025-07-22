@@ -15,6 +15,7 @@ function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
     <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
       <div className="flex items-center justify-between mb-2">
         <p className="text-sm text-gray-600 font-medium">{title}</p>
+        <div className="w-4 h-4 text-gray-400 cursor-help">?</div>
       </div>
       <div className="flex items-center justify-between">
         <p className="text-2xl font-bold text-gray-900">{value}</p>

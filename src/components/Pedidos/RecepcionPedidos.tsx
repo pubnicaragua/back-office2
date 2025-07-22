@@ -99,7 +99,7 @@ export function RecepcionPedidos() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Recepción de pedidos</h1>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-3 ml-auto">
           <button 
             onClick={() => setShowFilters(true)}
             className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -109,13 +109,13 @@ export function RecepcionPedidos() {
           </button>
           <button 
             onClick={() => setShowAgregarModal(true)}
-            className="p-2 rounded-md hover:bg-gray-100"
+            className="p-2 rounded-md hover:bg-gray-100 text-blue-600"
           >
             <Plus className="w-5 h-5" />
           </button>
           <button 
             onClick={handleDownloadReport}
-            className="p-2 rounded-md hover:bg-gray-100"
+            className="p-2 rounded-md hover:bg-gray-100 text-blue-600"
           >
             <Download className="w-5 h-5" />
           </button>
