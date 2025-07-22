@@ -35,33 +35,137 @@ export function VentasDashboard() {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    periodo: '',
+    sucursal: '',
+    metodo_pago: ''
+  });
 
-  const { data: ventas = [] } = useSupabaseData<any>('ventas', '*');
+  const { data: ventas = [], loading: ventasLoading } = useSupabaseData<any>('ventas', '*, sucursales(nombre)');
+  const { data: ventaItems = [] } = useSupabaseData<any>('venta_items', '*, productos(nombre, costo)');
   const { data: sucursales = [] } = useSupabaseData<any>('sucursales', '*');
+  const { data: productos = [] } = useSupabaseData<any>('productos', '*');
 
-  const metricsData = [
-    { title: 'Ventas totales', value: '$67.150', change: '+100%', isPositive: true },
-    { title: 'Margen', value: '$67.150', change: '+100%', isPositive: true },
-    { title: 'Unidades vendidas', value: '667.150', change: '+100%', isPositive: true },
-    { title: 'N° de ventas', value: '667.150', change: '+100%', isPositive: true },
-    { title: 'Ticket promedio', value: '$67.150', change: '+100%', isPositive: true }
-  ];
+  // Calculate real metrics from data
+  const calculateMetrics = () => {
+    if (ventasLoading) return null;
 
-  const chartData = [
-    { month: 'Ene', value: 35 },
-    { month: 'Feb', value: 30 },
-    { month: 'Mar', value: 25 },
-    { month: 'Abr', value: 40 },
-    { month: 'May', value: 35 },
-    { month: 'Jun', value: 45 },
-    { month: 'Jul', value: 50 },
-    { month: 'Ago', value: 40 },
-    { month: 'Sep', value: 35 },
-    { month: 'Oct', value: 30 },
-    { month: 'Nov', value: 25 }
-  ];
+    // Apply filters
+    const filteredVentas = ventas.filter(venta => {
+      if (filters.sucursal && venta.sucursal_id !== filters.sucursal) return false;
+      if (filters.metodo_pago && venta.metodo_pago !== filters.metodo_pago) return false;
+      if (filters.periodo) {
+        const ventaYear = new Date(venta.fecha).getFullYear().toString();
+        if (ventaYear !== filters.periodo) return false;
+      }
+      return true;
+    });
+
+    const totalVentas = filteredVentas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
+    const totalUnidades = ventaItems.reduce((sum, item) => sum + (item.cantidad || 0), 0);
+    const numeroVentas = filteredVentas.length;
+    const ticketPromedio = numeroVentas > 0 ? totalVentas / numeroVentas : 0;
+    
+    // Calculate margin based on cost vs price
+    const totalCosto = ventaItems.reduce((sum, item) => {
+      const producto = productos.find(p => p.id === item.producto_id);
+      return sum + ((producto?.costo || 0) * item.cantidad);
+    }, 0);
+    const margen = totalVentas - totalCosto;
+
+    return {
+      ventasTotales: totalVentas,
+      margen: margen,
+      unidadesVendidas: totalUnidades,
+      numeroVentas: numeroVentas,
+      ticketPromedio: ticketPromedio
+    };
+  };
+
+  const metrics = calculateMetrics();
+
+  const metricsData = metrics ? [
+    { 
+      title: 'Ventas totales', 
+      value: `$${metrics.ventasTotales.toLocaleString('es-CL')}`, 
+      change: '+100%', 
+      isPositive: true 
+    },
+    { 
+      title: 'Margen', 
+      value: `$${metrics.margen.toLocaleString('es-CL')}`, 
+      change: '+100%', 
+      isPositive: true 
+    },
+    { 
+      title: 'Unidades vendidas', 
+      value: metrics.unidadesVendidas.toLocaleString('es-CL'), 
+      change: '+100%', 
+      isPositive: true 
+    },
+    { 
+      title: 'N° de ventas', 
+      value: metrics.numeroVentas.toLocaleString('es-CL'), 
+      change: '+100%', 
+      isPositive: true 
+    },
+    { 
+      title: 'Ticket promedio', 
+      value: `$${Math.round(metrics.ticketPromedio).toLocaleString('es-CL')}`, 
+      change: '+100%', 
+      isPositive: true 
+    },
+  ] : Array(5).fill({ title: 'Cargando...', value: '$0', change: '+0%', isPositive: true });
+  // Generate chart data from real sales
+  const generateChartData = () => {
+    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    return months.map((month, index) => {
+      const monthVentas = ventas.filter(venta => {
+        const ventaMonth = new Date(venta.fecha).getMonth();
+        return ventaMonth === index;
+      });
+      const monthTotal = monthVentas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
+      return { month, value: monthTotal / 1000 }; // Convert to thousands
+    });
+  };
+
+  const chartData = generateChartData();
   const maxValue = Math.max(...chartData.map(d => d.value));
 
+  const handleDownloadReport = () => {
+    try {
+      const filteredVentas = ventas.filter(venta => {
+        if (filters.sucursal && venta.sucursal_id !== filters.sucursal) return false;
+        if (filters.metodo_pago && venta.metodo_pago !== filters.metodo_pago) return false;
+        return true;
+      });
+
+      const headers = ['Folio', 'Fecha', 'Total', 'Sucursal', 'Método Pago'];
+      const csvContent = [
+        headers.join('\t'),
+        ...filteredVentas.map(v => [
+          v.folio || 'N/A',
+          new Date(v.fecha).toLocaleDateString('es-CL'),
+          v.total || '0',
+          v.sucursales?.nombre || 'N/A',
+          v.metodo_pago || 'N/A'
+        ].join('\t'))
+      ].join('\n');
+    
+      const BOM = '\uFEFF';
+      const blob = new Blob([BOM + csvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `reporte_ventas_${new Date().toISOString().split('T')[0]}.xls`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setShowDownloadModal(false);
+    } catch (error) {
+      console.error('Error downloading report:', error);
+      alert('Error al descargar el reporte.');
+    }
+  };
   return (
     <div className="p-6 space-y-6">
       {/* Header */}

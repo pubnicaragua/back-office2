@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Filter, Search, Plus, Edit, Download } from 'lucide-react';
-import { useSupabaseData, useSupabaseUpdate } from '../../hooks/useSupabaseData';
+import { useSupabaseData, useSupabaseUpdate, useSupabaseInsert } from '../../hooks/useSupabaseData';
 import { AgregarPromocionModal } from './AgregarPromocionModal';
 import { EditarPromocionModal } from './EditarPromocionModal';
 import { Modal } from '../Common/Modal';
+import { posSync } from '../../lib/posApiSync';
 
 interface PromocionesTodasProps {
   onShowModal: () => void;
@@ -17,16 +18,30 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
   const [showEditarModal, setShowEditarModal] = useState(false);
   const [selectedPromocion, setSelectedPromocion] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [filters, setFilters] = useState({
+    sucursal: '',
+    estado: '',
+    tipo: ''
+  });
 
-  const { data: promociones, loading, error, refetch } = useSupabaseData<any>('promociones', '*');
+  const { data: promociones, loading, error, refetch } = useSupabaseData<any>('promociones', '*, sucursales(nombre)');
+  const { data: sucursales } = useSupabaseData<any>('sucursales', '*');
   const { update: updatePromocion } = useSupabaseUpdate('promociones');
 
-  const processedData = (promociones || []).map(promocion => ({
+  // Apply filters to data
+  const filteredPromociones = (promociones || []).filter(promocion => {
+    if (filters.sucursal && promocion.sucursal_id !== filters.sucursal) return false;
+    if (filters.estado && (promocion.activo ? 'activo' : 'inactivo') !== filters.estado) return false;
+    if (filters.tipo && promocion.tipo !== filters.tipo) return false;
+    return true;
+  });
+
+  const processedData = filteredPromociones.map(promocion => ({
     id: promocion.id,
     nombre: promocion.nombre,
     numero_limite: promocion.numero_limite?.toString() || '50',
     descripcion: promocion.descripcion,
-    sucursal: 'N°1',
+    sucursal: promocion.sucursales?.nombre || 'Todas',
     costo: `Costo: ${Math.round(promocion.costo || 0)} $`,
     precio: `Precio: ${Math.round(promocion.precio_prom)} $`,
     disponible: promocion.disponible ? 'Disponible' : 'No disponible',
@@ -53,6 +68,8 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
     if (selectedPromocion) {
       const success = await updatePromocion(selectedPromocion.id, { activo: false });
       if (success) {
+        // Sync to POS terminals
+        await posSync.onProductAdded(selectedPromocion);
         setShowDeleteModal(false);
         setSelectedPromocion(null);
         refetch();
@@ -222,10 +239,15 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Sucursal
             </label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select 
+              value={filters.sucursal}
+              onChange={(e) => setFilters(prev => ({ ...prev, sucursal: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
               <option value="">Todas las sucursales</option>
-              <option value="n1">N°1</option>
-              <option value="n2">N°2</option>
+              {sucursales.map(sucursal => (
+                <option key={sucursal.id} value={sucursal.id}>{sucursal.nombre}</option>
+              ))}
             </select>
           </div>
           
@@ -233,10 +255,30 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Estado
             </label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select 
+              value={filters.estado}
+              onChange={(e) => setFilters(prev => ({ ...prev, estado: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
               <option value="">Todos</option>
               <option value="activo">Activo</option>
               <option value="inactivo">Inactivo</option>
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tipo
+            </label>
+            <select 
+              value={filters.tipo}
+              onChange={(e) => setFilters(prev => ({ ...prev, tipo: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Todos los tipos</option>
+              <option value="2x1">2x1</option>
+              <option value="descuento">Descuento</option>
+              <option value="combo">Combo</option>
             </select>
           </div>
           
