@@ -7,36 +7,55 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
+  // Handle CORS preflight requests with proper status
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, { 
+      status: 200, // Changed from 'ok' to 200
+      headers: corsHeaders 
+    })
   }
 
   try {
     const { message, context } = await req.json()
 
-    // Simple AI response based on context
+    // Enhanced AI response based on context
     let response = "¡Hola! Soy SolvIA, tu asistente inteligente de Solvendo. "
 
     if (message.toLowerCase().includes('ventas')) {
       const totalVentas = context?.metricas?.ventas?.total || 0
-      response += `Las ventas totales son $${totalVentas.toLocaleString('es-CL')}. `
+      response += `📊 **Ventas:** $${totalVentas.toLocaleString('es-CL')} total. `
       response += `Tienes ${context?.metricas?.ventas?.cantidad || 0} ventas registradas. `
+      
+      if (context?.ultimasVentas?.length > 0) {
+        response += `Últimas ventas: ${context.ultimasVentas.map(v => `Folio ${v.folio} ($${v.total})`).join(', ')}. `
+      }
     } else if (message.toLowerCase().includes('inventario') || message.toLowerCase().includes('productos')) {
-      response += `Tienes ${context?.metricas?.inventario?.productos || 0} productos en inventario. `
+      response += `📦 **Inventario:** ${context?.metricas?.inventario?.productos || 0} productos disponibles. `
       response += `Hay ${context?.metricas?.inventario?.mermas || 0} mermas reportadas. `
+      
+      if (context?.productos?.length > 0) {
+        response += `Productos destacados: ${context.productos.map(p => `${p.nombre} ($${p.precio})`).join(', ')}. `
+      }
     } else if (message.toLowerCase().includes('empleados') || message.toLowerCase().includes('colaboradores')) {
-      response += `Tienes ${context?.metricas?.colaboradores?.total || 0} colaboradores. `
-      response += `Hoy hay ${context?.metricas?.colaboradores?.asistenciasHoy || 0} asistencias registradas. `
+      response += `👥 **Colaboradores:** ${context?.metricas?.colaboradores?.total || 0} empleados registrados. `
+      response += `Hoy hay ${context?.metricas?.colaboradores?.asistenciasHoy || 0} asistencias. `
     } else if (message.toLowerCase().includes('pos')) {
-      response += `Tienes ${context?.metricas?.pos?.terminales || 0} terminales POS configurados. `
+      response += `💳 **POS:** ${context?.metricas?.pos?.terminales || 0} terminales configurados. `
       response += `${context?.metricas?.pos?.online || 0} están en línea. `
-      response += `Hoy se procesaron ${context?.metricas?.pos?.transaccionesHoy || 0} transacciones. `
+      response += `Hoy: ${context?.metricas?.pos?.transaccionesHoy || 0} transacciones procesadas. `
     } else if (message.toLowerCase().includes('sii') || message.toLowerCase().includes('folios')) {
-      response += `Tienes ${context?.metricas?.sii?.foliosDisponibles || 0} folios CAF disponibles. `
-      response += `Sistema SII configurado para ANROLTEC SPA. `
+      response += `📄 **SII:** ${context?.metricas?.sii?.foliosDisponibles || 0} folios CAF disponibles. `
+      response += `Sistema configurado para ANROLTEC SPA (RUT: 78168951-3). `
+    } else if (message.toLowerCase().includes('caja')) {
+      response += `💰 **Caja:** ${context?.metricas?.caja?.movimientosHoy || 0} movimientos registrados hoy. `
     } else {
-      response += "¿En qué puedo ayudarte? Puedo darte información sobre ventas, inventario, empleados, POS o el sistema SII."
+      response += "¿En qué puedo ayudarte? Puedo darte información sobre:\n"
+      response += "• 📊 **Ventas** y reportes\n"
+      response += "• 📦 **Inventario** y productos\n"
+      response += "• 👥 **Empleados** y asistencias\n"
+      response += "• 💳 **POS** y terminales\n"
+      response += "• 📄 **SII** y folios electrónicos\n"
+      response += "• 💰 **Movimientos de caja**"
     }
 
     return new Response(
@@ -46,10 +65,14 @@ serve(async (req) => {
       },
     )
   } catch (error) {
+    console.error('SolvIA Error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        response: 'Lo siento, hay un problema técnico. Por favor intenta de nuevo.',
+        error: error.message 
+      }),
       {
-        status: 400,
+        status: 200, // Return 200 even for errors to avoid CORS issues
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       },
     )

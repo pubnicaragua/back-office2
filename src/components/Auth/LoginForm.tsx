@@ -31,14 +31,18 @@ export function LoginForm() {
       setLoading(true);
       setError('');
       
-      // First try to sign up the test user
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: 'test@example.com',
-        password: 'password123',
-      });
-      
-      if (signUpError && !signUpError.message.includes('already registered')) {
-        console.warn('Test user creation issue:', signUpError);
+      // Try to sign up the test user, but ignore if already exists
+      try {
+        await supabase.auth.signUp({
+          email: 'test@example.com',
+          password: 'password123',
+        });
+      } catch (signUpError) {
+        // Ignore "user already exists" error, continue to sign in
+        if (!signUpError.message?.includes('already registered') && 
+            !signUpError.message?.includes('already exists')) {
+          throw signUpError;
+        }
       }
       
       // Now try to sign in

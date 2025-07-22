@@ -71,36 +71,41 @@ export function VentasDashboard() {
   const maxValue = Math.max(...chartData.map(d => d.value));
 
   const handleDownloadReport = () => {
-    // Apply filters to ventas data
-    const filteredVentas = ventas.filter(venta => {
-      if (filters.sucursal && venta.sucursal_id !== filters.sucursal) return false;
-      if (filters.periodo && !new Date(venta.fecha).toISOString().includes(filters.periodo)) return false;
-      return true;
-    });
+    try {
+      // Apply filters to ventas data
+      const filteredVentas = ventas.filter(venta => {
+        if (filters.sucursal && venta.sucursal_id !== filters.sucursal) return false;
+        if (filters.periodo && !new Date(venta.fecha).toISOString().includes(filters.periodo)) return false;
+        return true;
+      });
 
-    // Create CSV data with proper encoding
-    const headers = ['Folio', 'Fecha', 'Total', 'Sucursal', 'Método Pago'];
-    const csvContent = [
-      headers.join(','),
-      ...filteredVentas.map(v => [
-        `"${v.folio || 'N/A'}"`,
-        `"${new Date(v.fecha).toLocaleDateString('es-CL')}"`,
-        `"${v.total || '0'}"`,
-        `"${(v.sucursales?.nombre || 'N/A')}"`,
-        `"${(v.metodo_pago || 'N/A')}"`,
-      ].join(','))
-    ].join('\n');
+      // Create Excel-compatible data with proper encoding
+      const headers = ['Folio', 'Fecha', 'Total', 'Sucursal', 'Método Pago'];
+      const csvContent = [
+        headers.join('\t'), // Use tabs for Excel compatibility
+        ...filteredVentas.map(v => [
+          v.folio || 'N/A',
+          new Date(v.fecha).toLocaleDateString('es-CL'),
+          v.total || '0',
+          v.sucursales?.nombre || 'N/A',
+          v.metodo_pago || 'N/A',
+        ].join('\t'))
+      ].join('\n');
     
-    // Add BOM for proper Excel encoding
-    const BOM = '\uFEFF';
-    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `reporte_ventas_${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    setShowDownloadModal(false);
+      // Add BOM for proper Excel encoding
+      const BOM = '\uFEFF';
+      const blob = new Blob([BOM + csvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `reporte_ventas_${new Date().toISOString().split('T')[0]}.xls`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setShowDownloadModal(false);
+    } catch (error) {
+      console.error('Error downloading report:', error);
+      alert('Error al descargar el reporte. Por favor intenta de nuevo.');
+    }
   };
 
   return (
