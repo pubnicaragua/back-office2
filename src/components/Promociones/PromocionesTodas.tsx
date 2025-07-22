@@ -79,26 +79,25 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
 
   const handleDownloadReport = () => {
     try {
-      const headers = ['Promoción', 'Número límite', 'Descripción', 'Sucursal', 'Costo', 'Precio', 'Disponible'];
+      const headers = ['Promocion', 'Numero_limite', 'Descripcion', 'Sucursal', 'Costo', 'Precio', 'Disponible'];
       const csvContent = [
-        headers.join('\t'),
+        headers.join(','),
         ...filteredData.map(p => [
-          p.nombre,
+          `"${p.nombre}"`,
           p.numero_limite,
-          p.descripcion,
-          p.sucursal,
-          p.costo,
-          p.precio,
-          p.disponible
-        ].join('\t'))
+          `"${p.descripcion}"`,
+          `"${p.sucursal}"`,
+          `"${p.costo}"`,
+          `"${p.precio}"`,
+          `"${p.disponible}"`
+        ].join(','))
       ].join('\n');
     
-      const BOM = '\uFEFF';
-      const blob = new Blob([BOM + csvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `reporte_promociones_${new Date().toISOString().split('T')[0]}.xls`;
+      a.download = `reporte_promociones_${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (error) {

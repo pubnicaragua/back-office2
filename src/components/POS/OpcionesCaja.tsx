@@ -220,12 +220,12 @@ export function OpcionesCaja() {
       <div className="pt-6 border-t border-gray-200">
         <button
           onClick={handleSaveConfiguration}
-          className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+          className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
         >
-          💾 Guardar y Sincronizar con POS
+          💾 Guardar Configuración y Sincronizar POS
         </button>
         <p className="text-xs text-gray-500 text-center mt-2">
-          Los cambios se aplicarán a todos los terminales POS en tiempo real
+          ✅ Los cambios se aplicarán automáticamente a todos los terminales POS
         </p>
       </div>
 

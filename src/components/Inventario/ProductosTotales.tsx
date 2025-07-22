@@ -30,13 +30,14 @@ export function ProductosTotales() {
   const columns = [
     { key: 'producto', label: 'Producto' },
     { key: 'stock', label: 'Stock' },
-    { key: 'margen', label: 'Margen' },
     { key: 'categoria', label: 'Categoría' },
     { key: 'descripcion', label: 'Descripción' },
     { key: 'sku', label: 'SKU' },
     { key: 'costo', label: 'Costo' },
     { key: 'precio', label: 'Precio' },
+    { key: 'margen', label: 'Margen' },
     { key: 'disponible', label: 'Disponible' },
+    { key: 'acciones', label: 'Acciones' },
   ];
 
   // Aplicar filtros
@@ -57,13 +58,14 @@ export function ProductosTotales() {
     id: producto.id,
     producto: producto.nombre,
     stock: producto.stock?.toString() || '0',
-    margen: `${Math.round(((producto.precio || 0) - (producto.costo || 0)) / (producto.precio || 1) * 100)}%`,
     categoria: categorias.find(c => c.id === producto.categoria_id)?.nombre || 'Sin categoría',
     descripcion: producto.descripcion || '',
     sku: producto.codigo,
-    costo: `Costo: ${Math.round((producto.costo || 0))} $`,
-    precio: `Precio: ${Math.round((producto.precio || 0))} $`,
+    costo: `$${Math.round((producto.costo || 0)).toLocaleString('es-CL')}`,
+    precio: `$${Math.round((producto.precio || 0)).toLocaleString('es-CL')}`,
+    margen: `${Math.round(((producto.precio || 0) - (producto.costo || 0)) / (producto.precio || 1) * 100)}%`,
     disponible: producto.stock > 0 ? 'Disponible' : 'Agotado',
+    acciones: producto.id,
   }));
 
   const filteredData = processedData.filter(item =>
