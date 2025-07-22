@@ -30,6 +30,7 @@ export function ProductosTotales() {
   const columns = [
     { key: 'producto', label: 'Producto' },
     { key: 'stock', label: 'Stock' },
+    { key: 'margen', label: 'Margen' },
     { key: 'categoria', label: 'Categoría' },
     { key: 'descripcion', label: 'Descripción' },
     { key: 'sku', label: 'SKU' },
@@ -39,10 +40,13 @@ export function ProductosTotales() {
   ];
 
   // Aplicar filtros
-  const filteredProductos = productos.filter(producto => {
+  const filteredProductos = (productos || []).filter(producto => {
     if (filters.categoria && filters.categoria !== '') {
       const categoria = categorias.find(c => c.nombre.toLowerCase() === filters.categoria.toLowerCase());
       if (categoria && producto.categoria_id !== categoria.id) return false;
+    }
+    if (filters.sucursal && filters.sucursal !== '') {
+      // Apply sucursal filter logic here
     }
     if (filters.disponibilidad === 'disponibles' && (producto.stock || 0) <= 0) return false;
     if (filters.disponibilidad === 'agotados' && (producto.stock || 0) > 0) return false;
@@ -53,6 +57,7 @@ export function ProductosTotales() {
     id: producto.id,
     producto: producto.nombre,
     stock: producto.stock?.toString() || '0',
+    margen: `${Math.round(((producto.precio || 0) - (producto.costo || 0)) / (producto.precio || 1) * 100)}%`,
     categoria: categorias.find(c => c.id === producto.categoria_id)?.nombre || 'Sin categoría',
     descripcion: producto.descripcion || '',
     sku: producto.codigo,
@@ -62,7 +67,8 @@ export function ProductosTotales() {
   }));
 
   const filteredData = processedData.filter(item =>
-    item.producto.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (searchTerm === '' || 
+     item.producto.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.sku.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -73,49 +79,63 @@ export function ProductosTotales() {
         <div className="flex items-center space-x-3">
           <button 
             onClick={() => setShowFilters(true)}
-            className="flex items-center px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50"
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Filter className="w-5 h-5 mr-2" />
             Filtros
           </button>
           <button 
             onClick={() => setShowProductoModal(true)}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
           >
             <Plus className="w-5 h-5 mr-2" />
             Agregar
           </button>
           <button 
             onClick={() => setShowMermasModal(true)}
-            className="flex items-center px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50"
+            className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
           >
             <AlertTriangle className="w-5 h-5 mr-2" />
             Mermas
           </button>
         </div>
       </div>
-      <div className="flex items-center space-x-3">
+      
+      <div className="flex items-center justify-between mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
+            placeholder="Buscar productos..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-4 py-2 w-64 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+        
+        <div className="flex items-center space-x-3">
         <button 
           onClick={() => setShowFilters(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
         >
           <Filter className="w-4 h-4" />
           <span>Filtros</span>
         </button>
         <button 
           onClick={() => setShowProductoModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Agregar</span>
         </button>
         <button 
           onClick={() => setShowInventarioModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
         >
           <span>📊</span>
           <span>Actualizar inventario</span>
         </button>
+        </div>
       </div>
 
       <Table
