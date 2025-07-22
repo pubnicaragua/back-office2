@@ -35,35 +35,6 @@ export function VentasDashboard() {
   const { data: ventas, loading } = useSupabaseData<any>('ventas', '*');
   const { data: ventasItems } = useSupabaseData<any>('venta_items', '*');
 
-  // Calculate real metrics from data
-  const calculateMetrics = () => {
-    if (loading || !ventas.length) {
-      return {
-        ventasTotales: 67150,
-        margen: 67150,
-        unidadesVendidas: 67150,
-        numeroVentas: 67150,
-        ticketPromedio: 67150
-      };
-    }
-
-    const totalVentas = ventas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
-    const totalUnidades = ventasItems.reduce((sum, item) => sum + (item.cantidad || 0), 0);
-    const numeroVentas = ventas.length;
-    const ticketPromedio = numeroVentas > 0 ? totalVentas / numeroVentas : 0;
-    const margen = totalVentas * 0.3;
-
-    return {
-      ventasTotales: totalVentas,
-      margen: margen,
-      unidadesVendidas: totalUnidades,
-      numeroVentas: numeroVentas,
-      ticketPromedio: ticketPromedio
-    };
-  };
-
-  const metrics = calculateMetrics();
-
   const metricsData = [
     { 
       title: 'Ventas totales', 
@@ -97,22 +68,22 @@ export function VentasDashboard() {
     },
   ];
 
-  // Process chart data
+  // Chart data with varying heights
   const chartData = [
     { month: 'Ene', value: 25 },
-    { month: 'Feb', value: 30 },
+    { month: 'Feb', value: 32 },
     { month: 'Mar', value: 20 },
     { month: 'Abr', value: 35 },
     { month: 'May', value: 28 },
     { month: 'Jun', value: 32 },
     { month: 'Jul', value: 18 },
-    { month: 'Ago', value: 25 },
-    { month: 'Sep', value: 30 },
-    { month: 'Oct', value: 22 },
-    { month: 'Nov', value: 28 }
+    { month: 'Ago', value: 30 },
+    { month: 'Sep', value: 32 },
+    { month: 'Oct', value: 25 },
+    { month: 'Nov', value: 35 }
   ];
 
-  const maxValue = Math.max(...chartData.map(d => d.value), 1);
+  const maxValue = Math.max(...chartData.map(d => d.value));
 
   return (
     <div className="p-6 space-y-6">
@@ -164,24 +135,10 @@ export function VentasDashboard() {
           </div>
         </div>
         
-        {/* Chart */}
-        <div className="h-64">
-          <div className="flex items-end justify-between h-full space-x-2 pb-8">
-            {chartData.map((item, index) => (
-              <div key={index} className="flex flex-col items-center space-y-2 flex-1">
-                <div className="w-full flex flex-col justify-end h-48">
-                  <div 
-                    className="bg-blue-600 rounded-t transition-all duration-500 hover:bg-blue-700 min-h-[4px]"
-                    style={{ height: `${(item.value / maxValue) * 100}%` }}
-                  ></div>
-                </div>
-                <span className="text-xs text-gray-600">{item.month}</span>
-              </div>
-            ))}
-          </div>
-          
+        {/* Chart Container */}
+        <div className="relative">
           {/* Y-axis labels */}
-          <div className="flex flex-col justify-between h-48 absolute left-0 text-xs text-gray-500">
+          <div className="absolute left-0 top-0 h-64 flex flex-col justify-between text-xs text-gray-500 pr-4">
             <span>35k</span>
             <span>30k</span>
             <span>25k</span>
@@ -190,6 +147,21 @@ export function VentasDashboard() {
             <span>10k</span>
             <span>5k</span>
             <span>0</span>
+          </div>
+          
+          {/* Chart bars */}
+          <div className="ml-8 h-64 flex items-end justify-between space-x-2">
+            {chartData.map((item, index) => (
+              <div key={index} className="flex flex-col items-center space-y-2 flex-1">
+                <div className="w-full flex flex-col justify-end h-56">
+                  <div 
+                    className="bg-blue-600 rounded-t transition-all duration-500 hover:bg-blue-700 min-h-[8px]"
+                    style={{ height: `${(item.value / maxValue) * 100}%` }}
+                  ></div>
+                </div>
+                <span className="text-xs text-gray-600">{item.month}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
