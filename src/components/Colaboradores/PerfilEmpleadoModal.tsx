@@ -179,4 +179,4 @@ export const PerfilEmpleadoModal: React.FC<PerfilEmpleadoModalProps> = ({ isOpen
       />
     </>
   );
-}
+};

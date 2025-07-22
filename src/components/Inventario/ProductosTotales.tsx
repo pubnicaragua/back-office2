@@ -69,7 +69,7 @@ export function ProductosTotales() {
   const filteredData = processedData.filter(item =>
     (searchTerm === '' || 
      item.producto.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.sku.toLowerCase().includes(searchTerm.toLowerCase()))
+     item.sku.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
