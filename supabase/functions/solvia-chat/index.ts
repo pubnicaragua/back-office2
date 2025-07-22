@@ -16,7 +16,7 @@ serve(async (req) => {
     const { message, context } = await req.json()
 
     // Simple AI response based on context
-    let response = "Hola, soy SolvIA, tu asistente inteligente de Solvendo. "
+    let response = "¡Hola! Soy SolvIA, tu asistente inteligente de Solvendo. "
 
     if (message.toLowerCase().includes('ventas')) {
       const totalVentas = context?.metricas?.ventas?.total || 0
