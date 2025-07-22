@@ -19,8 +19,8 @@ function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
       </div>
       <div className="flex items-center justify-between">
         <p className="text-2xl font-bold text-gray-900">{value}</p>
-        <div className={`flex items-center space-x-1 text-sm font-medium ${
-          isPositive ? 'text-green-600' : 'text-red-600'
+        <div className={`flex items-center space-x-1 text-sm font-medium px-2 py-1 rounded-full ${
+          isPositive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
         }`}>
           <TrendingUp className="w-4 h-4" />
           <span>{change}</span>
@@ -163,27 +163,30 @@ export function VentasDashboard() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
+      {/* Header with action buttons */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-900">Ventas</h1>
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => setShowFilters(true)} 
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            <Filter className="w-5 h-5" />
+            <Filter className="w-4 h-4" />
+            <span>Filtros</span>
           </button>
           <button 
             onClick={() => setShowDownloadModal(true)} 
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
           >
-            <Download className="w-5 h-5" />
+            <Download className="w-4 h-4" />
+            <span>Descargar</span>
           </button>
           <button 
             onClick={() => refetch()} 
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+            className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
           >
-            <RefreshCw className="w-5 h-5" />
+            <RefreshCw className="w-4 h-4" />
+            <span>Actualizar</span>
           </button>
         </div>
       </div>
@@ -236,7 +239,7 @@ export function VentasDashboard() {
               <div key={idx} className="flex flex-col items-center space-y-2 flex-1">
                 <div className="w-full h-full flex flex-col justify-end">
                   <div
-                    className="bg-blue-600 rounded-t min-h-[8px]"
+                    className="bg-blue-600 rounded-t min-h-[8px] transition-all duration-300 hover:bg-blue-700"
                     style={{ height: `${Math.max((item.value / maxValue) * 100, 5)}%` }}
                   />
                 </div>
