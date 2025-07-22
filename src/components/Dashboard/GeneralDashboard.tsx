@@ -137,31 +137,31 @@ export default function GeneralDashboard() {
   const metricsData = metrics ? [
     { 
       title: 'Ventas totales', 
-      value: `$67.150`, 
+      value: `$${metrics.ventasTotales.toLocaleString('es-CL')}`, 
       change: '+100%', 
       isPositive: true 
     },
     { 
       title: 'Margen', 
-      value: `$67.150`, 
+      value: `$${metrics.margen.toLocaleString('es-CL')}`, 
       change: '+100%', 
       isPositive: true 
     },
     { 
       title: 'Unidades vendidas', 
-      value: '667.150', 
+      value: metrics.unidadesVendidas.toLocaleString('es-CL'), 
       change: '+100%', 
       isPositive: true 
     },
     { 
       title: 'N° de ventas', 
-      value: '667.150', 
+      value: metrics.numeroVentas.toLocaleString('es-CL'), 
       change: '+100%', 
       isPositive: true 
     },
     { 
       title: 'Ticket promedio', 
-      value: `$67.150`, 
+      value: `$${Math.round(metrics.ticketPromedio).toLocaleString('es-CL')}`, 
       change: '+100%', 
       isPositive: true 
     },
