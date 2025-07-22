@@ -124,7 +124,7 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
             Método de carga
           </label>
           <div className="flex space-x-4">
-            {['csv', 'excel', 'pdf'].map(method => (
+            {['xml', 'csv', 'excel', 'pdf'].map(method => (
               <label key={method} className="flex items-center">
                 <input
                   type="radio"

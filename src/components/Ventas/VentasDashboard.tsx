@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Filter, Download, RefreshCw, TrendingUp, HelpCircle } from 'lucide-react';
+import { Filter, Download, RefreshCw, TrendingUp, HelpCircle, X } from 'lucide-react';
 import { Modal } from '../Common/Modal';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 

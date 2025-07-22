@@ -100,6 +100,7 @@ function DonutChart({ title, data }: DonutChartProps) {
 
 export default function GeneralDashboard() {
   const [showChat, setShowChat] = useState(false);
+  const [showPreviousPeriod, setShowPreviousPeriod] = useState(false);
   
   const { data: ventas, loading: ventasLoading } = useSupabaseData<any>('ventas', '*');
   const { data: ventaItems } = useSupabaseData<any>('venta_items', '*');
@@ -111,9 +112,14 @@ export default function GeneralDashboard() {
   const calculateMetrics = () => {
     if (ventasLoading) return null;
 
-    const totalVentas = ventas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
+    // Filter by period if showing previous period
+    const filteredVentas = showPreviousPeriod 
+      ? ventas.filter(v => new Date(v.fecha).getFullYear() === 2024)
+      : ventas.filter(v => new Date(v.fecha).getFullYear() === 2025);
+    
+    const totalVentas = filteredVentas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
     const totalUnidades = ventaItems.reduce((sum, item) => sum + (item.cantidad || 0), 0);
-    const numeroVentas = ventas.length;
+    const numeroVentas = filteredVentas.length;
     const ticketPromedio = numeroVentas > 0 ? totalVentas / numeroVentas : 0;
     
     // Calculate margin based on cost vs price
@@ -217,6 +223,15 @@ export default function GeneralDashboard() {
         <div className="relative z-10">
           <h3 className="text-lg font-semibold mb-2">¡Hola, soy SolvIA!</h3>
           <p className="text-blue-100 mb-4">Tu asistente personal.</p>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowPreviousPeriod(!showPreviousPeriod);
+            }}
+            className="text-xs bg-blue-500 px-2 py-1 rounded"
+          >
+            {showPreviousPeriod ? 'Ver período actual' : 'Ver período anterior'}
+          </button>
         </div>
         <div className="absolute bottom-4 right-4">
           <div className="w-12 h-12 bg-black bg-opacity-20 rounded-full flex items-center justify-center">

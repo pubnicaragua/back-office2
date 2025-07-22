@@ -92,6 +92,40 @@ export function MovimientosEfectivo() {
           title="Filtros"
         >
           <div className="space-y-4">
+            <div className="flex items-center space-x-2 mb-4">
+              <input
+                type="checkbox"
+                id="resetFilters"
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="resetFilters" className="text-sm text-gray-700">
+                Restablecer filtros
+              </label>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Todos los movimientos
+              </label>
+              <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Todos los movimientos</option>
+                <option value="ingreso">Ingresos</option>
+                <option value="retiro">Retiros</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Fecha / Hora
+              </label>
+              <input
+                type="datetime-local"
+                value={filters.fecha}
+                onChange={(e) => setFilters(prev => ({ ...prev, fecha: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Sucursal
@@ -109,29 +143,19 @@ export function MovimientosEfectivo() {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tipo de movimiento
+                Cajas
               </label>
-              <select 
-                value={filters.tipo}
-                onChange={(e) => setFilters(prev => ({ ...prev, tipo: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Todos</option>
-                <option value="ingreso">Ingreso</option>
-                <option value="retiro">Retiro</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Fecha
-              </label>
-              <input
-                type="date"
-                value={filters.fecha}
-                onChange={(e) => setFilters(prev => ({ ...prev, fecha: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="space-y-2">
+                {['Caja N°1', 'Caja N°2', 'Caja N°3', 'Caja N°4'].map(caja => (
+                  <label key={caja} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-700">{caja}</span>
+                  </label>
+                ))}
+              </div>
             </div>
           </div>
         </FilterModal>
