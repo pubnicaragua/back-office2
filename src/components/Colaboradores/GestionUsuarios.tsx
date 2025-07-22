@@ -24,7 +24,7 @@ export function GestionUsuarios() {
   const [selectedUser, setSelectedUser] = useState(null);
 
   const { data: usuarios, loading, error, refetch } = useSupabaseData<any>('usuarios', '*');
-  const { data: sucursales } = useSupabaseData<any>('sucursales', '*');
+  const { data: asistencias } = useSupabaseData<any>('asistencias', '*, usuarios(nombres, apellidos, rut)');
 
   const columns = [
     { key: 'nombres', label: 'Nombres' },
@@ -40,8 +40,8 @@ export function GestionUsuarios() {
     
     return {
       id: usuario.id,
-      nombres: `${usuario.nombres || ''} ${usuario.apellidos || ''}`.trim(),
-      rut: usuario.rut,
+      nombres: `${usuario.nombres || ''} ${usuario.apellidos || ''}`.trim() || 'Sin nombre',
+      rut: usuario.rut || 'Sin RUT',
       edad: edad.toString(),
       rol: usuario.rol || 'Empleado',
       usuario: usuario
@@ -49,8 +49,9 @@ export function GestionUsuarios() {
   });
 
   const filteredData = processedData.filter(item =>
-    item.nombres.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.rut.includes(searchTerm)
+    (searchTerm === '' || 
+     item.nombres.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     item.rut.includes(searchTerm))
   );
 
   const handleViewPerfil = (userData) => {

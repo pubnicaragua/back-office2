@@ -40,7 +40,10 @@ export function ProductosTotales() {
 
   // Aplicar filtros
   const filteredProductos = productos.filter(producto => {
-    if (filters.categoria && filters.categoria !== '' && producto.categoria_id !== filters.categoria) return false;
+    if (filters.categoria && filters.categoria !== '') {
+      const categoria = categorias.find(c => c.nombre.toLowerCase() === filters.categoria.toLowerCase());
+      if (categoria && producto.categoria_id !== categoria.id) return false;
+    }
     if (filters.disponibilidad === 'disponibles' && (producto.stock || 0) <= 0) return false;
     if (filters.disponibilidad === 'agotados' && (producto.stock || 0) > 0) return false;
     return true;
@@ -50,7 +53,7 @@ export function ProductosTotales() {
     id: producto.id,
     producto: producto.nombre,
     stock: producto.stock?.toString() || '0',
-    categoria: producto.categorias?.nombre || 'Sin categoría',
+    categoria: categorias.find(c => c.id === producto.categoria_id)?.nombre || 'Sin categoría',
     descripcion: producto.descripcion || '',
     sku: producto.codigo,
     costo: `Costo: ${Math.round((producto.costo || 0))} $`,

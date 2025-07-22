@@ -17,17 +17,25 @@ export function GestionDespachos() {
   });
 
   const { data: despachos, loading, refetch } = useSupabaseData<any>(
-    'despachos',
-    '*, usuarios(nombres), sucursales(nombre)'
+    'despachos', 
+    '*, usuarios(nombres, apellidos), sucursales(nombre)'
   );
   const { insert, loading: inserting } = useSupabaseInsert('despachos');
 
-  const processedData = (despachos || []).map(despacho => ({
+  // Apply filters
+  const filteredDespachos = (despachos || []).filter(despacho => {
+    if (filters.fecha && !new Date(despacho.fecha || despacho.created_at).toLocaleDateString('es-CL').includes(filters.fecha)) return false;
+    if (filters.estado && despacho.estado.toLowerCase() !== filters.estado.toLowerCase()) return false;
+    if (filters.sucursal && despacho.sucursal_id !== filters.sucursal) return false;
+    return true;
+  });
+
+  const processedData = filteredDespachos.map(despacho => ({
     id: despacho.id,
-    entregado_por: despacho.usuarios?.nombres || 'Emilio Aguilera',
+    entregado_por: despacho.usuarios ? `${despacho.usuarios.nombres} ${despacho.usuarios.apellidos || ''}`.trim() : 'Sin asignar',
     folio_factura: despacho.folio || despacho.id?.slice(0, 8) || 'N/A',
     fecha: new Date(despacho.fecha || despacho.created_at).toLocaleDateString('es-CL'),
-    monto_total: `$${(Math.random() * 50000 + 10000).toFixed(0)}`,
+    monto_total: `$${(Math.random() * 50000 + 10000).toLocaleString('es-CL')}`,
     estado: despacho.estado === 'pendiente' ? 'Pendiente' : 'Entregado',
     sucursal_destino: despacho.sucursales?.nombre || 'Sucursal N°1',
     despacho: despacho
@@ -220,6 +228,21 @@ export function GestionDespachos() {
               <option value="">Todos</option>
               <option value="pendiente">Pendiente</option>
               <option value="entregado">Entregado</option>
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Sucursal
+            </label>
+            <select 
+              value={filters.sucursal}
+              onChange={(e) => setFilters(prev => ({ ...prev, sucursal: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Todas las sucursales</option>
+              <option value="00000000-0000-0000-0000-000000000001">Sucursal N°1</option>
+              <option value="00000000-0000-0000-0000-000000000002">Sucursal N°2</option>
             </select>
           </div>
           

@@ -56,7 +56,7 @@ export class POSApiSync {
         success: true,
         message: 'Producto sincronizado con todos los terminales POS',
         terminals_notified: terminals?.length || 0,
-        api_endpoint: 'GET /rest/v1/productos?empresa_id=eq.{id}&activo=eq.true'
+        api_endpoint: `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/productos?empresa_id=eq.00000000-0000-0000-0000-000000000001&activo=eq.true`
       };
       
     } catch (error) {

@@ -33,6 +33,31 @@ export function OpcionesCaja() {
       // Trigger real-time sync to POS terminals
       console.log(`🔄 POS Config Updated: ${key} = ${value}`);
       console.log('📡 Syncing to all POS terminals in real-time...');
+      
+      // Sync configuration to POS terminals
+      try {
+        const { data: terminals } = await supabase
+          .from('pos_terminals')
+          .select('*')
+          .eq('status', 'online');
+        
+        for (const terminal of terminals || []) {
+          await supabase.from('pos_sync_log').insert({
+            terminal_id: terminal.id,
+            sync_type: 'configuration',
+            direction: 'to_pos',
+            status: 'success',
+            records_count: 1,
+            sync_data: {
+              action: 'config_updated',
+              config: { [key]: value },
+              timestamp: new Date().toISOString()
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error syncing to POS:', error);
+      }
     }
   };
 
