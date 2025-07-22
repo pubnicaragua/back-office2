@@ -8,6 +8,10 @@ interface MetricsCardProps {
   value: string;
   change: string;
   isPositive: boolean;
+}
+
+function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
+  return (
     <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
@@ -30,6 +34,7 @@ function ActionButtons({ setShowFiltersPanel, setShowDownloadModal, refetch }: {
 }) {
   return (
     <div className="flex items-center space-x-2">
+      <div>
         <button 
           onClick={() => setShowFiltersPanel(true)} 
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
