@@ -77,18 +77,6 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium text-gray-900">Promociones de todas las tiendas</h2>
-        <div className="flex items-center space-x-3 ml-auto">
-          <button 
-            onClick={() => setShowFilters(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            <Filter className="w-4 h-4" />
-            <span>Filtros</span>
-          </button>
-        </div>
-      </div>
 
       <div className="flex items-center justify-between">
         <div className="relative flex-1 max-w-md">
@@ -179,7 +167,14 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
             className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 ml-auto">
+          <button 
+            onClick={() => setShowFilters(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            <Filter className="w-4 h-4" />
+            <span>Filtros</span>
+          </button>
           <button 
             onClick={() => setShowAgregarModal(true)}
             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
