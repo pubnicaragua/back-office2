@@ -94,6 +94,7 @@ export function ProductosTotales() {
           </button>
         </div>
       </div>
+      <div className="flex items-center space-x-3">
         <button 
           onClick={() => setShowFilters(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -108,7 +109,6 @@ export function ProductosTotales() {
           <Plus className="w-4 h-4" />
           <span>Agregar</span>
         </button>
-        <button 
         <button 
           onClick={() => setShowInventarioModal(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
