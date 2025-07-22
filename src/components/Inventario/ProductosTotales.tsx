@@ -129,6 +129,9 @@ export function ProductosTotales() {
           </div>
         </div>
 
+
+      {/* Main Content */}
+      <div className="flex-1 ml-24">
         <ReporteMermas 
           isOpen={showMermasModal} 
           onClose={() => setShowMermasModal(false)} 
@@ -184,8 +187,6 @@ export function ProductosTotales() {
             </div>
           </div>
         </FilterModal>
+      </div>
     </div>
   );
-}
-  )
-}
