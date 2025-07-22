@@ -214,7 +214,7 @@ export function VentasDashboard() {
         <div className="relative h-64">
           {/* Y-axis labels */}
           <div className="absolute top-0 left-0 h-full flex flex-col justify-between pr-4 text-xs text-gray-500">
-            <span>35k</nspan>
+            <span>35k</span>
             <span>30k</span>
             <span>25k</span>
             <span>20k</span>
