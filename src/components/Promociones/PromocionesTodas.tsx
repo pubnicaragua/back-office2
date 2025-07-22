@@ -89,7 +89,15 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
             className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
-        <div className="flex items-center space-x-2 ml-auto">
+        
+        {/* Botones alineados a la derecha - exacto al diseño */}
+        <div className="flex items-center space-x-2">
+          <button 
+            onClick={() => setShowFilters(true)}
+            className="p-2 rounded-md hover:bg-gray-100 text-blue-600"
+          >
+            <Filter className="w-4 h-4" />
+          </button>
           <button 
             onClick={() => setShowAgregarModal(true)}
             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"

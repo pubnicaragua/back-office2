@@ -111,13 +111,14 @@ export function VentasDashboard() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-900">Ventas</h1>
-        <div className="flex items-center space-x-3">
+        
+        {/* Botones alineados a la derecha - exacto al diseño */}
+        <div className="flex items-center space-x-2">
           <button 
             onClick={() => setShowFilters(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="p-2 rounded-md hover:bg-gray-100 text-blue-600"
           >
             <Filter className="w-4 h-4" />
-            <span>Filtros</span>
           </button>
           <button 
             onClick={() => setShowDownloadModal(true)}
@@ -125,7 +126,10 @@ export function VentasDashboard() {
           >
             <Download className="w-5 h-5" />
           </button>
-          <button className="p-2 rounded-md hover:bg-gray-100">
+          <button 
+            onClick={() => window.location.reload()}
+            className="p-2 rounded-md hover:bg-gray-100"
+          >
             <RefreshCw className="w-5 h-5" />
           </button>
         </div>

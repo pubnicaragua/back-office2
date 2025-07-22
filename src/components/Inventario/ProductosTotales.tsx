@@ -76,19 +76,26 @@ export function ProductosTotales() {
       <div className="bg-white rounded-lg border border-gray-200">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-lg font-medium text-gray-900">Productos totales</h2>
-          <div className="flex items-center space-x-3 ml-auto">
+          
+          {/* Botones alineados a la derecha - exacto al diseño */}
+          <div className="flex items-center space-x-2">
             <button 
               onClick={() => setShowFilters(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="p-2 rounded-md hover:bg-gray-100 text-blue-600"
             >
               <Filter className="w-4 h-4" />
-              <span>Filtros</span>
             </button>
             <button 
               onClick={() => setShowProductoModal(true)}
               className="p-2 rounded-md hover:bg-gray-100 text-blue-600"
             >
               <Plus className="w-5 h-5" />
+            </button>
+            <button 
+              onClick={() => setShowInventarioModal(true)}
+              className="p-2 rounded-md hover:bg-gray-100 text-blue-600"
+            >
+              <span className="text-sm">⚠️</span>
             </button>
           </div>
         </div>
