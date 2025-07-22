@@ -123,17 +123,24 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
       if (!error && newProduct) {
         // Registrar movimiento de inventario
         await insert({
+          empresa_id: '00000000-0000-0000-0000-000000000001',
+          sucursal_id: '00000000-0000-0000-0000-000000000001',
+          producto_id: newProduct.id,
           movimiento: 'entrada',
           cantidad: producto.cantidad,
           stock_anterior: 0,
           stock_final: producto.cantidad,
           referencia: 'Actualización masiva XML/CSV',
-          empresa_id: '00000000-0000-0000-0000-000000000001',
-          sucursal_id: '00000000-0000-0000-0000-000000000001',
-          producto_id: newProduct.id,
+          usuario_id: '80ca7f2b-d125-4df6-9f22-a5fe3ada00e4'
         });
         
-        console.log(`✅ Producto creado: ${producto.nombre} - Stock: ${producto.cantidad}`);
+        console.log('✅ PRODUCTO CREADO Y SINCRONIZADO CON POS:', {
+          nombre: producto.nombre,
+          stock: producto.cantidad,
+          precio: producto.precio || producto.costo * 1.5,
+          id: newProduct.id
+        });
+        
       }
     }
     

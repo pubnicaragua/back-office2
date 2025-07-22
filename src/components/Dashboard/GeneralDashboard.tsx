@@ -226,11 +226,12 @@ export default function GeneralDashboard() {
           <button
             onClick={(e) => {
               e.stopPropagation();
+              console.log('📊 CAMBIANDO PERÍODO:', showPreviousPeriod ? 'actual' : 'anterior');
               setShowPreviousPeriod(!showPreviousPeriod);
             }}
             className="text-xs bg-blue-500 px-2 py-1 rounded"
           >
-            {showPreviousPeriod ? 'Ver período actual' : 'Ver período anterior'}
+            {showPreviousPeriod ? 'Período actual' : 'Período anterior'}
           </button>
         </div>
         <div className="absolute bottom-4 right-4">

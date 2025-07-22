@@ -120,6 +120,12 @@ export function VentasDashboard() {
   const generateChartData = () => {
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     
+    console.log('📊 GENERANDO DATOS GRÁFICO:', {
+      filtros: filters,
+      ventasTotal: filteredVentas.length,
+      rangoFechas: filters.fechaInicio && filters.fechaFin ? `${filters.fechaInicio} - ${filters.fechaFin}` : 'Sin filtro'
+    });
+    
     // Si hay filtros de fecha, usar solo ese rango
     if (filters.fechaInicio && filters.fechaFin) {
       const startDate = new Date(filters.fechaInicio);
@@ -143,6 +149,7 @@ export function VentasDashboard() {
         monthlyData[monthKey].value += parseFloat(venta.total) || 0;
       });
       
+      console.log('📈 DATOS FILTRADOS POR FECHA:', Object.values(monthlyData));
       return Object.values(monthlyData);
     }
     

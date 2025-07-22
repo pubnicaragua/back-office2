@@ -51,6 +51,8 @@ export function GestionDespachos() {
   };
 
   const handleAgregarDespacho = async () => {
+    console.log('➕ AGREGANDO NUEVO DESPACHO');
+    
     const success = await insert({
       empresa_id: '00000000-0000-0000-0000-000000000001',
       sucursal_id: '00000000-0000-0000-0000-000000000001',
@@ -62,8 +64,11 @@ export function GestionDespachos() {
     });
 
     if (success) {
+      console.log('✅ DESPACHO AGREGADO EXITOSAMENTE');
       setShowAgregarModal(false);
       refetch();
+    } else {
+      console.log('❌ ERROR AL AGREGAR DESPACHO');
     }
   };
 

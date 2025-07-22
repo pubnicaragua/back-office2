@@ -198,34 +198,64 @@ export function RecepcionPedidos() {
           size="md"
         >
           <div className="space-y-4">
+            <div className="flex items-center space-x-2 mb-4">
+              <input
+                type="checkbox"
+                id="reset-filters-pedidos"
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    console.log('🔄 RESTABLECIENDO FILTROS PEDIDOS');
+                    setFilters({ proveedor: '', fecha: '', estado: '' });
+                  }
+                }}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="reset-filters-pedidos" className="text-sm text-gray-700">
+                Restablecer filtros
+              </label>
+            </div>
+            
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="proveedor-filter" className="block text-sm font-medium text-gray-700 mb-2">
                 Proveedor
               </label>
               <input
+                id="proveedor-filter"
+                name="proveedor-filter"
                 type="text"
                 value={filters.proveedor}
-                onChange={(e) => setFilters(prev => ({ ...prev, proveedor: e.target.value }))}
+                onChange={(e) => {
+                  console.log('🔍 FILTRO PROVEEDOR:', e.target.value);
+                  setFilters(prev => ({ ...prev, proveedor: e.target.value }));
+                }}
                 placeholder="Buscar proveedor..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="fecha-filter" className="block text-sm font-medium text-gray-700 mb-2">
                 Fecha
               </label>
               <input
+                id="fecha-filter"
+                name="fecha-filter"
                 type="date"
                 value={filters.fecha}
-                onChange={(e) => setFilters(prev => ({ ...prev, fecha: e.target.value }))}
+                onChange={(e) => {
+                  console.log('📅 FILTRO FECHA:', e.target.value);
+                  setFilters(prev => ({ ...prev, fecha: e.target.value }));
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             
             <div className="flex justify-end">
               <button
-                onClick={() => setShowFilters(false)}
+                onClick={() => {
+                  console.log('✅ APLICANDO FILTROS PEDIDOS:', filters);
+                  setShowFilters(false);
+                }}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 Aplicar filtros

@@ -94,24 +94,26 @@ export function ProductosTotales() {
         <button 
           onClick={(e) => {
             e.stopPropagation();
+            console.log('✏️ EDITANDO PRODUCTO:', producto.nombre);
             handleEditProduct(producto);
           }}
-          className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50"
+          className="text-blue-600 hover:text-blue-800 p-2 rounded-lg hover:bg-blue-50 transition-colors"
           title="Editar producto"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
           </svg>
         </button>
         <button 
           onClick={(e) => {
             e.stopPropagation();
+            console.log('🗑️ ELIMINANDO PRODUCTO:', producto.nombre);
             handleDeleteProduct(producto);
           }}
-          className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50"
+          className="text-red-600 hover:text-red-800 p-2 rounded-lg hover:bg-red-50 transition-colors"
           title="Eliminar producto"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
         </button>
@@ -126,32 +128,9 @@ export function ProductosTotales() {
   );
 
   return (
-    <div>
+    <div className="px-8 py-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Productos totales</h1>
-        <div className="flex items-center space-x-3">
-          <button 
-            onClick={() => setShowFilters(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            <Filter className="w-5 h-5 mr-2" />
-            Filtros
-          </button>
-          <button 
-            onClick={() => setShowProductoModal(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Agregar
-          </button>
-          <button 
-            onClick={() => setShowMermasModal(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            <AlertTriangle className="w-5 h-5 mr-2" />
-            Mermas
-          </button>
-        </div>
+        <h1 className="text-2xl font-semibold text-gray-900">Productos totales</h1>
       </div>
       
       <div className="flex items-center justify-between mb-6">
@@ -169,27 +148,47 @@ export function ProductosTotales() {
         </div>
         
         <div className="flex items-center space-x-3">
-        <button 
-          onClick={() => setShowFilters(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          <Filter className="w-4 h-4" />
-          <span>Filtros</span>
-        </button>
-        <button 
-          onClick={() => setShowProductoModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Agregar</span>
-        </button>
-        <button 
-          onClick={() => setShowInventarioModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          <span>📊</span>
-          <span>Actualizar inventario</span>
-        </button>
+          <button 
+            onClick={() => {
+              console.log('🔍 ABRIENDO FILTROS INVENTARIO');
+              setShowFilters(true);
+            }}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            <Filter className="w-4 h-4" />
+            <span>Filtros</span>
+          </button>
+          <button 
+            onClick={() => {
+              console.log('➕ ABRIENDO MODAL AGREGAR PRODUCTO');
+              setSelectedProduct(null);
+              setShowProductoModal(true);
+            }}
+            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Agregar</span>
+          </button>
+          <button 
+            onClick={() => {
+              console.log('📊 ABRIENDO ACTUALIZAR INVENTARIO');
+              setShowInventarioModal(true);
+            }}
+            className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          >
+            <span>📊</span>
+            <span>Actualizar inventario</span>
+          </button>
+          <button 
+            onClick={() => {
+              console.log('⚠️ ABRIENDO REPORTE MERMAS');
+              setShowMermasModal(true);
+            }}
+            className="flex items-center space-x-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
+          >
+            <AlertTriangle className="w-4 h-4" />
+            <span>Mermas</span>
+          </button>
         </div>
       </div>
 

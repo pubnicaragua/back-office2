@@ -38,9 +38,7 @@ export function ReporteMermas({ isOpen, onClose }: ReporteMermasProps) {
     <Modal isOpen={isOpen} onClose={onClose} title="Reporte de mermas" size="sm">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-            🔍
-          </div>
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             id="buscar-merma-input"
             name="buscar-merma-input"
@@ -81,6 +79,21 @@ export function ReporteMermas({ isOpen, onClose }: ReporteMermasProps) {
             placeholder="Cantidad mermada"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="observaciones-merma-textarea" className="block text-sm font-medium text-gray-700 mb-1">
+            Observaciones
+          </label>
+          <textarea
+            id="observaciones-merma-textarea"
+            name="observaciones-merma-textarea"
+            value={formData.observaciones || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, observaciones: e.target.value }))}
+            placeholder="Observaciones adicionales..."
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 

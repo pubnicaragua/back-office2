@@ -166,7 +166,6 @@ export function POSIntegrationSimple() {
         </p>
         <div className="space-y-2 text-sm text-yellow-700">
           <p>📧 <strong>Email:</strong> soporte@solvendo.com</p>
-          <p>🕒 <strong>Horario:</strong> Lunes a Viernes, 9:00 - 18:00</p>
         </div>
       </div>
     </div>

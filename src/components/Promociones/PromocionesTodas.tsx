@@ -4,6 +4,7 @@ import { useSupabaseData, useSupabaseUpdate, useSupabaseInsert } from '../../hoo
 import { AgregarPromocionModal } from './AgregarPromocionModal';
 import { EditarPromocionModal } from './EditarPromocionModal';
 import { Modal } from '../Common/Modal';
+import { supabase } from '../../lib/supabase';
 import { posSync } from '../../lib/posApiSync';
 
 interface PromocionesTodasProps {
@@ -244,13 +245,35 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
         size="md"
       >
         <div className="space-y-4">
+          <div className="flex items-center space-x-2 mb-4">
+            <input
+              type="checkbox"
+              id="reset-filters-promociones"
+              onChange={(e) => {
+                if (e.target.checked) {
+                  console.log('🔄 RESTABLECIENDO FILTROS PROMOCIONES');
+                  setFilters({ sucursal: '', estado: '', tipo: '' });
+                }
+              }}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor="reset-filters-promociones" className="text-sm text-gray-700">
+              Restablecer filtros
+            </label>
+          </div>
+          
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="sucursal-filter-promo" className="block text-sm font-medium text-gray-700 mb-2">
               Sucursal
             </label>
             <select 
+              id="sucursal-filter-promo"
+              name="sucursal-filter-promo"
               value={filters.sucursal}
-              onChange={(e) => setFilters(prev => ({ ...prev, sucursal: e.target.value }))}
+              onChange={(e) => {
+                console.log('🏢 FILTRO SUCURSAL PROMOCIONES:', e.target.value);
+                setFilters(prev => ({ ...prev, sucursal: e.target.value }));
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todas las sucursales</option>
