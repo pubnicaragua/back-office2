@@ -176,21 +176,15 @@ export function VentasDashboard() {
         {/* Header */}
         <header className="flex items-center justify-between h-16 px-6 border-b bg-white shadow-sm">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="lg:hidden">
+            <button className="lg:hidden p-2 rounded-md hover:bg-gray-100">
               <Menu className="h-6 w-6" />
               <span className="sr-only">Toggle navigation menu</span>
-            </Button>
+            </button>
             <h1 className="text-xl font-semibold text-gray-900">Ventas</h1>
           </div>
           <div className="flex-1 flex justify-center">
             {/* Solvendo Logo */}
-            <Image
-              src="/placeholder.svg?height=32&width=120"
-              alt="Solvendo Logo"
-              width={120}
-              height={32}
-              className="h-8"
-            />
+            <div className="text-xl font-bold">Solvendo</div>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -198,13 +192,7 @@ export function VentasDashboard() {
               <span>22:00</span>
             </div>
             <div className="flex items-center gap-2">
-              <Image
-                src="/placeholder.svg?height=32&width=32"
-                alt="User Avatar"
-                width={32}
-                height={32}
-                className="rounded-full border"
-              />
+              <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
               <span className="text-sm font-medium text-gray-800">Emilio Aguilera</span>
             </div>
           </div>
@@ -299,23 +287,23 @@ export function VentasDashboard() {
       {/* Right Sidebar for global actions (fixed position) */}
       <div className="fixed right-0 top-0 h-full w-16 bg-white border-l shadow-sm flex flex-col items-center justify-start py-4 gap-4 z-20">
         <div className="relative">
-          <Button onClick={() => setShowFilters(true)} variant="ghost" size="icon" className="relative">
+          <button onClick={() => setShowFilters(true)} className="relative p-2 rounded-md hover:bg-gray-100">
             <Filter className="w-6 h-6" />
             <span className="sr-only">Filtros</span>
-          </Button>
+          </button>
           {/* Badge for filter icon */}
           <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
             1
           </span>
         </div>
-        <Button onClick={() => setShowDownloadModal(true)} variant="ghost" size="icon">
+        <button onClick={() => setShowDownloadModal(true)} className="p-2 rounded-md hover:bg-gray-100">
           <Download className="w-6 h-6" />
           <span className="sr-only">Descargar</span>
-        </Button>
-        <Button onClick={() => console.log("Refresh data")} variant="ghost" size="icon">
+        </button>
+        <button onClick={() => console.log("Refresh data")} className="p-2 rounded-md hover:bg-gray-100">
           <RefreshCw className="w-6 h-6" />
           <span className="sr-only">Actualizar</span>
-        </Button>
+        </button>
       </div>
 
       {/* Modals */}
