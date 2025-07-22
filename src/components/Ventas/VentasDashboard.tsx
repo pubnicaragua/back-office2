@@ -12,14 +12,20 @@ interface MetricsCardProps {
 
 function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
   return (
-    <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm flex flex-col justify-between">
+    <div className="bg-gray-50 p-6 rounded-lg flex flex-col justify-between">
       <div className="flex items-center justify-between mb-2">
         <p className="text-sm text-gray-600 font-medium">{title}</p>
         <div className="w-4 h-4 text-gray-400 cursor-help">?</div>
       </div>
       <div className="flex items-center justify-between">
         <p className="text-2xl font-bold text-gray-900">{value}</p>
-        <span className={`text-sm font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`}>{change}</span>
+        <span
+          className={`px-2 py-1 text-sm font-medium rounded ${
+            isPositive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+          }`}
+        >
+          {change}
+        </span>
       </div>
     </div>
   );
@@ -30,7 +36,7 @@ export function VentasDashboard() {
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
-  const { data: ventas = [], loading: ventasLoading } = useSupabaseData<any>('ventas', '*');
+  const { data: ventas = [] } = useSupabaseData<any>('ventas', '*');
   const { data: sucursales = [] } = useSupabaseData<any>('sucursales', '*');
 
   const metricsData = [
@@ -41,7 +47,6 @@ export function VentasDashboard() {
     { title: 'Ticket promedio', value: '$67.150', change: '+100%', isPositive: true }
   ];
 
-  // Chart data
   const chartData = [
     { month: 'Ene', value: 35 },
     { month: 'Feb', value: 30 },
@@ -83,31 +88,29 @@ export function VentasDashboard() {
       </div>
 
       {/* Chart Section */}
-      <div className="bg-white p-6 rounded-lg border border-gray-200">
+      <div className="bg-white p-6 rounded-lg">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-medium text-gray-900">Ventas totales</h3>
-          <div className="flex items-center space-x-6 text-sm text-gray-600">
-            <div className="flex items-center space-x-1">
-              <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-              <span>Período anterior</span>
-              <span className="text-gray-500">01 May 2024 - 19 May 2024</span>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1 text-sm text-gray-600">
+              <span className="w-2 h-2 bg-gray-300 rounded-full inline-block"></span>
+              <span>Período anterior 01 May 2024 - 19 May 2024</span>
             </div>
-            <div className="flex items-center space-x-1">
-              <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
-              <span>Período seleccionado</span>
-              <span className="text-gray-500">01 May 2025 - 19 May 2025</span>
+            <div className="flex items-center space-x-1 text-sm text-gray-600">
+              <span className="w-2 h-2 bg-blue-600 rounded-full inline-block"></span>
+              <span>Período seleccionado 01 May 2025 - 19 May 2025</span>
             </div>
-            <button onClick={() => setShowInfoModal(true)} className="text-sm text-gray-600 hover:text-gray-800 bg-gray-100 px-3 py-1 rounded">
-              Ver período anterior
-            </button>
           </div>
+          <button onClick={() => setShowInfoModal(true)} className="text-sm text-gray-600 hover:text-gray-800 bg-gray-100 px-3 py-1 rounded">
+            Ver período anterior
+          </button>
         </div>
 
         {/* Bars */}
         <div className="relative h-64">
           {/* Y-axis labels */}
           <div className="absolute top-0 left-0 h-full flex flex-col justify-between pr-4 text-xs text-gray-500">
-            <span>35k</span>
+            <span>35k</nspan>
             <span>30k</span>
             <span>25k</span>
             <span>20k</span>
