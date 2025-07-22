@@ -64,8 +64,6 @@ export function ProductosTotales() {
   );
 
   if (loading) {
-    return <div className="text-center py-4">Cargando productos...</div>;
-  }
 
   return (
     <div className="flex">
@@ -94,6 +92,12 @@ export function ProductosTotales() {
                 Agregar
               </span>
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 ml-24">
         <div className="bg-white rounded-lg border border-gray-200">
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             <h2 className="text-lg font-medium text-gray-900">Productos totales</h2>
@@ -125,13 +129,7 @@ export function ProductosTotales() {
               currentPage={currentPage}
               totalPages={Math.ceil(filteredData.length / 10)}
               onPageChange={setCurrentPage}
-            />
-          </div>
-        </div>
 
-
-      {/* Main Content */}
-      <div className="flex-1 ml-24">
         <ReporteMermas 
           isOpen={showMermasModal} 
           onClose={() => setShowMermasModal(false)} 
