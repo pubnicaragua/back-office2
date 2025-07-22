@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { MovimientosEfectivo } from './MovimientosEfectivo';
 import { Devoluciones } from './Devoluciones';
 import { OpcionesCaja } from './OpcionesCaja';
-import { POSIntegration } from './POSIntegration';
-import { POSApiDocumentation } from './POSApiDocumentation';
-import { Filter } from 'lucide-react';
+import { POSIntegrationSimple } from './POSIntegrationSimple';
 
 export function POSInfo() {
   const [activeTab, setActiveTab] = useState('movimientos');
@@ -13,7 +11,6 @@ export function POSInfo() {
     { id: 'movimientos', label: 'Movimientos de efectivo' },
     { id: 'devoluciones', label: 'Devoluciones' },
     { id: 'integracion', label: 'Integración POS' },
-    { id: 'api', label: 'API POS' },
     { id: 'opciones', label: 'Opciones de caja' },
   ];
 
@@ -24,9 +21,7 @@ export function POSInfo() {
       case 'devoluciones':
         return <Devoluciones />;
       case 'integracion':
-        return <POSIntegration />;
-      case 'api':
-        return <POSApiDocumentation />;
+        return <POSIntegrationSimple />;
       case 'opciones':
         return <OpcionesCaja />;
       default:
@@ -54,13 +49,6 @@ export function POSInfo() {
                 </button>
               ))}
             </nav>
-            
-            {activeTab !== 'opciones' && (
-              <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                <Filter className="w-4 h-4" />
-                <span>Filtros</span>
-              </button>
-            )}
           </div>
         </div>
         

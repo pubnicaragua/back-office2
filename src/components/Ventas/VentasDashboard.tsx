@@ -1,16 +1,8 @@
 import React, { useState } from 'react';
 import { FilterModal } from '../Common/FilterModal';
 import { Modal } from '../Common/Modal';
-import { Download, RefreshCw, MessageCircle, Filter } from 'lucide-react';
+import { Download, RefreshCw, Filter } from 'lucide-react';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
-
-interface FolioElectronico {
-  id: string;
-  folio: number;
-  tipo_documento: string;
-  usado: boolean;
-  venta_id?: string;
-}
 
 interface MetricsCardProps {
   title: string;
@@ -36,6 +28,7 @@ function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
     </div>
   );
 }
+
 export function VentasDashboard() {
   const [showModal, setShowModal] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
@@ -49,123 +42,58 @@ export function VentasDashboard() {
 
   const { data: ventas, loading } = useSupabaseData<any>('ventas', '*, sucursales(nombre)');
   const { data: ventasItems } = useSupabaseData<any>('venta_items', '*');
-  const { data: foliosElectronicos } = useSupabaseData<FolioElectronico[]>('folios_electronicos', '*');
+  const { data: foliosElectronicos } = useSupabaseData<any>('folios_electronicos', '*');
   const { data: sucursales } = useSupabaseData<any>('sucursales', '*');
-  const { data: productos } = useSupabaseData<any>('productos', '*');
-  const { data: cajas } = useSupabaseData<any>('cajas', '*');
 
-  // Calculate real metrics from data
-  const calculateMetrics = () => {
-    if (loading) return null;
+  const metricsData = [
+    { title: 'Ventas totales', value: '$67.150', change: '+100%', isPositive: true },
+    { title: 'Margen', value: '$67.150', change: '+100%', isPositive: true },
+    { title: 'Unidades vendidas', value: '667.150', change: '+100%', isPositive: true },
+    { title: 'N° de ventas', value: '667.150', change: '+100%', isPositive: true },
+    { title: 'Ticket promedio', value: '$67.150', change: '+100%', isPositive: true },
+  ];
 
-    // Aplicar filtros a las ventas
-    const filteredVentas = ventas.filter(venta => {
-      if (filters.sucursal && filters.sucursal !== '' && venta.sucursal_id !== filters.sucursal) return false;
-      if (filters.periodo && filters.periodo !== '' && !new Date(venta.fecha).toISOString().includes(filters.periodo)) return false;
-      return true;
-    });
+  // Process chart data
+  const chartData = [
+    { month: 'Ene', value: 35 },
+    { month: 'Feb', value: 30 },
+    { month: 'Mar', value: 25 },
+    { month: 'Abr', value: 40 },
+    { month: 'May', value: 35 },
+    { month: 'Jun', value: 45 },
+    { month: 'Jul', value: 50 },
+    { month: 'Ago', value: 40 },
+    { month: 'Sep', value: 35 },
+    { month: 'Oct', value: 30 },
+    { month: 'Nov', value: 25 },
+  ];
 
-    const totalVentas = filteredVentas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
-    const margen = totalVentas * 0.4; // Assuming 40% margin
-    const unidadesVendidas = ventasItems.reduce((sum, item) => sum + (item.cantidad || 0), 0);
-    const numeroVentas = filteredVentas.length;
-    const ticketPromedio = numeroVentas > 0 ? totalVentas / numeroVentas : 0;
-
-    return {
-      totalVentas,
-      margen,
-      unidadesVendidas,
-      numeroVentas,
-      ticketPromedio
-    };
-  };
-
-  // Calculate electronic receipts metrics
-  const calculateElectronicMetrics = () => {
-    const totalFolios = foliosElectronicos.length;
-    const foliosUsados = foliosElectronicos.filter(f => f.usado).length;
-    const foliosDisponibles = totalFolios - foliosUsados;
-    
-    return {
-      totalFolios,
-      foliosUsados,
-      foliosDisponibles,
-      porcentajeUso: totalFolios > 0 ? Math.round((foliosUsados / totalFolios) * 100) : 0
-    };
-  };
-
-  const metrics = calculateMetrics();
-  const electronicMetrics = calculateElectronicMetrics();
-
-  const metricsData = metrics ? [
-    { title: 'Ventas totales', value: `$${metrics.totalVentas.toLocaleString('es-CL')}`, change: '+10%', isPositive: true },
-    { title: 'Margen', value: `$${metrics.margen.toLocaleString('es-CL')}`, change: '+10%', isPositive: true },
-    { title: 'Unidades vendidas', value: metrics.unidadesVendidas.toLocaleString('es-CL'), change: '+10%', isPositive: true },
-    { title: 'N° de ventas', value: metrics.numeroVentas.toLocaleString('es-CL'), change: '+10%', isPositive: true },
-    { title: 'Ticket promedio', value: `$${Math.round(metrics.ticketPromedio).toLocaleString('es-CL')}`, change: '+10%', isPositive: true },
-  ] : Array(5).fill({ title: 'Cargando...', value: '$0', change: '+0%', isPositive: true });
-
-  // Process chart data from real sales
-  const processChartData = () => {
-    if (loading || ventas.length === 0) {
-      const currentYear = new Date().getFullYear().toString().slice(-2);
-      return [
-        { month: `E-${currentYear}`, value: 35 },
-        { month: `F-${currentYear}`, value: 30 },
-        { month: `M-${currentYear}`, value: 25 },
-        { month: `A-${currentYear}`, value: 40 },
-        { month: `M-${currentYear}`, value: 35 },
-        { month: `J-${currentYear}`, value: 45 },
-        { month: `J-${currentYear}`, value: 50 },
-        { month: `A-${currentYear}`, value: 40 },
-        { month: `S-${currentYear}`, value: 35 },
-        { month: `O-${currentYear}`, value: 30 },
-        { month: `N-${currentYear}`, value: 25 },
-        { month: `D-${currentYear}`, value: 20 },
-      ];
-    }
-
-    // Group sales by month
-    const salesByMonth = {};
-    ventas.forEach(venta => {
-      const date = new Date(venta.fecha);
-      const monthKey = `${date.getMonth() + 1}-${date.getFullYear().toString().slice(-2)}`;
-      if (!salesByMonth[monthKey]) {
-        salesByMonth[monthKey] = 0;
-      }
-      salesByMonth[monthKey] += parseFloat(venta.total || 0);
-    });
-
-    // Convert to chart format
-    const months = ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
-    const currentYear = new Date().getFullYear().toString().slice(-2);
-    return months.map((month, index) => {
-      const monthKey = `${index + 1}-${new Date().getFullYear()}`;
-      return {
-        month: `${month}-${currentYear}`,
-        value: Math.round((salesByMonth[monthKey] || 0) / 1000) // Convert to thousands
-      };
-    });
-  };
-
-  const chartData = processChartData();
   const maxValue = Math.max(...chartData.map(d => d.value));
 
   const handleDownloadReport = () => {
-    // Create CSV data (Excel compatible)
+    // Apply filters to ventas data
+    const filteredVentas = ventas.filter(venta => {
+      if (filters.sucursal && venta.sucursal_id !== filters.sucursal) return false;
+      if (filters.periodo && !new Date(venta.fecha).toISOString().includes(filters.periodo)) return false;
+      return true;
+    });
+
+    // Create CSV data with proper encoding
     const headers = ['Folio', 'Fecha', 'Total', 'Sucursal', 'Método Pago'];
     const csvContent = [
       headers.join(','),
-      ...ventas.map(v => [
-        v.folio || 'N/A',
-        new Date(v.fecha).toLocaleDateString('es-CL'),
-        v.total || '0',
-        (v.sucursales?.nombre || 'N/A').replace(/,/g, ';'),
-        (v.metodo_pago || 'N/A').replace(/,/g, ';')
+      ...filteredVentas.map(v => [
+        `"${v.folio || 'N/A'}"`,
+        `"${new Date(v.fecha).toLocaleDateString('es-CL')}"`,
+        `"${v.total || '0'}"`,
+        `"${(v.sucursales?.nombre || 'N/A')}"`,
+        `"${(v.metodo_pago || 'N/A')}"`,
       ].join(','))
     ].join('\n');
     
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    // Add BOM for proper Excel encoding
+    const BOM = '\uFEFF';
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -206,62 +134,43 @@ export function VentasDashboard() {
         ))}
       </div>
 
-      {/* Chart and Controls */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-3 bg-white p-6 rounded-lg border border-gray-200">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-medium text-gray-900">Ventas totales</h3>
-            <div className="text-sm text-gray-600">
-              <span className="mr-4">Folios electrónicos: {electronicMetrics.foliosDisponibles} disponibles</span>
-              <span>Uso: {electronicMetrics.porcentajeUso}%</span>
+      {/* Chart */}
+      <div className="bg-white p-6 rounded-lg border border-gray-200">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-medium text-gray-900">Ventas totales</h3>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 text-sm">
+              <span className="text-gray-600">Período anterior</span>
+              <div className="w-3 h-3 bg-blue-200 rounded"></div>
+              <span className="text-gray-600">01 May 2024 - 19 May 2024</span>
             </div>
-          </div>
-          
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-sm">
-                <span className="text-gray-600">Período anterior</span>
-                <div className="w-3 h-3 bg-blue-200 rounded"></div>
-              </div>
-              <div className="flex items-center space-x-2 text-sm">
-                <span className="text-gray-600">Período seleccionado</span>
-                <div className="w-3 h-3 bg-blue-600 rounded"></div>
-              </div>
-              <button 
-                onClick={() => setShowModal(true)}
-                className="text-sm text-gray-600 hover:text-gray-800"
-              >
-                Ver período anterior
-              </button>
+            <div className="flex items-center space-x-2 text-sm">
+              <span className="text-gray-600">Período seleccionado</span>
+              <div className="w-3 h-3 bg-blue-600 rounded"></div>
+              <span className="text-gray-600">01 May 2025 - 19 May 2025</span>
             </div>
-          </div>
-          
-          {/* Simple Bar Chart */}
-          <div className="h-64 flex items-end justify-between space-x-2">
-            {chartData.map((item, index) => (
-              <div key={index} className="flex flex-col items-center space-y-2 flex-1">
-                <div className="w-full flex flex-col justify-end h-48">
-                  <div 
-                    className="bg-blue-600 rounded-t"
-                    style={{ height: `${maxValue > 0 ? (item.value / maxValue) * 100 : 0}%` }}
-                  ></div>
-                </div>
-                <span className="text-xs text-gray-600">{item.month}</span>
-              </div>
-            ))}
+            <button 
+              onClick={() => setShowModal(true)}
+              className="text-sm text-gray-600 hover:text-gray-800"
+            >
+              Ver período anterior
+            </button>
           </div>
         </div>
-
-        <div className="bg-blue-600 text-white p-6 rounded-lg relative overflow-hidden">
-          <div className="relative z-10">
-            <h3 className="text-lg font-semibold mb-2">¡Hola, soy SolvIA!</h3>
-            <p className="text-blue-100 mb-4">Tu asistente personal.</p>
-          </div>
-          <div className="absolute bottom-4 right-4">
-            <div className="w-12 h-12 bg-black bg-opacity-20 rounded-full flex items-center justify-center">
-              <MessageCircle className="w-6 h-6" />
+        
+        {/* Chart */}
+        <div className="h-64 flex items-end justify-between space-x-2">
+          {chartData.map((item, index) => (
+            <div key={index} className="flex flex-col items-center space-y-2 flex-1">
+              <div className="w-full flex flex-col justify-end h-48">
+                <div 
+                  className="bg-blue-600 rounded-t"
+                  style={{ height: `${maxValue > 0 ? (item.value / maxValue) * 100 : 0}%` }}
+                ></div>
+              </div>
+              <span className="text-xs text-gray-600">{item.month}</span>
             </div>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -297,7 +206,7 @@ export function VentasDashboard() {
         <div className="space-y-4">
           <p className="text-sm text-gray-600">
             ¿Deseas descargar el reporte de ventas?
-            El archivo se descargará en formato Excel.
+            El archivo se descargará en formato CSV compatible con Excel.
           </p>
           <div className="flex justify-end space-x-3">
             <button
@@ -307,9 +216,7 @@ export function VentasDashboard() {
               Cancelar
             </button>
             <button
-              onClick={() => {
-                handleDownloadReport();
-              }}
+              onClick={handleDownloadReport}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               Descargar
