@@ -4,10 +4,10 @@ import { Modal } from '../Common/Modal';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 interface MetricsCardProps {
-}
-
-function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
-  return (
+  title: string;
+  value: string;
+  change: string;
+  isPositive: boolean;
     <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
