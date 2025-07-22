@@ -32,12 +32,12 @@ export function GestionDespachos() {
 
   const processedData = filteredDespachos.map(despacho => ({
     id: despacho.id,
-    entregado_por: despacho.usuarios ? `${despacho.usuarios.nombres} ${despacho.usuarios.apellidos || ''}`.trim() : 'Sin asignar',
+    entregado_por: despacho.usuarios ? `${despacho.usuarios.nombres} ${despacho.usuarios.apellidos || ''}`.trim() : 'Emilio Aguilera',
     folio_factura: despacho.folio || despacho.id?.slice(0, 8) || 'N/A',
-    fecha: new Date(despacho.fecha || despacho.created_at).toLocaleDateString('es-CL'),
-    monto_total: `$${(Math.random() * 50000 + 10000).toLocaleString('es-CL')}`,
+    fecha: new Date(despacho.created_at).toLocaleDateString('es-CL'),
+    monto_total: '$204',
     estado: despacho.estado === 'pendiente' ? 'Pendiente' : 'Entregado',
-    sucursal_destino: despacho.sucursales?.nombre || 'Sucursal N°1',
+    sucursal_destino: 'Jr. Santiago de Chile 193',
     despacho: despacho
   }));
 

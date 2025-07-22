@@ -184,6 +184,19 @@ export function OpcionesCaja() {
         </div>
       </div>
 
+      {/* Save Button */}
+      <div className="pt-6 border-t border-gray-200">
+        <button
+          onClick={handleSaveConfiguration}
+          className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+        >
+          💾 Guardar y Sincronizar con POS
+        </button>
+        <p className="text-xs text-gray-500 text-center mt-2">
+          Los cambios se aplicarán a todos los terminales POS en tiempo real
+        </p>
+      </div>
+
       {/* Modal de Filtros */}
       <Modal
         isOpen={showFilters}

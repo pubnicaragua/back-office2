@@ -145,10 +145,17 @@ export function SolvIAChat({ isOpen, onClose }: SolvIAChatProps) {
       // Llamar a la Edge Function con contexto completo
       const context = getSystemContext();
       
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/solvia-chat`, {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!supabaseUrl || !supabaseKey) {
+        throw new Error('Configuración de Supabase no encontrada');
+      }
+      
+      const response = await fetch(`${supabaseUrl}/functions/v1/solvia-chat`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Authorization': `Bearer ${supabaseKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -156,6 +163,10 @@ export function SolvIAChat({ isOpen, onClose }: SolvIAChatProps) {
           context: context
         }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const data = await response.json();
       
