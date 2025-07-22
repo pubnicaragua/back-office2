@@ -124,25 +124,25 @@ export function AgregarProductoModal({ isOpen, onClose }: AgregarProductoModalPr
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {formData.se_vende_por === 'unidad' ? 'Código unitario' : 'Código kg'}
+              {formData.se_vende_por === 'unidad' ? 'Código unitario' : 'Código por kg'}
             </label>
             <input
               type="text"
               value={formData.codigo_unitario}
               onChange={(e) => setFormData(prev => ({ ...prev, codigo_unitario: e.target.value }))}
-              placeholder={formData.se_vende_por === 'unidad' ? 'Código unitario' : 'Código kg'}
+              placeholder={formData.se_vende_por === 'unidad' ? 'Código unitario' : 'Código por kg'}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {formData.se_vende_por === 'unidad' ? 'Precio unitario' : 'Precio kg'}
+              {formData.se_vende_por === 'unidad' ? 'Precio unitario' : 'Precio por kg'}
             </label>
             <input
               type="number"
               value={formData.precio_unitario}
               onChange={(e) => setFormData(prev => ({ ...prev, precio_unitario: e.target.value }))}
-              placeholder={formData.se_vende_por === 'unidad' ? 'Precio unitario' : 'Precio kg'}
+              placeholder={formData.se_vende_por === 'unidad' ? 'Precio unitario' : 'Precio por kg'}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />

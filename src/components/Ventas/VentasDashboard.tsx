@@ -33,7 +33,7 @@ function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
 export function VentasDashboard() {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFiltersPanel, setShowFiltersPanel] = useState(false);
   const [filters, setFilters] = useState({
     periodo: '',
     sucursal: '',
@@ -168,7 +168,7 @@ export function VentasDashboard() {
         <h1 className="text-2xl font-semibold text-gray-900">Ventas</h1>
         <div className="flex items-center space-x-2">
           <button 
-            onClick={() => setShowFilters(true)} 
+            onClick={() => setShowFiltersPanel(true)} 
             className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Filter className="w-4 h-4" />
@@ -249,6 +249,89 @@ export function VentasDashboard() {
           </div>
         </div>
       </div>
+      {showFiltersPanel && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4">
+            <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowFiltersPanel(false)} />
+            <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-medium text-gray-900">Filtros</h3>
+                <button onClick={() => setShowFiltersPanel(false)} className="text-gray-400 hover:text-gray-600">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Período</label>
+                  <select
+                    value={filters.periodo}
+                    onChange={(e) => setFilters(prev => ({ ...prev, periodo: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Enero - Diciembre</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Todas las sucursales</label>
+                  <select
+                    value={filters.sucursal}
+                    onChange={(e) => setFilters(prev => ({ ...prev, sucursal: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Todas las sucursales</option>
+                    {sucursales.map(sucursal => (
+                      <option key={sucursal.id} value={sucursal.id}>{sucursal.nombre}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Producto</label>
+                  <input
+                    type="text"
+                    placeholder="Buscar producto..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Productos con poco movimiento</label>
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Todos</option>
+                    <option value="poco">Poco movimiento</option>
+                    <option value="mucho">Mucho movimiento</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="mt-6">
+                <h4 className="text-sm font-medium text-gray-700 mb-3">Cajeros</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {['Caja N°1', 'Caja N°2', 'Caja N°3', 'Caja N°4'].map(caja => (
+                    <label key={caja} className="flex items-center space-x-2">
+                      <input type="checkbox" className="w-4 h-4 text-blue-600 border-gray-300 rounded" />
+                      <span className="text-sm text-gray-700">{caja}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="flex justify-end mt-6">
+                <button
+                  onClick={() => setShowFiltersPanel(false)}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Aplicar filtros
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modals */}
       <Modal isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} title="Última actualización">
@@ -286,60 +369,6 @@ export function VentasDashboard() {
         </div>
       </Modal>
 
-      <Modal isOpen={showFilters} onClose={() => setShowFilters(false)} title="Filtros">
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Período</label>
-            <select
-              value={filters.periodo}
-              onChange={(e) => setFilters(prev => ({ ...prev, periodo: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Todos los períodos</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Sucursal</label>
-            <select
-              value={filters.sucursal}
-              onChange={(e) => setFilters(prev => ({ ...prev, sucursal: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Todas las sucursales</option>
-              {sucursales.map(sucursal => (
-                <option key={sucursal.id} value={sucursal.id}>{sucursal.nombre}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Método de Pago</label>
-            <select
-              value={filters.metodo_pago}
-              onChange={(e) => setFilters(prev => ({ ...prev, metodo_pago: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Todos los métodos</option>
-              <option value="efectivo">Efectivo</option>
-              <option value="tarjeta">Tarjeta</option>
-              <option value="transferencia">Transferencia</option>
-            </select>
-          </div>
-          
-          <div className="flex justify-end">
-            <button
-              onClick={() => setShowFilters(false)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Aplicar filtros
-            </button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 }

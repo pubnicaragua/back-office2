@@ -27,7 +27,30 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
   const processFile = async (file: File) => {
     setProcessing(true);
     try {
-      if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+      if (file.name.endsWith('.xml')) {
+        // Process XML DTE file
+        const text = await file.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(text, 'text/xml');
+        
+        const detalles = xmlDoc.querySelectorAll('Detalle');
+        const processedProducts = Array.from(detalles).map(detalle => {
+          const codigo = detalle.querySelector('CdgItem VlrCodigo')?.textContent || '';
+          const nombre = detalle.querySelector('NmbItem')?.textContent || '';
+          const cantidad = parseInt(detalle.querySelector('QtyItem')?.textContent || '0');
+          const precio = parseFloat(detalle.querySelector('PrcItem')?.textContent || '0');
+          
+          return {
+            nombre,
+            codigo,
+            cantidad,
+            costo: precio * 0.7,
+            precio
+          };
+        });
+        
+        setProductos(processedProducts);
+      } else if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
         const text = await file.text();
         const lines = text.split('\n');
         const headers = lines[0].split(',');
@@ -143,7 +166,7 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
             <label className="cursor-pointer">
               <input
                 type="file"
-                accept={uploadMethod === 'csv' ? '.csv' : uploadMethod === 'excel' ? '.xlsx,.xls' : '.pdf'}
+                accept={uploadMethod === 'xml' ? '.xml' : uploadMethod === 'csv' ? '.csv' : uploadMethod === 'excel' ? '.xlsx,.xls' : '.pdf'}
                 onChange={handleFileUpload}
                 className="hidden"
                 disabled={processing}
@@ -153,7 +176,8 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
               </span>
             </label>
           </div>
-          <p className="text-sm text-gray-500 mt-2">
+              {['xml', 'csv', 'excel', 'pdf'].map(method => (
+            {uploadMethod === 'xml' && '📄 XML: Facturas electrónicas SII'}
             {uploadMethod === 'csv' && '📄 CSV: Formato simple y compatible'}
             {uploadMethod === 'excel' && '📊 Excel: Soporta .xlsx y .xls'}
             {uploadMethod === 'pdf' && '📋 PDF: Extrae tablas automáticamente'}
