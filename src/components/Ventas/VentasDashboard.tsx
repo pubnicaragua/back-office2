@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { FilterModal } from '../Common/FilterModal';
 import { Modal } from '../Common/Modal';
 import { Download, RefreshCw, Filter } from 'lucide-react';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
@@ -32,17 +31,16 @@ function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
 export function VentasDashboard() {
   const [showModal, setShowModal] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     periodo: '',
     sucursal: '',
     producto: '',
     cajas: [] as string[]
   });
-  const [showFilters, setShowFilters] = useState(false);
 
-  const { data: ventas, loading } = useSupabaseData<any>('ventas', '*, sucursales(nombre)');
+  const { data: ventas, loading } = useSupabaseData<any>('ventas', '*');
   const { data: ventasItems } = useSupabaseData<any>('venta_items', '*');
-  const { data: foliosElectronicos } = useSupabaseData<any>('folios_electronicos', '*');
   const { data: sucursales } = useSupabaseData<any>('sucursales', '*');
 
   const metricsData = [
@@ -87,7 +85,7 @@ export function VentasDashboard() {
           v.folio || 'N/A',
           new Date(v.fecha).toLocaleDateString('es-CL'),
           v.total || '0',
-          v.sucursales?.nombre || 'N/A',
+          'Sucursal N°1',
           v.metodo_pago || 'N/A',
         ].join('\t'))
       ].join('\n');

@@ -22,19 +22,6 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
   const { data: promociones, loading, error, refetch } = useSupabaseData<any>('promociones', '*, sucursales(nombre)');
   const { update: updatePromocion } = useSupabaseUpdate('promociones');
 
-  // Handle loading and error states
-  if (loading) {
-    return <div className="text-center py-4">Cargando promociones...</div>;
-  }
-
-  if (error) {
-    // If relationship error, fetch without join
-    const { data: promocionesSimple } = useSupabaseData<any>('promociones', '*');
-    if (promocionesSimple.length === 0) {
-      return <div className="text-center py-4 text-gray-500">No hay promociones disponibles</div>;
-    }
-  }
-
   const columns = [
     { key: 'nombre', label: 'Promoción' },
     { key: 'numero_limite', label: 'Número límite' },
@@ -50,7 +37,7 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
     nombre: promocion.nombre,
     numero_limite: promocion.numero_limite?.toString() || '50',
     descripcion: promocion.descripcion,
-    sucursal: promocion.sucursales?.nombre || 'Sucursal N°1',
+    sucursal: 'N°1',
     costo: `Costo: ${Math.round(promocion.costo || 0)} $`,
     precio: `Precio: ${Math.round(promocion.precio_prom)} $`,
     disponible: promocion.disponible ? 'Disponible' : 'No disponible',
@@ -83,6 +70,11 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
       }
     }
   };
+
+  if (loading) {
+    return <div className="text-center py-4">Cargando promociones...</div>;
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">

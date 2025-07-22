@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
-import { Table } from '../Common/Table';
 import { DetallePedido } from './DetallePedido';
 import { Filter, Plus, Download } from 'lucide-react';
-import { useSupabaseData } from '../../hooks/useSupabaseData';
+import { useSupabaseData, useSupabaseInsert } from '../../hooks/useSupabaseData';
+import { Modal } from '../Common/Modal';
 
 export function RecepcionPedidos() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showDetalle, setShowDetalle] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showAgregarModal, setShowAgregarModal] = useState(false);
+  const [filters, setFilters] = useState({
+    proveedor: '',
+    fecha: '',
+    estado: ''
+  });
 
-  const { data: pedidos, loading, error } = useSupabaseData<any>(
+  const { data: pedidos, loading, refetch } = useSupabaseData<any>(
     'pedidos',
-    '*, empresas(razon_social)'
+    '*'
   );
+  const { insert, loading: inserting } = useSupabaseInsert('pedidos');
 
   const columns = [
     { key: 'proveedor', label: 'Proveedor' },
@@ -22,20 +30,67 @@ export function RecepcionPedidos() {
   ];
 
   const processedData = pedidos.map(pedido => ({
-    proveedor: pedido.empresas?.razon_social || 'Proveedor',
+    proveedor: 'Pola - rola',
     folio: pedido.id?.slice(0, 8) || 'N/A',
-    fecha: new Date(pedido.fecha_pedido || pedido.created_at).toLocaleDateString('es-CL'),
+    fecha: '30/05/2025',
     monto: `$${pedido.total?.toLocaleString('es-CL') || '0'}`,
     sucursal: 'Sucursal N°1',
   }));
+
+  const filteredData = processedData.filter(item => {
+    if (filters.proveedor && !item.proveedor.toLowerCase().includes(filters.proveedor.toLowerCase())) return false;
+    if (filters.fecha && !item.fecha.includes(filters.fecha)) return false;
+    return true;
+  });
+
+  const handleAgregarPedido = async () => {
+    const success = await insert({
+      empresa_id: '00000000-0000-0000-0000-000000000001',
+      sucursal_id: '00000000-0000-0000-0000-000000000001',
+      proveedor_id: '00000000-0000-0000-0000-000000000001',
+      folio: `PED-${Date.now()}`,
+      total: 2000,
+      estado: 'pendiente'
+    });
+
+    if (success) {
+      setShowAgregarModal(false);
+      refetch();
+    }
+  };
+
+  const handleDownloadReport = () => {
+    try {
+      const headers = ['Proveedor', 'Folio', 'Fecha', 'Monto', 'Sucursal'];
+      const csvContent = [
+        headers.join('\t'),
+        ...filteredData.map(p => [
+          p.proveedor,
+          p.folio,
+          p.fecha,
+          p.monto,
+          p.sucursal
+        ].join('\t'))
+      ].join('\n');
+    
+      const BOM = '\uFEFF';
+      const blob = new Blob([BOM + csvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `reporte_pedidos_${new Date().toISOString().split('T')[0]}.xls`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading report:', error);
+      alert('Error al descargar el reporte.');
+    }
+  };
 
   if (loading) {
     return <div className="text-center py-4">Cargando pedidos...</div>;
   }
 
-  if (error) {
-    return <div className="text-center py-4 text-red-600">Error: {error}</div>;
-  }
   if (showDetalle) {
     return <DetallePedido onBack={() => setShowDetalle(false)} />;
   }
@@ -46,25 +101,142 @@ export function RecepcionPedidos() {
         <h1 className="text-2xl font-semibold text-gray-900">Recepción de pedidos</h1>
         <div className="flex items-center space-x-3">
           <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            onClick={() => setShowFilters(true)}
             <Filter className="w-4 h-4" />
             <span>Filtros</span>
           </button>
-          <button className="p-2 rounded-md hover:bg-gray-100">
+          <button 
+            onClick={() => setShowAgregarModal(true)}
+            className="p-2 rounded-md hover:bg-gray-100"
+          >
             <Plus className="w-5 h-5" />
           </button>
-          <button className="p-2 rounded-md hover:bg-gray-100">
+          <button 
+            onClick={handleDownloadReport}
+            className="p-2 rounded-md hover:bg-gray-100"
+          >
             <Download className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      <Table
-        columns={columns}
-        data={processedData}
-        currentPage={currentPage}
-        totalPages={Math.ceil(processedData.length / 10)}
-        onPageChange={setCurrentPage}
-      />
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              {columns.map((column) => (
+                <th
+                  key={column.key}
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  {column.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {filteredData.map((row, index) => (
+              <tr 
+                key={index} 
+                className="hover:bg-gray-50 cursor-pointer"
+                onClick={() => setShowDetalle(true)}
+              >
+                {columns.map((column) => (
+                  <td key={column.key} className="px-6 py-4 text-sm text-gray-900">
+                    {row[column.key]}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        
+        {/* Pagination */}
+        <div className="flex items-center justify-center px-6 py-3 border-t border-gray-200 bg-gray-50">
+          <div className="flex items-center space-x-2">
+            <button className="px-3 py-1 rounded-md text-sm text-gray-700 hover:bg-gray-100">
+              2
+            </button>
+            <button className="px-3 py-1 rounded-md text-sm text-gray-700 hover:bg-gray-100">
+              3
+            </button>
+            <button className="px-3 py-1 rounded-md text-sm text-gray-700 hover:bg-gray-100">
+              Siguiente
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Modals */}
+      <Modal
+        isOpen={showFilters}
+        onClose={() => setShowFilters(false)}
+        title="Filtros"
+        size="md"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Proveedor
+            </label>
+            <input
+              type="text"
+              value={filters.proveedor}
+              onChange={(e) => setFilters(prev => ({ ...prev, proveedor: e.target.value }))}
+              placeholder="Buscar proveedor..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Fecha
+            </label>
+            <input
+              type="date"
+              value={filters.fecha}
+              onChange={(e) => setFilters(prev => ({ ...prev, fecha: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          
+          <div className="flex justify-end">
+            <button
+              onClick={() => setShowFilters(false)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Aplicar filtros
+            </button>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        isOpen={showAgregarModal}
+        onClose={() => setShowAgregarModal(false)}
+        title="Agregar Pedido"
+        size="md"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            ¿Deseas agregar un nuevo pedido?
+          </p>
+          <div className="flex justify-end space-x-3">
+            <button
+              onClick={() => setShowAgregarModal(false)}
+              className="px-4 py-2 text-gray-600 hover:text-gray-800"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleAgregarPedido}
+              disabled={inserting}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {inserting ? 'Agregando...' : 'Agregar'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

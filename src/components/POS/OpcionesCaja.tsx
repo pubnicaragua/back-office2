@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal } from '../Common/Modal';
 import { Filter } from 'lucide-react';
+import { useSupabaseData, useSupabaseUpdate } from '../../hooks/useSupabaseData';
 
 export function OpcionesCaja() {
   const [showFilters, setShowFilters] = useState(false);
@@ -9,28 +10,26 @@ export function OpcionesCaja() {
     cajas: [],
   });
 
-  const [settings, setSettings] = useState({
-    // Opciones de caja
+  const { data: configuracion, loading } = useSupabaseData<any>('configuracion_pos', '*');
+  const { update } = useSupabaseUpdate('configuracion_pos');
+
+  const settings = configuracion[0] || {
     deposito: true,
-    reporteVentas: false,
+    reporte_ventas: false,
     devoluciones: true,
-    
-    // Tipo de moneda
     usd: true,
     clp: false,
-    
-    // Integración con POS
-    mercadoPago: false,
-    sumUp: true,
+    mercado_pago: false,
+    sumup: true,
     transbank: false,
-    getNet: false,
-    
-    // Autorización
-    solicitarAutorizacion: true,
-  });
+    getnet: false,
+    solicitar_autorizacion: true,
+  };
 
-  const handleSettingChange = (key: string, value: boolean) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+  const handleSettingChange = async (key: string, value: boolean) => {
+    if (configuracion[0]) {
+      await update(configuracion[0].id, { [key]: value });
+    }
   };
 
   const handleCajaChange = (caja: string, checked: boolean) => {
@@ -41,6 +40,10 @@ export function OpcionesCaja() {
         : prev.cajas.filter(c => c !== caja)
     }));
   };
+
+  if (loading) {
+    return <div className="text-center py-4">Cargando configuración...</div>;
+  }
 
   return (
     <div className="space-y-8">
@@ -63,7 +66,7 @@ export function OpcionesCaja() {
         <div className="space-y-3">
           {[
             { key: 'deposito', label: 'Depósito' },
-            { key: 'reporteVentas', label: 'Reporte de ventas' },
+            { key: 'reporte_ventas', label: 'Reporte de ventas' },
             { key: 'devoluciones', label: 'Devoluciones' },
           ].map(option => (
             <label key={option.key} className="flex items-center space-x-3">
@@ -106,9 +109,9 @@ export function OpcionesCaja() {
         <div className="space-y-3">
           {[
             { key: 'mercadoPago', label: 'Mercado Pago' },
-            { key: 'sumUp', label: 'SumUp' },
+            { key: 'sumup', label: 'SumUp' },
             { key: 'transbank', label: 'Transbank' },
-            { key: 'getNet', label: 'GetNet' },
+            { key: 'getnet', label: 'GetNet' },
           ].map(option => (
             <label key={option.key} className="flex items-center space-x-3">
               <input
@@ -133,8 +136,8 @@ export function OpcionesCaja() {
             <input
               type="radio"
               name="autorizacion"
-              checked={settings.solicitarAutorizacion}
-              onChange={() => handleSettingChange('solicitarAutorizacion', true)}
+              checked={settings.solicitar_autorizacion}
+              onChange={() => handleSettingChange('solicitar_autorizacion', true)}
               className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
             />
             <span className="text-gray-700">Sí</span>
@@ -143,8 +146,8 @@ export function OpcionesCaja() {
             <input
               type="radio"
               name="autorizacion"
-              checked={!settings.solicitarAutorizacion}
-              onChange={() => handleSettingChange('solicitarAutorizacion', false)}
+              checked={!settings.solicitar_autorizacion}
+              onChange={() => handleSettingChange('solicitar_autorizacion', false)}
               className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
             />
             <span className="text-gray-700">No</span>
