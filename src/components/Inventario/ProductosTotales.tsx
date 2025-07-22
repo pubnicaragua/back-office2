@@ -94,27 +94,6 @@ export function ProductosTotales() {
                 Agregar
               </span>
             </button>
-            
-            <button 
-              onClick={() => setShowMermasModal(true)}
-              className="p-3 rounded-lg hover:bg-orange-50 text-orange-600 transition-colors group relative"
-              title="Reportar Mermas"
-            >
-              <AlertTriangle className="w-5 h-5" />
-              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Mermas
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main content with left margin */}
-      <div className="flex-1 ml-24 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">Inventario</h1>
-        </div>
-
         <div className="bg-white rounded-lg border border-gray-200">
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             <h2 className="text-lg font-medium text-gray-900">Productos totales</h2>
@@ -205,7 +184,6 @@ export function ProductosTotales() {
             </div>
           </div>
         </FilterModal>
-      </div>
     </div>
   );
 }

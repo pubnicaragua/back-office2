@@ -106,59 +106,42 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
 
   return (
     <div className="flex">
-      {/* Vertical Sidebar - Fixed position on the left */}
-      <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-40">
-        <div className="w-20 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
-          <div className="flex flex-col space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-medium text-gray-900">Promociones de todas las tiendas</h2>
+          
+          {/* Botones alineados a la derecha */}
+          <div className="flex items-center space-x-2">
             <button 
               onClick={() => setShowFilters(true)}
-              className="p-3 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors group relative"
-              title="Filtros"
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              <Filter className="w-5 h-5" />
-              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Filtros
-              </span>
+              <Filter className="w-4 h-4" />
+              <span>Filtros</span>
             </button>
-            
             <button 
               onClick={() => setShowAgregarModal(true)}
-              className="p-3 rounded-lg hover:bg-green-50 text-green-600 transition-colors group relative"
-              title="Agregar Promoción"
+              className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             >
               <Plus className="w-5 h-5" />
-              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Agregar
-              </span>
+              <span>Agregar</span>
             </button>
-            
             <button 
               onClick={() => setShowEditarModal(true)}
-              className="p-3 rounded-lg hover:bg-yellow-50 text-yellow-600 transition-colors group relative"
-              title="Editar Promoción"
+              className="flex items-center space-x-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
             >
               <Edit className="w-5 h-5" />
-              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Editar
-              </span>
+              <span>Editar</span>
             </button>
-            
             <button 
               onClick={handleDownloadReport}
-              className="p-3 rounded-lg hover:bg-purple-50 text-purple-600 transition-colors group relative"
-              title="Descargar Reporte"
+              className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
             >
               <Download className="w-5 h-5" />
-              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Descargar
-              </span>
+              <span>Descargar</span>
             </button>
           </div>
         </div>
-      </div>
-
-      {/* Main content with left margin */}
-      <div className="flex-1 ml-24 space-y-6">
+        
         <div className="flex items-center justify-between">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -305,7 +288,6 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
             </div>
           </div>
         </Modal>
-      </div>
     </div>
   );
 }

@@ -26,29 +26,18 @@ export function MovimientosEfectivo() {
   }
 
   return (
-    <div className="flex">
-      {/* Vertical Sidebar - Fixed position on the left */}
-      <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-40">
-        <div className="w-20 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
-          <div className="flex flex-col space-y-3">
-            <button 
-              onClick={() => setShowFilters(true)}
-              className="p-3 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors group relative"
-              title="Filtros"
-            >
-              <Filter className="w-5 h-5" />
-              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Filtros
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main content with left margin */}
-      <div className="flex-1 ml-24 space-y-6">
+    <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-medium text-gray-900">Movimientos de efectivo</h2>
+          
+          {/* Botón de filtros alineado a la derecha */}
+          <button 
+            onClick={() => setShowFilters(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Filter className="w-4 h-4" />
+            <span>Filtros</span>
+          </button>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -146,7 +135,6 @@ export function MovimientosEfectivo() {
             </div>
           </div>
         </FilterModal>
-      </div>
     </div>
   );
 }

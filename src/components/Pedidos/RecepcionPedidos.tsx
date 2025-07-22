@@ -122,27 +122,6 @@ export function RecepcionPedidos() {
                 Agregar
               </span>
             </button>
-            
-            <button 
-              onClick={handleDownloadReport}
-              className="p-3 rounded-lg hover:bg-purple-50 text-purple-600 transition-colors group relative"
-              title="Descargar Reporte"
-            >
-              <Download className="w-5 h-5" />
-              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Descargar
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main content with left margin */}
-      <div className="flex-1 ml-24 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">Recepción de pedidos</h1>
-        </div>
-
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -261,7 +240,6 @@ export function RecepcionPedidos() {
             </div>
           </div>
         </Modal>
-      </div>
     </div>
   );
 }
