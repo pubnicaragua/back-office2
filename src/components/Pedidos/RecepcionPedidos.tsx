@@ -45,11 +45,26 @@ export function RecepcionPedidos() {
   });
 
   const handleAgregarPedido = async () => {
+    // Generar folio único
+    const folio = `PED-${Date.now()}`;
+    
+    // Verificar si ya existe un pedido con este folio
+    const { data: existingPedido } = await supabase
+      .from('pedidos')
+      .select('id')
+      .eq('folio', folio)
+      .single();
+    
+    if (existingPedido) {
+      alert('Ya existe un pedido con este folio. Intente nuevamente.');
+      return;
+    }
+    
     const success = await insert({
       empresa_id: '00000000-0000-0000-0000-000000000001',
       sucursal_id: '00000000-0000-0000-0000-000000000001',
       proveedor_id: '00000000-0000-0000-0000-000000000001',
-      folio: `PED-${Date.now()}`,
+      folio: folio,
       total: 2000,
       estado: 'pendiente'
     });

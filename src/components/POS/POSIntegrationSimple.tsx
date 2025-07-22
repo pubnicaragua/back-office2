@@ -157,43 +157,6 @@ export function POSIntegrationSimple() {
         </div>
       </div>
 
-      {/* Real-time Sync */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 className="font-semibold text-blue-900 mb-3">📡 Sincronización en Tiempo Real</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-              <span className="text-blue-600 font-bold">📦</span>
-            </div>
-            <p className="font-medium text-blue-900">Productos</p>
-            <p className="text-blue-700">Stock y precios</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-              <span className="text-blue-600 font-bold">🎯</span>
-            </div>
-            <p className="font-medium text-blue-900">Promociones</p>
-            <p className="text-blue-700">Descuentos activos</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-              <span className="text-blue-600 font-bold">💰</span>
-            </div>
-            <p className="font-medium text-blue-900">Configuración</p>
-            <p className="text-blue-700">Monedas y opciones</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-              <span className="text-blue-600 font-bold">📄</span>
-            </div>
-            <p className="font-medium text-blue-900">Folios SII</p>
-            <p className="text-blue-700">Automático</p>
-          </div>
-        </div>
-      </div>
 
       {/* Contact Information */}
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
@@ -203,9 +166,7 @@ export function POSIntegrationSimple() {
         </p>
         <div className="space-y-2 text-sm text-yellow-700">
           <p>📧 <strong>Email:</strong> soporte@solvendo.com</p>
-          <p>📱 <strong>WhatsApp:</strong> +56 9 1234 5678</p>
           <p>🕒 <strong>Horario:</strong> Lunes a Viernes, 9:00 - 18:00</p>
-          <p>🔧 <strong>Instalación:</strong> Servicio técnico disponible</p>
         </div>
       </div>
     </div>

@@ -66,51 +66,51 @@ export function GestionUsuarios() {
     return <div className="text-center py-4 text-red-600">Error: {error}</div>;
   }
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium text-gray-900">Gestión de usuarios</h2>
-        <div className="flex items-center space-x-3 ml-auto">
+        <h2 className="text-base font-medium text-gray-900">Gestión de usuarios</h2>
+        <div className="flex items-center space-x-2">
           <button 
             onClick={() => setShowComunicadoModal(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center space-x-1 px-3 py-1.5 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
           >
-            <Mail className="w-4 h-4" />
-            <span>Enviar comunicado general</span>
+            <Mail className="w-3 h-3" />
+            <span>Comunicado</span>
           </button>
           <button 
             onClick={() => setShowTiempoModal(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            className="flex items-center space-x-1 px-3 py-1.5 text-xs bg-green-600 text-white rounded hover:bg-green-700"
           >
-            <Clock className="w-4 h-4" />
-            <span>Asignar tiempo de colación</span>
+            <Clock className="w-3 h-3" />
+            <span>Tiempo colación</span>
           </button>
           <button 
             onClick={() => setShowFilters(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="flex items-center space-x-1 px-3 py-1.5 text-xs bg-purple-600 text-white rounded hover:bg-purple-700"
           >
-            <Filter className="w-4 h-4" />
+            <Filter className="w-3 h-3" />
             <span>Filtros</span>
           </button>
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
           <input
             type="text"
             placeholder="Buscar"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="pl-8 pr-4 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
         <div className="ml-auto">
           <button 
             onClick={() => setShowAgregarModal(true)}
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-4 h-4" />
           </button>
         </div>
       </div>
