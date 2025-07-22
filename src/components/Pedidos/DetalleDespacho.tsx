@@ -253,7 +253,5 @@ export function DetalleDespacho({ onBack, despacho }: DetalleDespachoProps) {
           </div>
         </div>
       </div>
-    </div>
-  );
   );
 }
