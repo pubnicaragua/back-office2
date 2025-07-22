@@ -7,9 +7,9 @@ import { AsignarPermisoModal } from './AsignarPermisoModal';
 interface PerfilEmpleadoModalProps {
   isOpen: boolean;
   onClose: () => void;
+  selectedUser?: any;
 }
 
-export function PerfilEmpleadoModal({ isOpen, onClose }: PerfilEmpleadoModalProps) {
   const [showTurnoModal, setShowTurnoModal] = useState(false);
   const [showTareaModal, setShowTareaModal] = useState(false);
   const [showPermisoModal, setShowPermisoModal] = useState(false);

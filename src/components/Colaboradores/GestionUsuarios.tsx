@@ -171,6 +171,7 @@ export function GestionUsuarios() {
       <PerfilEmpleadoModal 
         isOpen={showPerfilModal} 
         onClose={() => setShowPerfilModal(false)} 
+        selectedUser={selectedUser}
       />
 
       <FilterModal
