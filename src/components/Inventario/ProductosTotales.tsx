@@ -64,6 +64,7 @@ export function ProductosTotales() {
   );
 
   if (loading) {
+  }
 
   return (
     <div className="flex">
@@ -187,6 +188,7 @@ export function ProductosTotales() {
         </FilterModal>
       </div>
     </div>
+  )
   );
   )
 }
