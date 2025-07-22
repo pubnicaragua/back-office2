@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
 import { Filter, Download, RefreshCw, TrendingUp, Menu, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button" // Assuming shadcn/ui Button is available
 import { Modal } from "../Common/Modal" // Assuming this Modal component exists
