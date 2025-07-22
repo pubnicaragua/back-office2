@@ -4,6 +4,36 @@ import { Modal } from '../Common/Modal';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 interface MetricsCardProps {
+  title: string;
+  value: string;
+  change: string;
+  isPositive: boolean;
+}
+
+function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
+  return (
+    <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-gray-600">{title}</p>
+          <p className="text-2xl font-semibold text-gray-900">{value}</p>
+        </div>
+        <div className="flex items-center space-x-1">
+          <TrendingUp className={`w-4 h-4 ${isPositive ? 'text-green-500' : 'text-red-500'}`} />
+          <span className={`text-sm ${isPositive ? 'text-green-500' : 'text-red-500'}`}>{change}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ActionButtons({ setShowFiltersPanel, setShowDownloadModal, refetch }: {
+  setShowFiltersPanel: (show: boolean) => void;
+  setShowDownloadModal: (show: boolean) => void;
+  refetch: () => void;
+}) {
+  return (
+    <div className="flex items-center space-x-2">
         <button 
           onClick={() => setShowFiltersPanel(true)} 
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
