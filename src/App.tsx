@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LoginForm } from './components/Auth/LoginForm';
 import { Sidebar } from './components/Layout/Sidebar';
 import { Header } from './components/Layout/Header';
-import { GeneralDashboard } from './components/Dashboard/GeneralDashboard';
+import GeneralDashboard from './components/Dashboard/GeneralDashboard';
 import { Documentos } from './components/Documentos/Documentos';
 import { Promociones } from './components/Promociones/Promociones';
 import { Colaboradores } from './components/Colaboradores/Colaboradores';
