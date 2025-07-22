@@ -63,6 +63,31 @@ export function ProductosTotales() {
     item.sku.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  return (
+    <div>
+      <div>
+        <div>
+          <div>
+            <div>
+              <button 
+                onClick={() => setShowInventarioModal(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Actualizar inventario
+              </button>
+            </div>
+
+            <Table
+              columns={columns}
+              data={filteredData}
+              currentPage={currentPage}
+              totalPages={Math.ceil(filteredData.length / 10)}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        </div>
+      </div>
+
       <ReporteMermas 
         isOpen={showMermasModal} 
         onClose={() => setShowMermasModal(false)} 
@@ -118,27 +143,6 @@ export function ProductosTotales() {
           </div>
         </div>
       </FilterModal>
-    </div>
-  );
-}
-              <button 
-                onClick={() => setShowInventarioModal(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Actualizar inventario
-              </button>
-            </div>
-
-            <Table
-              columns={columns}
-              data={filteredData}
-              currentPage={currentPage}
-              totalPages={Math.ceil(filteredData.length / 10)}
-              onPageChange={setCurrentPage}
-            />
-          </div>
-        </div>
-      </div>
 
         <ReporteMermas 
           isOpen={showMermasModal} 
@@ -197,8 +201,5 @@ export function ProductosTotales() {
         </FilterModal>
       </div>
     </div>
-  )
-  )
   );
-  )
 }
