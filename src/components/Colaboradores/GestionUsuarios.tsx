@@ -113,12 +113,6 @@ export function GestionUsuarios() {
           </button>
         </div>
       </div>
-          onClick={() => setShowAgregarModal(true)}
-          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-        >
-          <Plus className="w-5 h-5" />
-        </button>
-      </div>
 
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <table className="w-full">
