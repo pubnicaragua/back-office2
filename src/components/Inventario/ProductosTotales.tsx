@@ -190,3 +190,5 @@ export function ProductosTotales() {
       </div>
     </div>
   );
+  )
+}
