@@ -90,7 +90,7 @@ export function VentasDashboard() {
           v.metodo_pago || 'N/A',
         ].join('\t'))
       ].join('\n');
-
+    
       // Add BOM for proper Excel encoding
       const BOM = '\uFEFF';
       const blob = new Blob([BOM + csvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
@@ -161,7 +161,7 @@ export function VentasDashboard() {
             </button>
           </div>
         </div>
-
+        
         {/* Chart */}
         <div className="h-64 flex items-end justify-between space-x-2">
           {chartData.map((item, index) => (
@@ -250,7 +250,7 @@ export function VentasDashboard() {
               <option value="2023">2023</option>
             </select>
           </div>
-
+          
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Sucursal
@@ -266,7 +266,7 @@ export function VentasDashboard() {
               ))}
             </select>
           </div>
-
+          
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Productos
@@ -279,7 +279,7 @@ export function VentasDashboard() {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
+          
           <div className="flex justify-end">
             <button
               onClick={() => setShowFilters(false)}
@@ -292,3 +292,4 @@ export function VentasDashboard() {
       </Modal>
     </div>
   );
+}
