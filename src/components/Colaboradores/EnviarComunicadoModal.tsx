@@ -43,10 +43,12 @@ export function EnviarComunicadoModal({ isOpen, onClose }: EnviarComunicadoModal
     <Modal isOpen={isOpen} onClose={onClose} title="Enviar comunicado general" size="md">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="titulo-comunicado-input" className="block text-sm font-medium text-gray-700 mb-1">
             Título
           </label>
           <input
+            id="titulo-comunicado-input"
+            name="titulo-comunicado-input"
             type="text"
             value={formData.titulo}
             onChange={(e) => setFormData(prev => ({ ...prev, titulo: e.target.value }))}
@@ -57,10 +59,12 @@ export function EnviarComunicadoModal({ isOpen, onClose }: EnviarComunicadoModal
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="comunicado-textarea" className="block text-sm font-medium text-gray-700 mb-1">
             Comunicado
           </label>
           <textarea
+            id="comunicado-textarea"
+            name="comunicado-textarea"
             value={formData.comunicado}
             onChange={(e) => setFormData(prev => ({ ...prev, comunicado: e.target.value }))}
             placeholder="Comunicado"

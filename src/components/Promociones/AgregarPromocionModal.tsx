@@ -62,10 +62,12 @@ export function AgregarPromocionModal({ isOpen, onClose }: AgregarPromocionModal
     <Modal isOpen={isOpen} onClose={onClose} title="Agregar promoción" size="md">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="nombre-promocion-input" className="block text-sm font-medium text-gray-700 mb-1">
             Nombre
           </label>
           <input
+            id="nombre-promocion-input"
+            name="nombre-promocion-input"
             type="text"
             value={formData.nombre}
             onChange={(e) => setFormData(prev => ({ ...prev, nombre: e.target.value }))}
@@ -76,10 +78,12 @@ export function AgregarPromocionModal({ isOpen, onClose }: AgregarPromocionModal
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="descripcion-promocion-input" className="block text-sm font-medium text-gray-700 mb-1">
             Descripción
           </label>
           <input
+            id="descripcion-promocion-input"
+            name="descripcion-promocion-input"
             type="text"
             value={formData.descripcion}
             onChange={(e) => setFormData(prev => ({ ...prev, descripcion: e.target.value }))}

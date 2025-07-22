@@ -45,10 +45,12 @@ export function AgregarUsuarioModal({ isOpen, onClose }: AgregarUsuarioModalProp
     <Modal isOpen={isOpen} onClose={onClose} title="Agregar usuario" size="md">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="nombres-usuario-input" className="block text-sm font-medium text-gray-700 mb-1">
             Nombres
           </label>
           <input
+            id="nombres-usuario-input"
+            name="nombres-usuario-input"
             type="text"
             value={formData.nombres}
             onChange={(e) => setFormData(prev => ({ ...prev, nombres: e.target.value }))}
@@ -59,10 +61,12 @@ export function AgregarUsuarioModal({ isOpen, onClose }: AgregarUsuarioModalProp
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="rut-usuario-input" className="block text-sm font-medium text-gray-700 mb-1">
             RUT
           </label>
           <input
+            id="rut-usuario-input"
+            name="rut-usuario-input"
             type="text"
             value={formData.rut}
             onChange={(e) => setFormData(prev => ({ ...prev, rut: e.target.value }))}
@@ -73,10 +77,12 @@ export function AgregarUsuarioModal({ isOpen, onClose }: AgregarUsuarioModalProp
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="fecha-nacimiento-input" className="block text-sm font-medium text-gray-700 mb-1">
             Fecha de nacimiento
           </label>
           <input
+            id="fecha-nacimiento-input"
+            name="fecha-nacimiento-input"
             type="date"
             value={formData.fecha_nacimiento}
             onChange={(e) => setFormData(prev => ({ ...prev, fecha_nacimiento: e.target.value }))}
@@ -85,10 +91,12 @@ export function AgregarUsuarioModal({ isOpen, onClose }: AgregarUsuarioModalProp
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="rol-usuario-select" className="block text-sm font-medium text-gray-700 mb-1">
             Rol del usuario
           </label>
           <select
+            id="rol-usuario-select"
+            name="rol-usuario-select"
             value={formData.rol_usuario}
             onChange={(e) => setFormData(prev => ({ ...prev, rol_usuario: e.target.value }))}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
