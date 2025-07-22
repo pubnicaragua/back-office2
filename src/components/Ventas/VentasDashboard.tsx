@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Filter, Download, RefreshCw, TrendingUp, Menu, Clock } from "lucide-react"
+import { TrendingUp } from "lucide-react"
 import { Modal } from "../Common/Modal" // Assuming this Modal component exists
 
 // --- Data Fetching (Simulated Backend) ---
@@ -22,7 +22,7 @@ async function fetchVentasData() {
 
   // Chart data with varying heights to match the image
   const chartData = [
-    { month: "Ene", value: 25000 }, // Corresponds to 25k
+    { month: "Ene", value: 28000 }, // Adjusted to match image
     { month: "Feb", value: 35000 }, // Adjusted to match image
     { month: "Mar", value: 22000 }, // Adjusted to match image
     { month: "Abr", value: 38000 }, // Adjusted to match image
@@ -171,155 +171,91 @@ export function VentasDashboard() {
     .reverse() // Reverse to have 35k at top, 0 at bottom
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Main content area - adjusted to account for the fixed right sidebar */}
-      <div className="flex-1 flex flex-col pr-16">
-        {" "}
-        {/* Added pr-16 to make space for the fixed right sidebar */}
-        {/* Global Header (as per image, this is part of the overall app layout, not this component) */}
-        {/* I'm assuming this header is rendered by a parent layout component (e.g., app/layout.tsx) */}
-        {/* If you need a header here, please specify its content. */}
-        <header className="flex items-center justify-between h-16 px-6 border-b bg-white shadow-sm">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="lg:hidden">
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle navigation menu</span>
-            </Button>
-            <h1 className="text-xl font-semibold text-gray-900">Ventas</h1>
-          </div>
-          <div className="flex-1 flex justify-center">
-            {/* Solvendo Logo */}
-            <Image
-              src="/placeholder.svg?height=32&width=120"
-              alt="Solvendo Logo"
-              width={120}
-              height={32}
-              className="h-8"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Clock className="w-4 h-4" />
-              <span>22:00</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Image
-                src="/placeholder.svg?height=32&width=32"
-                alt="User Avatar"
-                width={32}
-                height={32}
-                className="rounded-full border"
-              />
-              <span className="text-sm font-medium text-gray-800">Emilio Aguilera</span>
-            </div>
-          </div>
-        </header>
-        {/* Dashboard Content */}
-        <main className="flex-1 p-6 space-y-6">
-          {/* Metrics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            {loading
-              ? Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm animate-pulse">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-8 bg-gray-200 rounded w-1/2"></div>
-                  </div>
-                ))
-              : metricsData.map((metric, index) => <MetricsCard key={index} {...metric} />)}
-          </div>
+    // The outermost div now represents the main content area of the dashboard,
+    // assuming the global header and right sidebar are handled by a parent layout.
+    <div className="flex-1 p-6 space-y-6 bg-gray-50 min-h-screen">
+      {/* "Ventas totales" label above metrics cards */}
+      <h2 className="text-xl font-semibold text-gray-900">Ventas totales</h2>
 
-          {/* Chart Section */}
-          <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-medium text-gray-900">Ventas totales</h3>
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-2 text-sm">
-                  <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-                  <span className="text-gray-600">Período anterior</span>
-                  <span className="text-gray-500">01 May 2024 - 19 May 2024</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
-                  <span className="text-gray-600">Período seleccionado</span>
-                  <span className="text-gray-500">01 May 2025 - 19 May 2025</span>
-                </div>
-                <button
-                  onClick={() => setShowModal(true)}
-                  className="text-sm text-gray-600 hover:text-gray-800 bg-gray-100 px-3 py-1 rounded"
-                >
-                  Ver período anterior
-                </button>
+      {/* Metrics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        {loading
+          ? Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-8 bg-gray-200 rounded w-1/2"></div>
               </div>
-            </div>
-
-            {/* Chart Container */}
-            <div className="relative h-64">
-              {/* Y-axis labels */}
-              <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-4 pb-4">
-                {yAxisLabels.map((label, i) => (
-                  <span key={i} className="h-[calc(100%/7)] flex items-end justify-end pb-1">
-                    {label}
-                  </span>
-                ))}
-              </div>
-              {/* Grid lines spanning full width */}
-              <div className="absolute left-8 top-0 h-full w-[calc(100%-2rem)] flex flex-col justify-between">
-                {Array.from({ length: 7 }).map((_, i) => (
-                  <div key={i} className="border-b border-gray-200 h-[calc(100%/7)]"></div>
-                ))}
-              </div>
-
-              {/* Chart bars */}
-              <div className="ml-8 h-full flex items-end justify-between space-x-4 pb-4">
-                {loading
-                  ? Array.from({ length: 11 }).map((_, i) => (
-                      <div key={i} className="flex flex-col items-center space-y-2 flex-1 h-full">
-                        <div className="w-full flex flex-col justify-end h-full">
-                          <div className="bg-gray-200 rounded-t animate-pulse h-1/2"></div>
-                        </div>
-                        <span className="text-xs text-gray-600 h-4 w-8 bg-gray-200 rounded"></span>
-                      </div>
-                    ))
-                  : chartData.map((item, index) => (
-                      <div key={index} className="flex flex-col items-center space-y-2 flex-1 h-full">
-                        <div className="w-full flex flex-col justify-end h-full">
-                          <div
-                            className="bg-blue-600 rounded-t transition-all duration-500 hover:bg-blue-700 min-h-[8px]"
-                            style={{ height: `${(item.value / maxValue) * 100}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-xs text-gray-600">{item.month}</span>
-                      </div>
-                    ))}
-              </div>
-              {/* Horizontal blue line at the bottom */}
-              <div className="absolute bottom-0 left-8 w-[calc(100%-2rem)] h-0.5 bg-blue-600"></div>
-              {/* Removed the large dark gray circle */}
-            </div>
-          </div>
-        </main>
+            ))
+          : metricsData.map((metric, index) => <MetricsCard key={index} {...metric} />)}
       </div>
 
-      {/* Right Sidebar for global actions (fixed position) */}
-      <div className="fixed right-0 top-0 h-full w-16 bg-white border-l shadow-sm flex flex-col items-center justify-start py-4 gap-4 z-20">
-        <div className="relative">
-          <button onClick={() => setShowFilters(true)} className="relative p-2 rounded-md hover:bg-gray-100">
-            <Filter className="w-6 h-6" />
-            <span className="sr-only">Filtros</span>
-          </button>
-          {/* Badge for filter icon */}
-          <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-            1
-          </span>
+      {/* Chart Section */}
+      <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-medium text-gray-900">Ventas totales</h3>
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-2 text-sm">
+              <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+              <span className="text-gray-600">Período anterior</span>
+              <span className="text-gray-500">01 May 2024 - 19 May 2024</span>
+            </div>
+            <div className="flex items-center space-x-2 text-sm">
+              <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+              <span className="text-gray-600">Período seleccionado</span>
+              <span className="text-gray-500">01 May 2025 - 19 May 2025</span>
+            </div>
+            <button
+              onClick={() => setShowModal(true)}
+              className="text-sm text-gray-600 hover:text-gray-800 bg-gray-100 px-3 py-1 rounded"
+            >
+              Ver período anterior
+            </button>
+          </div>
         </div>
-        <button onClick={() => setShowDownloadModal(true)} className="p-2 rounded-md hover:bg-gray-100">
-          <Download className="w-6 h-6" />
-          <span className="sr-only">Descargar</span>
-        </button>
-        <button onClick={() => console.log("Refresh data")} className="p-2 rounded-md hover:bg-gray-100">
-          <RefreshCw className="w-6 h-6" />
-          <span className="sr-only">Actualizar</span>
-        </button>
+
+        {/* Chart Container */}
+        <div className="relative h-64">
+          {/* Y-axis labels */}
+          <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-4 pb-4">
+            {yAxisLabels.map((label, i) => (
+              <span key={i} className="h-[calc(100%/7)] flex items-end justify-end pb-1">
+                {label}
+              </span>
+            ))}
+          </div>
+          {/* Grid lines spanning full width */}
+          <div className="absolute left-8 top-0 h-full w-[calc(100%-2rem)] flex flex-col justify-between">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div key={i} className="border-b border-gray-200 h-[calc(100%/7)]"></div>
+            ))}
+          </div>
+
+          {/* Chart bars */}
+          <div className="ml-8 h-full flex items-end justify-between space-x-4 pb-4">
+            {loading
+              ? Array.from({ length: 11 }).map((_, i) => (
+                  <div key={i} className="flex flex-col items-center space-y-2 flex-1 h-full">
+                    <div className="w-full flex flex-col justify-end h-full">
+                      <div className="bg-gray-200 rounded-t animate-pulse h-1/2"></div>
+                    </div>
+                    <span className="text-xs text-gray-600 h-4 w-8 bg-gray-200 rounded"></span>
+                  </div>
+                ))
+              : chartData.map((item, index) => (
+                  <div key={index} className="flex flex-col items-center space-y-2 flex-1 h-full">
+                    <div className="w-full flex flex-col justify-end h-full">
+                      <div
+                        className="bg-blue-600 rounded-t transition-all duration-500 hover:bg-blue-700 min-h-[8px]"
+                        style={{ height: `${(item.value / maxValue) * 100}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-xs text-gray-600">{item.month}</span>
+                  </div>
+                ))}
+          </div>
+          {/* Horizontal blue line at the bottom */}
+          <div className="absolute bottom-0 left-8 w-[calc(100%-2rem)] h-0.5 bg-blue-600"></div>
+        </div>
       </div>
 
       {/* Modals */}
