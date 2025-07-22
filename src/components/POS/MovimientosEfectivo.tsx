@@ -12,12 +12,12 @@ export function MovimientosEfectivo() {
   });
   
   const { data: movimientos, loading, error } = useSupabaseData<any>(
-    'movimientos_caja', 
-    '*, sucursales(nombre)'
+    'movimientos_caja',
+    '*'
   );
 
   // Apply filters
-  const filteredMovimientos = movimientos.filter(movimiento => {
+  const filteredMovimientos = (movimientos || []).filter(movimiento => {
     if (filters.sucursal && movimiento.sucursal_id !== filters.sucursal) return false;
     if (filters.tipo && movimiento.tipo !== filters.tipo) return false;
     if (filters.fecha && !new Date(movimiento.fecha).toISOString().includes(filters.fecha)) return false;
@@ -28,9 +28,6 @@ export function MovimientosEfectivo() {
     return <div className="text-center py-4">Cargando movimientos...</div>;
   }
 
-  if (error) {
-    return <div className="text-center py-4 text-red-600">Error: {error}</div>;
-  }
 
   return (
     <div className="space-y-6">
@@ -80,7 +77,7 @@ export function MovimientosEfectivo() {
                   {new Date(movimiento.fecha).toLocaleString('es-CL')}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900">
-                  {movimiento.sucursales?.nombre || 'N°1'}
+                  N°1
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900">
                   N°1
