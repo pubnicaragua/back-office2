@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Filter, Download, RefreshCw, TrendingUp, HelpCircle, X } from 'lucide-react';
+import { Filter, Download, RefreshCw, TrendingUp, HelpCircle, X, Calendar } from 'lucide-react';
 import { Modal } from '../Common/Modal';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 
@@ -27,49 +27,18 @@ function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
   );
 }
 
-function ActionButtons({ setShowFiltersPanel, setShowDownloadModal, refetch }: {
-  setShowFiltersPanel: (show: boolean) => void;
-  setShowDownloadModal: (show: boolean) => void;
-  refetch: () => void;
-}) {
-  return (
-    <div className="flex items-center space-x-2">
-      <div>
-        <button 
-          onClick={() => setShowFiltersPanel(true)} 
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          <Filter className="w-4 h-4" />
-          <span>Filtros</span>
-        </button>
-        <button 
-          onClick={() => setShowDownloadModal(true)} 
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          <Download className="w-4 h-4" />
-          <span>Descargar</span>
-        </button>
-        <button 
-          onClick={() => refetch()} 
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          <RefreshCw className="w-4 h-4" />
-          <span>Actualizar</span>
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export function VentasDashboard() {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showFiltersPanel, setShowFiltersPanel] = useState(false);
+  const [showPreviousPeriod, setShowPreviousPeriod] = useState(false);
   const [filters, setFilters] = useState({
     fechaInicio: '',
     fechaFin: '',
     sucursal: '',
-    metodo_pago: ''
+    metodo_pago: '',
+    producto: '',
+    cajas: [] as string[]
   });
 
   const { data: ventas = [], loading: ventasLoading, refetch } = useSupabaseData<any>('ventas', '*, sucursales(nombre)');
@@ -90,12 +59,14 @@ export function VentasDashboard() {
   const calculateMetrics = () => {
     if (ventasLoading) return null;
 
-    const totalVentas = filteredVentas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
+    const currentYear = showPreviousPeriod ? 2024 : 2025;
+    const yearVentas = filteredVentas.filter(v => new Date(v.fecha).getFullYear() === currentYear);
+    
+    const totalVentas = yearVentas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
     const totalUnidades = ventaItems.reduce((sum, item) => sum + (item.cantidad || 0), 0);
-    const numeroVentas = filteredVentas.length;
+    const numeroVentas = yearVentas.length;
     const ticketPromedio = numeroVentas > 0 ? totalVentas / numeroVentas : 0;
     
-    // Calculate margin based on cost vs price
     const totalCosto = ventaItems.reduce((sum, item) => {
       const producto = productos.find(p => p.id === item.producto_id);
       return sum + ((producto?.costo || 0) * item.cantidad);
@@ -146,13 +117,13 @@ export function VentasDashboard() {
     },
   ] : Array(5).fill({ title: 'Cargando...', value: '$0', change: '+0%', isPositive: true });
 
-  // Generate chart data from real filtered sales
   const generateChartData = () => {
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     return months.map((month, index) => {
       const monthVentas = filteredVentas.filter(venta => {
         const ventaMonth = new Date(venta.fecha).getMonth();
-        return ventaMonth === index;
+        const ventaYear = new Date(venta.fecha).getFullYear();
+        return ventaMonth === index && ventaYear === (showPreviousPeriod ? 2024 : 2025);
       });
       const monthTotal = monthVentas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
       return { month, value: monthTotal }; 
@@ -166,22 +137,21 @@ export function VentasDashboard() {
     try {
       const headers = ['Folio', 'Fecha', 'Total', 'Sucursal', 'Método Pago'];
       const csvContent = [
-        headers.join('\t'),
+        headers.join(','),
         ...filteredVentas.map(v => [
           v.folio || 'N/A',
           new Date(v.fecha).toLocaleDateString('es-CL'),
           v.total || '0',
           v.sucursales?.nombre || 'N/A',
           v.metodo_pago || 'N/A'
-        ].join('\t'))
+        ].join(','))
       ].join('\n');
     
-      const BOM = '\uFEFF';
-      const blob = new Blob([BOM + csvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `reporte_ventas_${new Date().toISOString().split('T')[0]}.xls`;
+      a.download = `reporte_ventas_${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
       URL.revokeObjectURL(url);
       setShowDownloadModal(false);
@@ -189,6 +159,15 @@ export function VentasDashboard() {
       console.error('Error downloading report:', error);
       alert('Error al descargar el reporte.');
     }
+  };
+
+  const handleCajaChange = (caja: string, checked: boolean) => {
+    setFilters(prev => ({
+      ...prev,
+      cajas: checked 
+        ? [...prev.cajas, caja]
+        : prev.cajas.filter(c => c !== caja)
+    }));
   };
 
   return (
@@ -199,21 +178,21 @@ export function VentasDashboard() {
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => setShowFiltersPanel(true)} 
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <Filter className="w-4 h-4" />
             <span>Filtros</span>
           </button>
           <button 
             onClick={() => setShowDownloadModal(true)} 
-            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <Download className="w-4 h-4" />
             <span>Descargar</span>
           </button>
           <button 
             onClick={() => refetch()} 
-            className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <RefreshCw className="w-4 h-4" />
             <span>Actualizar</span>
@@ -243,16 +222,15 @@ export function VentasDashboard() {
             </div>
           </div>
           <button 
-            onClick={() => setShowInfoModal(true)} 
+            onClick={() => setShowPreviousPeriod(!showPreviousPeriod)} 
             className="text-sm text-gray-600 hover:text-gray-800 bg-gray-100 px-3 py-1 rounded"
           >
-            Ver período anterior
+            {showPreviousPeriod ? 'Ver período actual' : 'Ver período anterior'}
           </button>
         </div>
 
         {/* Chart */}
         <div className="relative h-64">
-          {/* Y-axis labels */}
           <div className="absolute top-0 left-0 h-full flex flex-col justify-between pr-4 text-xs text-gray-500">
             <span>35k</span>
             <span>30k</span>
@@ -263,7 +241,6 @@ export function VentasDashboard() {
             <span>5k</span>
             <span>0</span>
           </div>
-          {/* Bars container */}
           <div className="ml-12 h-full flex items-end justify-between space-x-2">
             {chartData.map((item, idx) => (
               <div key={idx} className="flex flex-col items-center space-y-2 flex-1">
@@ -279,11 +256,13 @@ export function VentasDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Filters Panel */}
       {showFiltersPanel && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen px-4">
             <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowFiltersPanel(false)} />
-            <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+            <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-medium text-gray-900">Filtros</h3>
                 <button onClick={() => setShowFiltersPanel(false)} className="text-gray-400 hover:text-gray-600">
@@ -291,33 +270,41 @@ export function VentasDashboard() {
                 </button>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <input type="checkbox" id="reset-filters" className="w-4 h-4 text-blue-600" />
+                  <label htmlFor="reset-filters" className="text-sm text-gray-700">Restablecer filtros</label>
+                </div>
+                
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Fecha Inicio</label>
+                  <label htmlFor="fecha-inicio" className="block text-sm font-medium text-gray-700 mb-2">Fecha Inicio</label>
                   <input
+                    id="fecha-inicio"
                     type="date"
                     value={filters.fechaInicio}
                     onChange={(e) => setFilters(prev => ({ ...prev, fechaInicio: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Fecha Fin</label>
+                  <label htmlFor="fecha-fin" className="block text-sm font-medium text-gray-700 mb-2">Fecha Fin</label>
                   <input
+                    id="fecha-fin"
                     type="date"
                     value={filters.fechaFin}
                     onChange={(e) => setFilters(prev => ({ ...prev, fechaFin: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Sucursal</label>
+                  <label htmlFor="sucursal-select" className="block text-sm font-medium text-gray-700 mb-2">Sucursal</label>
                   <select
+                    id="sucursal-select"
                     value={filters.sucursal}
                     onChange={(e) => setFilters(prev => ({ ...prev, sucursal: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   >
                     <option value="">Todas las sucursales</option>
                     {sucursales.map(sucursal => (
@@ -327,38 +314,33 @@ export function VentasDashboard() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Producto</label>
+                  <label htmlFor="producto-input" className="block text-sm font-medium text-gray-700 mb-2">Producto</label>
                   <input
+                    id="producto-input"
                     type="text"
                     placeholder="Buscar producto..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={filters.producto}
+                    onChange={(e) => setFilters(prev => ({ ...prev, producto: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Productos con poco movimiento</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Todos</option>
-                    <option value="poco">Poco movimiento</option>
-                    <option value="mucho">Mucho movimiento</option>
-                  </select>
-                </div>
-              </div>
-              
-              <div className="mt-6">
-                <h4 className="text-sm font-medium text-gray-700 mb-3">Cajas</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  {['Caja N°1', 'Caja N°2', 'Caja N°3', 'Caja N°4'].map(caja => (
-                    <label key={caja} htmlFor={`caja-${caja}`} className="flex items-center space-x-2">
-                      <input 
-                        id={`caja-${caja}`}
-                        name={`caja-${caja}`}
-                        type="checkbox" 
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded" 
-                      />
-                      <span className="text-sm text-gray-700">{caja}</span>
-                    </label>
-                  ))}
+                  <h4 className="text-sm font-medium text-gray-700 mb-3">Cajas</h4>
+                  <div className="space-y-2">
+                    {['Caja N°1', 'Caja N°2', 'Caja N°3', 'Caja N°4'].map(caja => (
+                      <label key={caja} htmlFor={`caja-${caja}`} className="flex items-center space-x-2">
+                        <input 
+                          id={`caja-${caja}`}
+                          type="checkbox" 
+                          checked={filters.cajas.includes(caja)}
+                          onChange={(e) => handleCajaChange(caja, e.target.checked)}
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded" 
+                        />
+                        <span className="text-sm text-gray-700">{caja}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </div>
               
@@ -375,24 +357,11 @@ export function VentasDashboard() {
         </div>
       )}
 
-      {/* Modals */}
-      <Modal isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} title="Última actualización">
-        <div className="space-y-4 text-center">
-          <p className="text-sm text-gray-600">Fecha: {new Date().toLocaleDateString('es-CL')}</p>
-          <p className="text-sm text-gray-600">Hora: {new Date().toLocaleTimeString('es-CL')}</p>
-          <button 
-            onClick={() => setShowInfoModal(false)} 
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Visualizar última actualización
-          </button>
-        </div>
-      </Modal>
-
+      {/* Download Modal */}
       <Modal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)} title="Descargar reporte">
         <div className="space-y-4">
           <p className="text-sm text-gray-600">
-            ¿Deseas descargar el reporte de ventas? El archivo se descargará en formato Excel.
+            ¿Deseas descargar el reporte de ventas? El archivo se descargará en formato CSV.
           </p>
           <div className="flex justify-end space-x-3">
             <button 
@@ -405,12 +374,11 @@ export function VentasDashboard() {
               onClick={handleDownloadReport}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              Descargar
+              Descargar CSV
             </button>
           </div>
         </div>
       </Modal>
-
     </div>
   );
 }
