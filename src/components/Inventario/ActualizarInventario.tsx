@@ -176,7 +176,7 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
               </span>
             </label>
           </div>
-              {['xml', 'csv', 'excel', 'pdf'].map(method => (
+          <p className="text-xs text-gray-500 mt-2">
             {uploadMethod === 'xml' && '📄 XML: Facturas electrónicas SII'}
             {uploadMethod === 'csv' && '📄 CSV: Formato simple y compatible'}
             {uploadMethod === 'excel' && '📊 Excel: Soporta .xlsx y .xls'}
