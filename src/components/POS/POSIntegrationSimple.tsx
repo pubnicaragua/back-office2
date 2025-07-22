@@ -4,22 +4,6 @@ import { CheckCircle, Monitor, Smartphone, CreditCard, Usb, Wifi, QrCode } from 
 export function POSIntegrationSimple() {
   return (
     <div className="space-y-8">
-      {/* Status Overview */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-        <div className="flex items-start space-x-3">
-          <CheckCircle className="w-6 h-6 text-green-600 mt-1" />
-          <div>
-            <h3 className="font-semibold text-green-900 mb-2">✅ Sistema POS 100% Funcional</h3>
-            <div className="text-green-800 space-y-1">
-              <p>• <strong>Empresa:</strong> ANROLTEC SPA (RUT: 78168951-3)</p>
-              <p>• <strong>Folios SII:</strong> 45 folios CAF disponibles (Tipo 39 - Boletas)</p>
-              <p>• <strong>Terminales:</strong> 3 configurados, 2 en línea</p>
-              <p>• <strong>Sincronización:</strong> Tiempo real automática</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Integration Options */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="font-semibold text-gray-900 mb-6">🔗 Opciones para Conectar Terminal de Pago a Solvendo</h3>

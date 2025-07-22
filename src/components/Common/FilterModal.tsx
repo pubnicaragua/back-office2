@@ -14,6 +14,10 @@ export function FilterModal({ isOpen, onClose, title = "Filtros", children, onAp
   const [resetFilters, setResetFilters] = useState(false);
 
   const handleApplyFilter = () => {
+    if (resetFilters) {
+      console.log('🔄 RESTABLECIENDO FILTROS');
+      // Trigger reset logic here
+    }
     console.log('✅ APLICANDO FILTROS:', { title });
     if (onApplyFilter) {
       onApplyFilter();

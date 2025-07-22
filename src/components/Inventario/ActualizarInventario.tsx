@@ -17,17 +17,55 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
   const { insert, loading } = useSupabaseInsert('inventario');
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadedFile = event.target.files?.[0];
-    if (uploadedFile) {
-      setFile(uploadedFile);
-      processFile(uploadedFile);
+    const uploadedFiles = event.target.files;
+    if (uploadedFiles && uploadedFiles.length > 0) {
+      console.log(`📁 PROCESANDO ${uploadedFiles.length} ARCHIVO(S) ${uploadMethod.toUpperCase()}`);
+      
+      if (uploadedFiles.length === 1) {
+        setFile(uploadedFiles[0]);
+        processFile(uploadedFiles[0]);
+      } else {
+        // Procesar múltiples archivos
+        processMultipleFiles(Array.from(uploadedFiles));
+      }
+    }
+  };
+
+  const processMultipleFiles = async (files: File[]) => {
+    setProcessing(true);
+    let allProducts: any[] = [];
+    
+    try {
+      for (const file of files) {
+        console.log(`📄 PROCESANDO ARCHIVO: ${file.name}`);
+        const fileProducts = await processFileContent(file);
+        allProducts = [...allProducts, ...fileProducts];
+      }
+      
+      console.log(`✅ TOTAL PRODUCTOS PROCESADOS: ${allProducts.length}`);
+      setProductos(allProducts);
+    } catch (error) {
+      console.error('❌ ERROR PROCESANDO MÚLTIPLES ARCHIVOS:', error);
+      alert('Error al procesar los archivos');
+    } finally {
+      setProcessing(false);
     }
   };
 
   const processFile = async (file: File) => {
     setProcessing(true);
     try {
+      const processedProducts = await processFileContent(file);
+      setProductos(processedProducts);
+    } catch (error) {
+      console.error('❌ ERROR PROCESANDO ARCHIVO:', error);
+      alert('Error al procesar el archivo');
+    } finally {
+      setProcessing(false);
+    }
+  };
       if (file.name.endsWith('.xml')) {
+        console.log('📄 PROCESANDO XML DTE');
         // Process XML DTE file
         const text = await file.text();
         const parser = new DOMParser();
@@ -38,21 +76,22 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
           const codigo = detalle.querySelector('CdgItem VlrCodigo')?.textContent || '';
           const nombre = detalle.querySelector('NmbItem')?.textContent || '';
           const cantidad = parseInt(detalle.querySelector('QtyItem')?.textContent || '0');
-          const precio = Math.round(parseFloat(detalle.querySelector('PrcItem')?.textContent || '0'));
+          const precioConIva = Math.round(parseFloat(detalle.querySelector('PrcItem')?.textContent || '0'));
           
           return {
             nombre,
             codigo,
             cantidad,
-            costo: Math.round(precio * 0.7)
+            precio: precioConIva,
+            costo: Math.round(precioConIva / 1.19 * 0.7) // Precio sin IVA * 70%
           };
         });
         
-        setProductos(processedProducts);
+        return processedProducts;
       } else if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+        console.log('📊 PROCESANDO CSV');
         const text = await file.text();
         const lines = text.split('\n');
-        const headers = lines[0].split(',');
         
         const processedProducts = lines.slice(1).map(line => {
           const values = line.split(',');
@@ -64,19 +103,36 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
           };
         }).filter(p => p.nombre && p.cantidad > 0);
         
-        setProductos(processedProducts);
+        return processedProducts;
       } else if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.name.endsWith('.xlsx')) {
+        console.log('📈 PROCESANDO EXCEL');
         // Simulate Excel processing
         const mockExcelData = [
           { nombre: 'Producto Excel 1', cantidad: 15, costo: 1200, precio: 1800 },
           { nombre: 'Producto Excel 2', cantidad: 25, costo: 800, precio: 1200 }
         ];
-        setProductos(mockExcelData);
+        return mockExcelData;
       } else if (file.type === 'application/pdf') {
+        console.log('📋 PROCESANDO PDF CON IVA');
         // Simulate PDF processing
-        const mockPdfData = [
-          { nombre: 'Producto PDF 1', cantidad: 20, costo: 1500, precio: 2200 },
-          { nombre: 'Producto PDF 2', cantidad: 10, costo: 900, precio: 1400 }
+        const preciosConIva = [2618, 1666]; // Precios con IVA
+        const mockPdfData = preciosConIva.map((precioConIva, index) => {
+          const precioSinIva = Math.round(precioConIva / 1.19);
+          return {
+            nombre: `Producto PDF ${index + 1}`,
+            cantidad: 20 - (index * 10),
+            precio: precioConIva,
+            costo: Math.round(precioSinIva * 0.7)
+          };
+        });
+        return mockPdfData;
+      }
+      return [];
+    } catch (error) {
+      console.error('❌ ERROR EN processFileContent:', error);
+      throw error;
+    }
+  };
         ];
         setProductos(mockPdfData);
       }
