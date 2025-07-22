@@ -1,66 +1,13 @@
-"use client"
+import React, { useState } from 'react';
+import { Modal } from '../Common/Modal';
+import { Download, RefreshCw, Filter } from 'lucide-react';
+import { useSupabaseData } from '../../hooks/useSupabaseData';
 
-import { useState, useEffect } from "react"
-import { TrendingUp } from "lucide-react"
-import { Modal } from "../Common/Modal" // Assuming this Modal component exists
-
-// --- Data Fetching (Simulated Backend) ---
-// This function simulates fetching data from a backend source like Supabase.
-// In a real Next.js application, this would typically be a Server Action
-// or a direct database query from a Server Component.
-async function fetchVentasData() {
-  // Simulate a network delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  const metricsData = [
-    { title: "Ventas totales", value: "$67.150", change: "+100%", isPositive: true },
-    { title: "Margen", value: "$67.150", change: "+100%", isPositive: true },
-    { title: "Unidades vendidas", value: "667.150", change: "+100%", isPositive: true },
-    { title: "N° de ventas", value: "667.150", change: "+100%", isPositive: true },
-    { title: "Ticket promedio", value: "$67.150", change: "+100%", isPositive: true },
-  ]
-
-  // Chart data with varying heights to match the image
-  const chartData = [
-    { month: "Ene", value: 28000 }, // Adjusted to match image
-    { month: "Feb", value: 35000 }, // Adjusted to match image
-    { month: "Mar", value: 22000 }, // Adjusted to match image
-    { month: "Abr", value: 38000 }, // Adjusted to match image
-    { month: "May", value: 30000 }, // Adjusted to match image
-    { month: "Jun", value: 36000 }, // Adjusted to match image
-    { month: "Jul", value: 20000 }, // Adjusted to match image
-    { month: "Ago", value: 32000 }, // Adjusted to match image
-    { month: "Sep", value: 34000 }, // Adjusted to match image
-    { month: "Oct", value: 28000 }, // Adjusted to match image
-    { month: "Nov", value: 39000 }, // Adjusted to match image
-  ]
-
-  // Mock data for filters, replace with actual Supabase data if needed
-  const sucursales = [
-    { id: "1", nombre: "Sucursal Centro" },
-    { id: "2", nombre: "Sucursal Norte" },
-  ]
-
-  // Placeholder for actual sales data if needed for download
-  const ventas = [
-    { folio: "123", fecha: "2025-05-10T10:00:00Z", total: "15000", sucursal_id: "1", metodo_pago: "Tarjeta" },
-    { folio: "124", fecha: "2025-05-11T11:30:00Z", total: "22000", sucursal_id: "2", metodo_pago: "Efectivo" },
-  ]
-
-  return {
-    metricsData,
-    chartData,
-    sucursales,
-    ventas,
-  }
-}
-
-// --- MetricsCard Component (Nested) ---
 interface MetricsCardProps {
-  title: string
-  value: string
-  change: string
-  isPositive: boolean
+  title: string;
+  value: string;
+  change: string;
+  isPositive: boolean;
 }
 
 function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
@@ -68,202 +15,180 @@ function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
     <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
       <div className="flex items-center justify-between mb-2">
         <p className="text-sm text-gray-600 font-medium">{title}</p>
-        {/* Changed to a simple '?' as seen in the image */}
-        <div className="w-4 h-4 text-gray-400 cursor-help flex items-center justify-center text-xs font-bold">?</div>
+        <div className="w-4 h-4 text-gray-400 cursor-help">?</div>
       </div>
       <div className="flex items-center justify-between">
         <p className="text-2xl font-bold text-gray-900">{value}</p>
-        {/* Added background color for positive change */}
-        <div
-          className={`flex items-center space-x-1 text-sm font-medium px-2 py-1 rounded-full ${
-            isPositive ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
-          }`}
-        >
-          <TrendingUp className="w-4 h-4" />
+        <div className={`flex items-center space-x-1 text-sm font-medium ${
+          isPositive ? 'text-green-600' : 'text-red-600'
+        }`}>
           <span>{change}</span>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-// --- Main VentasDashboard Component ---
 export function VentasDashboard() {
-  const [showModal, setShowModal] = useState(false)
-  const [showDownloadModal, setShowDownloadModal] = useState(false)
-  const [showFilters, setShowFilters] = useState(false)
+  const [showModal, setShowModal] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
-    periodo: "",
-    sucursal: "",
-    producto: "",
-    cajas: [] as string[],
-  })
-  const [metricsData, setMetricsData] = useState<MetricsCardProps[]>([])
-  const [chartData, setChartData] = useState<{ month: string; value: number }[]>([])
-  const [sucursales, setSucursales] = useState<{ id: string; nombre: string }[]>([])
-  const [ventasForDownload, setVentasForDownload] = useState<any[]>([]) // Data for download
-  const [loading, setLoading] = useState(true)
+    periodo: '',
+    sucursal: '',
+    producto: '',
+    cajas: [] as string[]
+  });
 
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true)
-      try {
-        const data = await fetchVentasData()
-        setMetricsData(data.metricsData)
-        setChartData(data.chartData)
-        setSucursales(data.sucursales)
-        setVentasForDownload(data.ventas) // Set data for download
-      } catch (error) {
-        console.error("Error fetching data:", error)
-        // Handle error, e.g., show an error message
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadData()
-  }, [])
+  const { data: ventas, loading } = useSupabaseData<any>('ventas', '*');
+  const { data: ventasItems } = useSupabaseData<any>('venta_items', '*');
+  const { data: sucursales } = useSupabaseData<any>('sucursales', '*');
 
-  // Max value for Y-axis, ensuring it's at least 35k for consistent scaling
-  const maxValue = Math.max(...chartData.map((d) => d.value), 35000)
+  const metricsData = [
+    { title: 'Ventas totales', value: '$67.150', change: '+100%', isPositive: true },
+    { title: 'Margen', value: '$67.150', change: '+100%', isPositive: true },
+    { title: 'Unidades vendidas', value: '667.150', change: '+100%', isPositive: true },
+    { title: 'N° de ventas', value: '667.150', change: '+100%', isPositive: true },
+    { title: 'Ticket promedio', value: '$67.150', change: '+100%', isPositive: true },
+  ];
+
+  // Process chart data
+  const chartData = [
+    { month: 'Ene', value: 35 },
+    { month: 'Feb', value: 30 },
+    { month: 'Mar', value: 25 },
+    { month: 'Abr', value: 40 },
+    { month: 'May', value: 35 },
+    { month: 'Jun', value: 45 },
+    { month: 'Jul', value: 50 },
+    { month: 'Ago', value: 40 },
+    { month: 'Sep', value: 35 },
+    { month: 'Oct', value: 30 },
+    { month: 'Nov', value: 25 },
+  ];
+
+  const maxValue = Math.max(...chartData.map(d => d.value));
 
   const handleDownloadReport = () => {
     try {
-      const filteredVentas = ventasForDownload.filter((venta) => {
-        if (filters.sucursal && venta.sucursal_id !== filters.sucursal) return false
-        if (filters.periodo && !new Date(venta.fecha).toISOString().includes(filters.periodo)) return false
-        return true
-      })
+      // Apply filters to ventas data
+      const filteredVentas = ventas.filter(venta => {
+        if (filters.sucursal && venta.sucursal_id !== filters.sucursal) return false;
+        if (filters.periodo && !new Date(venta.fecha).toISOString().includes(filters.periodo)) return false;
+        return true;
+      });
 
-      const headers = ["Folio", "Fecha", "Total", "Sucursal", "Método Pago"]
+      // Create Excel-compatible data with proper encoding
+      const headers = ['Folio', 'Fecha', 'Total', 'Sucursal', 'Método Pago'];
       const csvContent = [
-        headers.join("\t"),
-        ...filteredVentas.map((v) =>
-          [
-            v.folio || "N/A",
-            new Date(v.fecha).toLocaleDateString("es-CL"),
-            v.total || "0",
-            sucursales.find((s) => s.id === v.sucursal_id)?.nombre || "N/A",
-            v.metodo_pago || "N/A",
-          ].join("\t"),
-        ),
-      ].join("\n")
+        headers.join('\t'), // Use tabs for Excel compatibility
+        ...filteredVentas.map(v => [
+          v.folio || 'N/A',
+          new Date(v.fecha).toLocaleDateString('es-CL'),
+          v.total || '0',
+          'Sucursal N°1',
+          v.metodo_pago || 'N/A',
+        ].join('\t'))
+      ].join('\n');
 
-      const BOM = "\uFEFF"
-      const blob = new Blob([BOM + csvContent], { type: "application/vnd.ms-excel;charset=utf-8;" })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = `reporte_ventas_${new Date().toISOString().split("T")[0]}.xls`
-      a.click()
-      URL.revokeObjectURL(url)
-      setShowDownloadModal(false)
+      // Add BOM for proper Excel encoding
+      const BOM = '\uFEFF';
+      const blob = new Blob([BOM + csvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `reporte_ventas_${new Date().toISOString().split('T')[0]}.xls`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setShowDownloadModal(false);
     } catch (error) {
-      console.error("Error downloading report:", error)
-      alert("Error al descargar el reporte. Por favor intenta de nuevo.")
+      console.error('Error downloading report:', error);
+      alert('Error al descargar el reporte. Por favor intenta de nuevo.');
     }
-  }
-
-  const yAxisLabels = Array.from({ length: 8 })
-    .map((_, i) => {
-      const value = i * 5 // 0, 5, 10, ..., 35
-      return value === 0 ? "0" : `${value}k`
-    })
-    .reverse() // Reverse to have 35k at top, 0 at bottom
+  };
 
   return (
-    // The outermost div now represents the main content area of the dashboard,
-    // assuming the global header and right sidebar are handled by a parent layout.
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      {/* "Ventas totales" label above metrics cards */}
-      <h2 className="text-xl font-semibold text-gray-900">Ventas totales</h2>
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold text-gray-900">Ventas</h1>
+        <div className="flex items-center space-x-3">
+          <button 
+            onClick={() => setShowFilters(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            <Filter className="w-4 h-4" />
+            <span>Filtros</span>
+          </button>
+          <button 
+            onClick={() => setShowDownloadModal(true)}
+            className="p-2 rounded-md hover:bg-gray-100"
+          >
+            <Download className="w-5 h-5" />
+          </button>
+          <button className="p-2 rounded-md hover:bg-gray-100">
+            <RefreshCw className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
 
       {/* Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        {loading
-          ? Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-8 bg-gray-200 rounded w-1/2"></div>
-              </div>
-            ))
-          : metricsData.map((metric, index) => <MetricsCard key={index} {...metric} />)}
+        {metricsData.map((metric, index) => (
+          <MetricsCard key={index} {...metric} />
+        ))}
       </div>
 
-      {/* Chart Section */}
-      <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+      {/* Chart */}
+      <div className="bg-white p-6 rounded-lg border border-gray-200">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-medium text-gray-900">Ventas totales</h3>
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-sm">
-              <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
               <span className="text-gray-600">Período anterior</span>
-              <span className="text-gray-500">01 May 2024 - 19 May 2024</span>
+              <div className="w-3 h-3 bg-blue-200 rounded"></div>
+              <span className="text-gray-600">01 May 2024 - 19 May 2024</span>
             </div>
             <div className="flex items-center space-x-2 text-sm">
-              <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
               <span className="text-gray-600">Período seleccionado</span>
-              <span className="text-gray-500">01 May 2025 - 19 May 2025</span>
+              <div className="w-3 h-3 bg-blue-600 rounded"></div>
+              <span className="text-gray-600">01 May 2025 - 19 May 2025</span>
             </div>
-            <button
+            <button 
               onClick={() => setShowModal(true)}
-              className="text-sm text-gray-600 hover:text-gray-800 bg-gray-100 px-3 py-1 rounded"
+              className="text-sm text-gray-600 hover:text-gray-800"
             >
               Ver período anterior
             </button>
           </div>
         </div>
 
-        {/* Chart Container */}
-        <div className="relative h-64">
-          {/* Y-axis labels */}
-          <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-4 pb-4">
-            {yAxisLabels.map((label, i) => (
-              <span key={i} className="h-[calc(100%/7)] flex items-end justify-end pb-1">
-                {label}
-              </span>
-            ))}
-          </div>
-          {/* Grid lines spanning full width */}
-          <div className="absolute left-8 top-0 h-full w-[calc(100%-2rem)] flex flex-col justify-between">
-            {Array.from({ length: 7 }).map((_, i) => (
-              <div key={i} className="border-b border-gray-200 h-[calc(100%/7)]"></div>
-            ))}
-          </div>
-
-          {/* Chart bars */}
-          <div className="ml-8 h-full flex items-end justify-between space-x-4 pb-4">
-            {loading
-              ? Array.from({ length: 11 }).map((_, i) => (
-                  <div key={i} className="flex flex-col items-center space-y-2 flex-1 h-full">
-                    <div className="w-full flex flex-col justify-end h-full">
-                      <div className="bg-gray-200 rounded-t animate-pulse h-1/2"></div>
-                    </div>
-                    <span className="text-xs text-gray-600 h-4 w-8 bg-gray-200 rounded"></span>
-                  </div>
-                ))
-              : chartData.map((item, index) => (
-                  <div key={index} className="flex flex-col items-center space-y-2 flex-1 h-full">
-                    <div className="w-full flex flex-col justify-end h-full">
-                      <div
-                        className="bg-blue-600 rounded-t transition-all duration-500 hover:bg-blue-700 min-h-[8px]"
-                        style={{ height: `${(item.value / maxValue) * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-xs text-gray-600">{item.month}</span>
-                  </div>
-                ))}
-          </div>
-          {/* Horizontal blue line at the bottom */}
-          <div className="absolute bottom-0 left-8 w-[calc(100%-2rem)] h-0.5 bg-blue-600"></div>
+        {/* Chart */}
+        <div className="h-64 flex items-end justify-between space-x-2">
+          {chartData.map((item, index) => (
+            <div key={index} className="flex flex-col items-center space-y-2 flex-1">
+              <div className="w-full flex flex-col justify-end h-48">
+                <div 
+                  className="bg-blue-600 rounded-t"
+                  style={{ height: `${maxValue > 0 ? (item.value / maxValue) * 100 : 0}%` }}
+                ></div>
+              </div>
+              <span className="text-xs text-gray-600">{item.month}</span>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Modals */}
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Última actualización" size="sm">
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="Última actualización"
+        size="sm"
+      >
         <div className="space-y-4">
           <div className="text-center">
-            <p className="text-sm text-gray-600">Fecha: {new Date().toLocaleDateString("es-CL")}</p>
-            <p className="text-sm text-gray-600">Hora: {new Date().toLocaleTimeString("es-CL")}</p>
+            <p className="text-sm text-gray-600">Fecha: {new Date().toLocaleDateString('es-CL')}</p>
+            <p className="text-sm text-gray-600">Hora: {new Date().toLocaleTimeString('es-CL')}</p>
           </div>
           <div className="flex justify-center">
             <button
@@ -276,13 +201,22 @@ export function VentasDashboard() {
         </div>
       </Modal>
 
-      <Modal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)} title="Descargar reporte" size="sm">
+      <Modal
+        isOpen={showDownloadModal}
+        onClose={() => setShowDownloadModal(false)}
+        title="Descargar reporte"
+        size="sm"
+      >
         <div className="space-y-4">
           <p className="text-sm text-gray-600">
-            ¿Deseas descargar el reporte de ventas? El archivo se descargará en formato CSV compatible con Excel.
+            ¿Deseas descargar el reporte de ventas?
+            El archivo se descargará en formato CSV compatible con Excel.
           </p>
           <div className="flex justify-end space-x-3">
-            <button onClick={() => setShowDownloadModal(false)} className="px-4 py-2 text-gray-600 hover:text-gray-800">
+            <button
+              onClick={() => setShowDownloadModal(false)}
+              className="px-4 py-2 text-gray-600 hover:text-gray-800"
+            >
               Cancelar
             </button>
             <button
@@ -295,13 +229,20 @@ export function VentasDashboard() {
         </div>
       </Modal>
 
-      <Modal isOpen={showFilters} onClose={() => setShowFilters(false)} title="Filtros" size="md">
+      <Modal
+        isOpen={showFilters}
+        onClose={() => setShowFilters(false)}
+        title="Filtros"
+        size="md"
+      >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Período</label>
-            <select
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Período
+            </label>
+            <select 
               value={filters.periodo}
-              onChange={(e) => setFilters((prev) => ({ ...prev, periodo: e.target.value }))}
+              onChange={(e) => setFilters(prev => ({ ...prev, periodo: e.target.value }))}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todos los períodos</option>
@@ -309,31 +250,36 @@ export function VentasDashboard() {
               <option value="2023">2023</option>
             </select>
           </div>
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Sucursal</label>
-            <select
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Sucursal
+            </label>
+            <select 
               value={filters.sucursal}
-              onChange={(e) => setFilters((prev) => ({ ...prev, sucursal: e.target.value }))}
+              onChange={(e) => setFilters(prev => ({ ...prev, sucursal: e.target.value }))}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todas las sucursales</option>
-              {sucursales.map((sucursal) => (
-                <option key={sucursal.id} value={sucursal.id}>
-                  {sucursal.nombre}
-                </option>
+              {sucursales.map(sucursal => (
+                <option key={sucursal.id} value={sucursal.id}>{sucursal.nombre}</option>
               ))}
             </select>
           </div>
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Productos</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Productos
+            </label>
             <input
               type="text"
               value={filters.producto}
-              onChange={(e) => setFilters((prev) => ({ ...prev, producto: e.target.value }))}
+              onChange={(e) => setFilters(prev => ({ ...prev, producto: e.target.value }))}
               placeholder="Buscar productos..."
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
           <div className="flex justify-end">
             <button
               onClick={() => setShowFilters(false)}
@@ -345,5 +291,4 @@ export function VentasDashboard() {
         </div>
       </Modal>
     </div>
-  )
-}
+  );
