@@ -21,114 +21,13 @@ export function POSApiDocumentation() {
       </div>
       
       {/* Novedades del Sistema */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-        <h3 className="font-semibold text-green-900 mb-4">🆕 Novedades del Sistema - ANROLTEC SPA (Últimas 24 horas)</h3>
-        <div className="space-y-3 text-sm text-green-800">
-          <div className="flex items-start space-x-2">
-            <span className="text-green-600">🔥</span>
-            <div>
-              <p className="font-medium">Nuevos Endpoints para POS ✅</p>
-              <p>GET /auth/roles - Roles de usuario con permisos</p>
-              <p>GET /config/terminales - Terminales POS disponibles</p>
-              <p>GET /config/impresion - Configuración de impresión</p>
-              <p>GET /api/descuentos - Sistema de descuentos</p>
-              <p>GET /api/cupones - Sistema de cupones</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start space-x-2">
-            <span className="text-green-600">🔥</span>
-            <div>
-              <p className="font-medium">Sistema de Notificaciones en Tiempo Real ✅</p>
-              <p>Alertas automáticas de stock bajo en header del back office</p>
-              <p>Detección de inconsistencias POS vs inventario</p>
-              <p>Notificaciones con prioridades (Alta, Media, Baja)</p>
-              <p>Auto-refresh cada 30 segundos</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start space-x-2">
-            <span className="text-green-600">⚡</span>
-            <div>
-              <p className="font-medium">Performance Optimizada ✅</p>
-              <p>Logs en tiempo real en consola del navegador</p>
-              <p>Conexión Supabase optimizada con timeout 10s</p>
-              <p>Cache eliminado para datos en tiempo real</p>
-              <p>Índices optimizados para consultas rápidas</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start space-x-2">
-            <span className="text-green-600">🔥</span>
-            <div>
-              <p className="font-medium">Detección de Inconsistencias POS ✅</p>
-              <p>Ejemplo: Ingresaron 100 productos, vendieron 40, sistema registró 20</p>
-              <p>Alerta automática: "Diferencia de 20 unidades detectada"</p>
-              <p>Función: detect_pos_inconsistencies() implementada</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start space-x-2">
-            <span className="text-green-600">✅</span>
-            <div>
-              <p className="font-medium">Sistema de Facturación Electrónica SII ✅</p>
-              <p>CAF (Código de Autorización de Folios) integrado para ANROLTEC SPA</p>
-              <p>Folios 1-50 disponibles para boletas electrónicas (Tipo 39)</p>
-              <p>XML DTE generado automáticamente según normativa SII</p>
-              <p>Firma digital con certificados reales de ANROLTEC SPA</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start space-x-2">
-            <span className="text-green-600">✅</span>
-            <div>
-              <p className="font-medium">Backend 100% Funcional - 0% Hard-code ✅</p>
-              <p>Todos los datos provienen de Supabase PostgreSQL</p>
-              <p>CRUD completo en todos los módulos</p>
-              <p>Filtros y búsquedas funcionales en tiempo real</p>
-              <p>Notificaciones automáticas implementadas</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start space-x-2">
-            <span className="text-green-600">✅</span>
-            <div>
-              <p className="font-medium">Sincronización POS ↔ Back Office en Tiempo Real</p>
-              <p>Productos, precios, promociones y folios CAF se sincronizan automáticamente</p>
-              <p>Transacciones del POS se envían en tiempo real al back office</p>
-              <p>Stock actualizado automáticamente con cada venta</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start space-x-2">
-            <span className="text-green-600">✅</span>
-            <div>
-              <p className="font-medium">Proveedores de Pago Integrados</p>
-              <p>SumUp configurado y activo para pagos con tarjeta</p>
-              <p>Webhooks configurados para recibir confirmaciones de pago</p>
-              <p>Mercado Pago, Transbank, GetNet listos para activar</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start space-x-2">
-            <span className="text-green-600">✅</span>
-            <div>
-              <p className="font-medium">Sistema Completo de Gestión</p>
-              <p>Inventario, colaboradores, asistencias, promociones</p>
-              <p>Alertas de stock bajo y gestión de mermas implementada</p>
-              <p>Reportes y filtros funcionales en todos los módulos</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start space-x-2">
-            <span className="text-green-600">✅</span>
-            <div>
-              <p className="font-medium">SolvIA - Asistente IA Integrado</p>
-              <p>OpenAI GPT-4 con contexto completo del sistema</p>
-              <p>Respuestas inteligentes basadas en datos reales</p>
-              <p>Análisis y recomendaciones automáticas</p>
-            </div>
-          </div>
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 className="font-semibold text-blue-900 mb-4">📋 Resumen del Sistema</h3>
+        <div className="space-y-2 text-sm text-blue-800">
+          <p>✅ <strong>SII:</strong> Folios CAF 1-50 disponibles para ANROLTEC SPA</p>
+          <p>✅ <strong>POS:</strong> 3 terminales configurados (SumUp activo)</p>
+          <p>✅ <strong>Backend:</strong> 100% funcional, 0% hard-code</p>
+          <p>✅ <strong>Endpoints:</strong> Listos para integración POS</p>
         </div>
       </div>
 

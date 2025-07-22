@@ -16,7 +16,7 @@ export function MovimientosEfectivo() {
   
   const { data: movimientos, loading, error } = useSupabaseData<any>(
     'movimientos_caja', 
-    '*, sucursales(nombre), usuarios(nombres)'
+    '*'
   );
   const { data: sucursales } = useSupabaseData<any>('sucursales', '*');
   const { data: cajas } = useSupabaseData<any>('cajas', '*');

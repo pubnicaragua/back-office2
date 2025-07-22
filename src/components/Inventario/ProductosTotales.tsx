@@ -22,7 +22,7 @@ export function ProductosTotales() {
 
   const { data: productos, loading, refetch } = useSupabaseData<any>(
     'productos',
-    '*, categorias(nombre)'
+    '*'
   );
   const { data: sucursales } = useSupabaseData<any>('sucursales', '*');
   const { data: categorias } = useSupabaseData<any>('categorias', '*');
