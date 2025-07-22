@@ -64,6 +64,9 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
       setProcessing(false);
     }
   };
+
+  const processFileContent = async (file: File) => {
+    try {
       if (file.name.endsWith('.xml')) {
         console.log('📄 PROCESANDO XML DTE');
         // Process XML DTE file
@@ -131,16 +134,6 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
     } catch (error) {
       console.error('❌ ERROR EN processFileContent:', error);
       throw error;
-    }
-  };
-        ];
-        setProductos(mockPdfData);
-      }
-    } catch (error) {
-      console.error('Error processing file:', error);
-      alert('Error al procesar el archivo');
-    } finally {
-      setProcessing(false);
     }
   };
 
@@ -284,13 +277,15 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
               <span>Producto</span>
               <span>Cantidad</span>
               <span>Costo</span>
+              <span>Precio</span>
             </div>
             <div className="space-y-3 max-h-60 overflow-y-auto">
               {productos.slice(0, 5).map((producto, index) => (
-                <div key={index} className="grid grid-cols-3 gap-4 text-sm">
+                <div key={index} className="grid grid-cols-4 gap-4 text-sm">
                   <span className="text-gray-900">{producto.nombre}</span>
                   <span className="text-gray-600">{producto.cantidad}</span>
                   <span className="text-gray-900">${producto.costo}</span>
+                  <span className="text-gray-900">${producto.precio}</span>
                 </div>
               ))}
               {productos.length > 5 && (
