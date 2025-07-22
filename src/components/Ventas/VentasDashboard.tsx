@@ -173,7 +173,7 @@ export function VentasDashboard() {
   return (
     // The outermost div now represents the main content area of the dashboard,
     // assuming the global header and right sidebar are handled by a parent layout.
-    <div className="flex-1 p-6 space-y-6 bg-gray-50 min-h-screen">
+    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
       {/* "Ventas totales" label above metrics cards */}
       <h2 className="text-xl font-semibold text-gray-900">Ventas totales</h2>
 
