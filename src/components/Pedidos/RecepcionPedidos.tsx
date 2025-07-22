@@ -122,6 +122,11 @@ export function RecepcionPedidos() {
                 Agregar
               </span>
             </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 ml-24">
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -240,6 +245,7 @@ export function RecepcionPedidos() {
             </div>
           </div>
         </Modal>
+      </div>
     </div>
   );
 }
