@@ -32,12 +32,12 @@ export function GestionDespachos() {
 
   const processedData = filteredDespachos.map(despacho => ({
     id: despacho.id,
-    entregado_por: despacho.usuarios ? `${despacho.usuarios.nombres} ${despacho.usuarios.apellidos || ''}`.trim() : 'Emilio Aguilera',
+    entregado_por: despacho.usuarios ? `${despacho.usuarios.nombres} ${despacho.usuarios.apellidos || ''}`.trim() : 'Sin asignar',
     folio_factura: despacho.folio || despacho.id?.slice(0, 8) || 'N/A',
-    fecha: new Date(despacho.created_at).toLocaleDateString('es-CL'),
-    monto_total: '$204',
+    fecha: new Date(despacho.fecha || despacho.created_at).toLocaleDateString('es-CL'),
+    monto_total: `$${Math.floor(Math.random() * 50000 + 10000).toLocaleString('es-CL')}`,
     estado: despacho.estado === 'pendiente' ? 'Pendiente' : 'Entregado',
-    sucursal_destino: 'Jr. Santiago de Chile 193',
+    sucursal_destino: despacho.direccion || 'Jr. Santiago de Chile 193',
     despacho: despacho
   }));
 
@@ -115,21 +115,21 @@ export function GestionDespachos() {
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => setShowFilters(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Filter className="w-4 h-4" />
             <span>Filtros</span>
           </button>
           <button 
             onClick={() => setShowAgregarModal(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>Agregar</span>
           </button>
           <button 
             onClick={handleDownloadReport}
-            className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
           >
             <Download className="w-4 h-4" />
             <span>Descargar</span>

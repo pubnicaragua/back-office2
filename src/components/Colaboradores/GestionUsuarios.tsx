@@ -49,6 +49,7 @@ export function GestionUsuarios() {
   });
 
   const filteredData = processedData.filter(item =>
+    (filters.sucursal === '' || item.sucursal === filters.sucursal) &&
     (searchTerm === '' || 
      item.nombres.toLowerCase().includes(searchTerm.toLowerCase()) ||
      item.rut.includes(searchTerm))
@@ -72,21 +73,21 @@ export function GestionUsuarios() {
         <div className="flex items-center space-x-3 ml-auto">
           <button 
             onClick={() => setShowComunicadoModal(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Mail className="w-4 h-4" />
             <span>Enviar comunicado general</span>
           </button>
           <button 
             onClick={() => setShowTiempoModal(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
           >
             <Clock className="w-4 h-4" />
             <span>Asignar tiempo de colación</span>
           </button>
           <button 
             onClick={() => setShowFilters(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
           >
             <Filter className="w-4 h-4" />
             <span>Filtros</span>

@@ -94,26 +94,27 @@ export function ProductosTotales() {
           </button>
         </div>
       </div>
-
-      <div className="mb-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <input
-            type="text"
-            placeholder="Buscar productos..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      </div>
-
-      <div className="mb-4">
+        <button 
+          onClick={() => setShowFilters(true)}
+          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <Filter className="w-4 h-4" />
+          <span>Filtros</span>
+        </button>
+        <button 
+          onClick={() => setShowProductoModal(true)}
+          className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Agregar</span>
+        </button>
+        <button 
         <button 
           onClick={() => setShowInventarioModal(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
         >
-          Actualizar inventario
+          <span>📊</span>
+          <span>Actualizar inventario</span>
         </button>
       </div>
 
@@ -148,21 +149,30 @@ export function ProductosTotales() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Todas las sucursales
+              Sucursal
             </label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select 
+              value={filters.sucursal}
+              onChange={(e) => setFilters(prev => ({ ...prev, sucursal: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
               <option value="">Todas las sucursales</option>
-              <option value="n1">N°1</option>
-              <option value="n2">N°2</option>
+              {sucursales.map(sucursal => (
+                <option key={sucursal.id} value={sucursal.id}>{sucursal.nombre}</option>
+              ))}
             </select>
           </div>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Productos totales
+              Disponibilidad
             </label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">Productos totales</option>
+            <select 
+              value={filters.disponibilidad}
+              onChange={(e) => setFilters(prev => ({ ...prev, disponibilidad: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Todos los productos</option>
               <option value="disponibles">Disponibles</option>
               <option value="agotados">Agotados</option>
             </select>
@@ -170,13 +180,27 @@ export function ProductosTotales() {
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Categorías
+              Categoría
             </label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select 
+              value={filters.categoria}
+              onChange={(e) => setFilters(prev => ({ ...prev, categoria: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
               <option value="">Todas las categorías</option>
-              <option value="bebidas">Bebidas</option>
-              <option value="snacks">Snacks</option>
+              {categorias.map(categoria => (
+                <option key={categoria.id} value={categoria.nombre}>{categoria.nombre}</option>
+              ))}
             </select>
+          </div>
+          
+          <div className="flex justify-end">
+            <button
+              onClick={() => setShowFilters(false)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Aplicar filtros
+            </button>
           </div>
         </div>
       </FilterModal>

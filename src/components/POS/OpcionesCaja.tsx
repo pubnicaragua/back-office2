@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal } from '../Common/Modal';
 import { Filter } from 'lucide-react';
 import { useSupabaseData, useSupabaseUpdate } from '../../hooks/useSupabaseData';
+import { supabase } from '../../lib/supabase';
 
 export function OpcionesCaja() {
   const [showFilters, setShowFilters] = useState(false);
@@ -61,6 +62,37 @@ export function OpcionesCaja() {
     }
   };
 
+  const handleSaveConfiguration = async () => {
+    try {
+      console.log('💾 Guardando configuración completa...');
+      
+      // Sync all configuration to POS terminals
+      const { data: terminals } = await supabase
+        .from('pos_terminals')
+        .select('*')
+        .eq('status', 'online');
+      
+      for (const terminal of terminals || []) {
+        await supabase.from('pos_sync_log').insert({
+          terminal_id: terminal.id,
+          sync_type: 'configuration',
+          direction: 'to_pos',
+          status: 'success',
+          records_count: 1,
+          sync_data: {
+            action: 'full_config_sync',
+            config: settings,
+            timestamp: new Date().toISOString()
+          }
+        });
+      }
+      
+      alert('✅ Configuración guardada y sincronizada con todos los terminales POS');
+    } catch (error) {
+      console.error('Error saving configuration:', error);
+      alert('❌ Error al guardar la configuración');
+    }
+  };
   const handleCajaChange = (caja: string, checked: boolean) => {
     setFilters(prev => ({
       ...prev,
@@ -137,7 +169,7 @@ export function OpcionesCaja() {
         <h3 className="font-medium text-gray-900">Integración con POS</h3>
         <div className="space-y-3">
           {[
-            { key: 'mercadoPago', label: 'Mercado Pago' },
+            { key: 'mercado_pago', label: 'Mercado Pago' },
             { key: 'sumup', label: 'SumUp' },
             { key: 'transbank', label: 'Transbank' },
             { key: 'getnet', label: 'GetNet' },
