@@ -16,10 +16,7 @@ export function GestionDespachos() {
     sucursal: ''
   });
 
-  const { data: despachos, loading, refetch } = useSupabaseData<any>(
-    'despachos', 
-    '*, usuarios(nombres, apellidos)'
-  );
+  const { data: despachos, loading, refetch } = useSupabaseData<any>('despachos', '*');
   const { insert, loading: inserting } = useSupabaseInsert('despachos');
   const { data: usuarios } = useSupabaseData<any>('usuarios', '*');
 

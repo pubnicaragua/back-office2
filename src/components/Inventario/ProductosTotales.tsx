@@ -5,6 +5,8 @@ import { Filter, Plus, Search, AlertTriangle } from 'lucide-react';
 import { useSupabaseData, useSupabaseUpdate } from '../../hooks/useSupabaseData';
 import { ReporteMermas } from './ReporteMermas';
 import { ActualizarInventario } from './ActualizarInventario';
+import { AgregarProductoModal } from './AgregarProductoModal';
+import { Modal } from '../Common/Modal';
 
 export function ProductosTotales() {
   const [currentPage, setCurrentPage] = useState(1);

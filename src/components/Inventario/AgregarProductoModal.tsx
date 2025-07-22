@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from '../Common/Modal';
-import { useSupabaseInsert } from '../../hooks/useSupabaseData';
+import { useSupabaseInsert, useSupabaseUpdate } from '../../hooks/useSupabaseData';
 
 interface AgregarProductoModalProps {
   isOpen: boolean;
