@@ -96,150 +96,172 @@ export function RecepcionPedidos() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Recepción de pedidos</h1>
-        
-        {/* Botones alineados a la derecha - exacto al diseño */}
-        <div className="flex items-center space-x-2">
-          <button 
-            onClick={() => setShowFilters(true)}
-            className="p-2 rounded-md hover:bg-gray-100 text-blue-600"
-          >
-            <Filter className="w-4 h-4" />
-          </button>
-          <button 
-            onClick={() => setShowAgregarModal(true)}
-            className="p-2 rounded-md hover:bg-gray-100 text-blue-600"
-          >
-            <Plus className="w-5 h-5" />
-          </button>
-          <button 
-            onClick={handleDownloadReport}
-            className="p-2 rounded-md hover:bg-gray-100 text-blue-600"
-          >
-            <Download className="w-5 h-5" />
-          </button>
+    <div className="flex">
+      {/* Vertical Sidebar - Fixed position on the left */}
+      <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-40">
+        <div className="w-20 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
+          <div className="flex flex-col space-y-3">
+            <button 
+              onClick={() => setShowFilters(true)}
+              className="p-3 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors group relative"
+              title="Filtros"
+            >
+              <Filter className="w-5 h-5" />
+              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Filtros
+              </span>
+            </button>
+            
+            <button 
+              onClick={() => setShowAgregarModal(true)}
+              className="p-3 rounded-lg hover:bg-green-50 text-green-600 transition-colors group relative"
+              title="Agregar Pedido"
+            >
+              <Plus className="w-5 h-5" />
+              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Agregar
+              </span>
+            </button>
+            
+            <button 
+              onClick={handleDownloadReport}
+              className="p-3 rounded-lg hover:bg-purple-50 text-purple-600 transition-colors group relative"
+              title="Descargar Reporte"
+            >
+              <Download className="w-5 h-5" />
+              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Descargar
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              {columns.map((column) => (
-                <th
-                  key={column.key}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  {column.label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredData.map((row, index) => (
-              <tr 
-                key={index} 
-                className="hover:bg-gray-50 cursor-pointer"
-                onClick={() => setShowDetalle(true)}
-              >
+      {/* Main content with left margin */}
+      <div className="flex-1 ml-24 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-semibold text-gray-900">Recepción de pedidos</h1>
+        </div>
+
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
                 {columns.map((column) => (
-                  <td key={column.key} className="px-6 py-4 text-sm text-gray-900">
-                    {row[column.key]}
-                  </td>
+                  <th
+                    key={column.key}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    {column.label}
+                  </th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-        
-        {/* Pagination */}
-        <div className="flex items-center justify-center px-6 py-3 border-t border-gray-200 bg-gray-50">
-          <div className="flex items-center space-x-2">
-            <button className="px-3 py-1 rounded-md text-sm text-gray-700 hover:bg-gray-100">
-              2
-            </button>
-            <button className="px-3 py-1 rounded-md text-sm text-gray-700 hover:bg-gray-100">
-              3
-            </button>
-            <button className="px-3 py-1 rounded-md text-sm text-gray-700 hover:bg-gray-100">
-              Siguiente
-            </button>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {filteredData.map((row, index) => (
+                <tr 
+                  key={index} 
+                  className="hover:bg-gray-50 cursor-pointer"
+                  onClick={() => setShowDetalle(true)}
+                >
+                  {columns.map((column) => (
+                    <td key={column.key} className="px-6 py-4 text-sm text-gray-900">
+                      {row[column.key]}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          
+          {/* Pagination */}
+          <div className="flex items-center justify-center px-6 py-3 border-t border-gray-200 bg-gray-50">
+            <div className="flex items-center space-x-2">
+              <button className="px-3 py-1 rounded-md text-sm text-gray-700 hover:bg-gray-100">
+                2
+              </button>
+              <button className="px-3 py-1 rounded-md text-sm text-gray-700 hover:bg-gray-100">
+                3
+              </button>
+              <button className="px-3 py-1 rounded-md text-sm text-gray-700 hover:bg-gray-100">
+                Siguiente
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Modals */}
-      <Modal
-        isOpen={showFilters}
-        onClose={() => setShowFilters(false)}
-        title="Filtros"
-        size="md"
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Proveedor
-            </label>
-            <input
-              type="text"
-              value={filters.proveedor}
-              onChange={(e) => setFilters(prev => ({ ...prev, proveedor: e.target.value }))}
-              placeholder="Buscar proveedor..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+        {/* Modals */}
+        <Modal
+          isOpen={showFilters}
+          onClose={() => setShowFilters(false)}
+          title="Filtros"
+          size="md"
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Proveedor
+              </label>
+              <input
+                type="text"
+                value={filters.proveedor}
+                onChange={(e) => setFilters(prev => ({ ...prev, proveedor: e.target.value }))}
+                placeholder="Buscar proveedor..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Fecha
+              </label>
+              <input
+                type="date"
+                value={filters.fecha}
+                onChange={(e) => setFilters(prev => ({ ...prev, fecha: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowFilters(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Aplicar filtros
+              </button>
+            </div>
           </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Fecha
-            </label>
-            <input
-              type="date"
-              value={filters.fecha}
-              onChange={(e) => setFilters(prev => ({ ...prev, fecha: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+        </Modal>
+
+        <Modal
+          isOpen={showAgregarModal}
+          onClose={() => setShowAgregarModal(false)}
+          title="Agregar Pedido"
+          size="md"
+        >
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              ¿Deseas agregar un nuevo pedido?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowAgregarModal(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleAgregarPedido}
+                disabled={inserting}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                {inserting ? 'Agregando...' : 'Agregar'}
+              </button>
+            </div>
           </div>
-          
-          <div className="flex justify-end">
-            <button
-              onClick={() => setShowFilters(false)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Aplicar filtros
-            </button>
-          </div>
-        </div>
-      </Modal>
-      <Modal
-        isOpen={showAgregarModal}
-        onClose={() => setShowAgregarModal(false)}
-        title="Agregar Pedido"
-        size="md"
-      >
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            ¿Deseas agregar un nuevo pedido?
-          </p>
-          <div className="flex justify-end space-x-3">
-            <button
-              onClick={() => setShowAgregarModal(false)}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={handleAgregarPedido}
-              disabled={inserting}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-            >
-              {inserting ? 'Agregando...' : 'Agregar'}
-            </button>
-          </div>
-        </div>
-      </Modal>
+        </Modal>
+      </div>
     </div>
   );
 }
