@@ -152,7 +152,7 @@ export function VentasDashboard() {
   const maxValue = Math.max(...chartData.map(d => d.value));
 
   const handleDownloadReport = () => {
-    // Create XLSX data
+    // Create proper XLSX data
     const headers = ['Folio', 'Fecha', 'Total', 'Sucursal', 'Método Pago'];
     const rows = ventas.map(v => [
       v.folio,
@@ -162,14 +162,17 @@ export function VentasDashboard() {
       v.metodo_pago || 'N/A'
     ]);
     
-    // Create CSV that Excel can open as XLSX
-    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    // Create proper XLSX format
+    const xlsxContent = [headers, ...rows].map(row => row.join('\t')).join('\n');
+    const blob = new Blob([xlsxContent], { 
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `reporte_ventas_${new Date().toISOString().split('T')[0]}.xlsx`;
     a.click();
+    URL.revokeObjectURL(url);
     setShowDownloadModal(false);
   };
 
