@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Table } from '../Common/Table';
 import { Filter, Plus, Download } from 'lucide-react';
 import { DetalleDespacho } from '../Pedidos/DetalleDespacho';
 import { useSupabaseData, useSupabaseInsert } from '../../hooks/useSupabaseData';
@@ -23,16 +22,7 @@ export function GestionDespachos() {
   );
   const { insert, loading: inserting } = useSupabaseInsert('despachos');
 
-  const columns = [
-    { key: 'entregado_por', label: 'Entregado por' },
-    { key: 'folio_factura', label: 'Folio de factura' },
-    { key: 'fecha', label: 'Fecha' },
-    { key: 'monto_total', label: 'Monto total' },
-    { key: 'estado', label: 'Estado' },
-    { key: 'sucursal_destino', label: 'Sucursal de destino' },
-  ];
-
-  const processedData = despachos.map(despacho => ({
+  const processedData = (despachos || []).map(despacho => ({
     id: despacho.id,
     entregado_por: despacho.usuarios?.nombres || 'Emilio Aguilera',
     folio_factura: despacho.folio || despacho.id?.slice(0, 8) || 'N/A',
@@ -113,7 +103,7 @@ export function GestionDespachos() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Gestión de despachos</h1>
         
-        {/* Botones alineados a la derecha */}
+        {/* Action buttons */}
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => setShowFilters(true)}
@@ -124,31 +114,44 @@ export function GestionDespachos() {
           </button>
           <button 
             onClick={() => setShowAgregarModal(true)}
-            className="p-2 rounded-md hover:bg-gray-100 text-blue-600"
+            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-4 h-4" />
+            <span>Agregar</span>
           </button>
           <button 
             onClick={handleDownloadReport}
-            className="p-2 rounded-md hover:bg-gray-100 text-blue-600"
+            className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
           >
-            <Download className="w-5 h-5" />
+            <Download className="w-4 h-4" />
+            <span>Descargar</span>
           </button>
         </div>
       </div>
 
+      {/* Table */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              {columns.map((column) => (
-                <th
-                  key={column.key}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  {column.label}
-                </th>
-              ))}
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Entregado por
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Folio de factura
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Fecha
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Monto total
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Estado
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Sucursal de destino
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -158,11 +161,12 @@ export function GestionDespachos() {
                 className="hover:bg-gray-50 cursor-pointer"
                 onClick={() => handleViewDetalle(row)}
               >
-                {columns.map((column) => (
-                  <td key={column.key} className="px-6 py-4 text-sm text-gray-900">
-                    {row[column.key]}
-                  </td>
-                ))}
+                <td className="px-6 py-4 text-sm text-gray-900">{row.entregado_por}</td>
+                <td className="px-6 py-4 text-sm text-gray-900">{row.folio_factura}</td>
+                <td className="px-6 py-4 text-sm text-gray-900">{row.fecha}</td>
+                <td className="px-6 py-4 text-sm text-gray-900">{row.monto_total}</td>
+                <td className="px-6 py-4 text-sm text-gray-900">{row.estado}</td>
+                <td className="px-6 py-4 text-sm text-gray-900">{row.sucursal_destino}</td>
               </tr>
             ))}
           </tbody>

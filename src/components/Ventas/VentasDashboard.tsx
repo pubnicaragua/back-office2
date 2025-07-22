@@ -169,7 +169,7 @@ export function VentasDashboard() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-900">Ventas</h1>
         
-        {/* Botones alineados a la derecha */}
+        {/* Action buttons */}
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => setShowFilters(true)}
