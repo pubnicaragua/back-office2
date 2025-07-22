@@ -81,6 +81,21 @@ export function ReporteMermas({ isOpen, onClose }: ReporteMermasProps) {
           />
         </div>
 
+        <div>
+          <label htmlFor="observaciones-input" className="block text-sm font-medium text-gray-700 mb-1">
+            Observaciones
+          </label>
+          <textarea
+            id="observaciones-input"
+            name="observaciones-input"
+            value={formData.observaciones || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, observaciones: e.target.value }))}
+            placeholder="Observaciones adicionales..."
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
         <div className="flex justify-center">
           <button
             type="submit"

@@ -119,6 +119,34 @@ export function VentasDashboard() {
 
   const generateChartData = () => {
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    
+    // Si hay filtros de fecha, usar solo ese rango
+    if (filters.fechaInicio && filters.fechaFin) {
+      const startDate = new Date(filters.fechaInicio);
+      const endDate = new Date(filters.fechaFin);
+      
+      const filteredByDateVentas = filteredVentas.filter(venta => {
+        const ventaDate = new Date(venta.fecha);
+        return ventaDate >= startDate && ventaDate <= endDate;
+      });
+      
+      // Agrupar por mes dentro del rango
+      const monthlyData = {};
+      filteredByDateVentas.forEach(venta => {
+        const ventaDate = new Date(venta.fecha);
+        const monthKey = `${ventaDate.getFullYear()}-${ventaDate.getMonth()}`;
+        const monthName = months[ventaDate.getMonth()];
+        
+        if (!monthlyData[monthKey]) {
+          monthlyData[monthKey] = { month: monthName, value: 0 };
+        }
+        monthlyData[monthKey].value += parseFloat(venta.total) || 0;
+      });
+      
+      return Object.values(monthlyData);
+    }
+    
+    // Comportamiento normal por año
     return months.map((month, index) => {
       const monthVentas = filteredVentas.filter(venta => {
         const ventaMonth = new Date(venta.fecha).getMonth();

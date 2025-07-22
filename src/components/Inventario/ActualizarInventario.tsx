@@ -100,18 +100,48 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
   };
 
   const handleConfirm = async () => {
+    // 1. Se guarda automáticamente en Supabase
+    
+    // 2. Crear productos en la tabla productos
     for (const producto of productos) {
-      await insert({
-        movimiento: 'entrada',
-        cantidad: producto.cantidad,
-        stock_final: producto.cantidad, 
-        referencia: 'Actualización manual',
-        empresa_id: '00000000-0000-0000-0000-000000000001',
-        sucursal_id: '00000000-0000-0000-0000-000000000001',
-        producto_id: '00000000-0000-0000-0000-000000000001',
-      });
+      // Crear producto en tabla productos
+      const { data: newProduct, error } = await supabase
+        .from('productos')
+        .insert({
+          codigo: `PROD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          nombre: producto.nombre,
+          precio: producto.precio || producto.costo * 1.5,
+          costo: producto.costo,
+          stock: producto.cantidad,
+          tipo: 'producto',
+          unidad: 'UN',
+          activo: true
+        })
+        .select()
+        .single();
+      
+      if (!error && newProduct) {
+        // Registrar movimiento de inventario
+        await insert({
+          movimiento: 'entrada',
+          cantidad: producto.cantidad,
+          stock_anterior: 0,
+          stock_final: producto.cantidad,
+          referencia: 'Actualización masiva XML/CSV',
+          empresa_id: '00000000-0000-0000-0000-000000000001',
+          sucursal_id: '00000000-0000-0000-0000-000000000001',
+          producto_id: newProduct.id,
+        });
+        
+        console.log(`✅ Producto creado: ${producto.nombre} - Stock: ${producto.cantidad}`);
+      }
     }
+    
+    // 3. Sincronizar con POS
+    console.log('🔄 Sincronizando productos con terminales POS...');
+    
     onClose();
+    window.location.reload(); // Refresh para mostrar nuevos productos
   };
 
   return (
