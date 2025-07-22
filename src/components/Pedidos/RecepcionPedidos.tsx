@@ -38,11 +38,8 @@ export function RecepcionPedidos() {
   }));
 
   const filteredData = processedData.filter(item => {
-    if (filters.proveedor && !item.proveedor.toLowerCase().includes(filters.proveedor.toLowerCase())) return false;
-    if (filters.fecha) {
-      const pedidoFecha = new Date(item.fecha).toISOString().split('T')[0];
-      if (pedidoFecha !== filters.fecha) return false;
-    }
+    if (filters.proveedor && filters.proveedor !== '' && !item.proveedor.toLowerCase().includes(filters.proveedor.toLowerCase())) return false;
+    if (filters.fecha && filters.fecha !== '' && !item.fecha.includes(filters.fecha)) return false;
     if (filters.estado && item.estado !== filters.estado) return false;
     return true;
   });

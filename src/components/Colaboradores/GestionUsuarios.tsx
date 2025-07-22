@@ -49,7 +49,6 @@ export function GestionUsuarios() {
   });
 
   const filteredData = processedData.filter(item =>
-    (filters.sucursal === '' || item.sucursal === filters.sucursal) &&
     (searchTerm === '' || 
      item.nombres.toLowerCase().includes(searchTerm.toLowerCase()) ||
      item.rut.includes(searchTerm))
