@@ -79,7 +79,87 @@ export function PromocionesTodas({ onShowModal }: PromocionesTodasProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium text-gray-900">Promociones de todas las tiendas</h2>
-        <button 
+        <div className="flex items-center space-x-3 ml-auto">
+          <button 
+            onClick={() => setShowFilters(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            <Filter className="w-4 h-4" />
+            <span>Filtros</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
+            placeholder="Buscar"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+        <div className="flex items-center space-x-2 ml-auto">
+          <button 
+            onClick={() => setShowAgregarModal(true)}
+            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+          <button 
+            onClick={() => setShowEditarModal(true)}
+            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+          >
+            <Edit className="w-5 h-5" />
+          </button>
+          <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
+            <Download className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Modal de Filtros */}
+      <Modal
+        isOpen={showFilters}
+        onClose={() => setShowFilters(false)}
+        title="Filtros"
+        size="md"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Sucursal
+            </label>
+            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Todas las sucursales</option>
+              <option value="n1">N°1</option>
+              <option value="n2">N°2</option>
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Estado
+            </label>
+            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Todos</option>
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
+          </div>
+          
+          <div className="flex justify-end">
+            <button
+              onClick={() => setShowFilters(false)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Aplicar filtros
+            </button>
+          </div>
+        </div>
+      </Modal>
           onClick={() => setShowFilters(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >

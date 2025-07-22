@@ -113,8 +113,46 @@ export function DocumentoDetalleModal({ isOpen, onClose, documento }: DocumentoD
               <FileText className="w-4 h-4" />
               <span>Vista previa del documento:</span>
             </h3>
-            <div className="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center">
-              <span className="text-gray-400 text-sm">Vista previa del documento</span>
+            <div className="w-full h-64 bg-white border border-gray-200 rounded-lg p-4 text-xs font-mono">
+              <div className="text-center mb-4">
+                <img src="/logo_negro.svg" alt="Solvendo" className="h-8 mx-auto mb-2" />
+                <div className="text-sm font-bold">ANROLTEC SPA</div>
+                <div>RUT: 78.168.951-3</div>
+                <div>Av. Principal 123, Santiago</div>
+                <div>Tel: +56 9 1234 5678</div>
+              </div>
+              
+              <div className="border-t border-b border-gray-300 py-2 mb-2">
+                <div className="flex justify-between">
+                  <span>BOLETA ELECTRÓNICA</span>
+                  <span>N° {documento?.folio}</span>
+                </div>
+                <div>Fecha: {documento?.fecha}</div>
+              </div>
+              
+              <div className="space-y-1 mb-2">
+                {productos.slice(0, 3).map((item, index) => (
+                  <div key={index} className="flex justify-between">
+                    <span>{item.productos?.nombre || 'Producto'}</span>
+                    <span>${parseFloat(item.subtotal || 0).toLocaleString('es-CL')}</span>
+                  </div>
+                ))}
+                {productos.length > 3 && (
+                  <div className="text-center text-gray-500">... y {productos.length - 3} más</div>
+                )}
+              </div>
+              
+              <div className="border-t border-gray-300 pt-2">
+                <div className="flex justify-between font-bold">
+                  <span>TOTAL:</span>
+                  <span>${total.toLocaleString('es-CL')}</span>
+                </div>
+              </div>
+              
+              <div className="text-center mt-4 text-gray-500">
+                <div>Gracias por su compra</div>
+                <div>www.solvendo.com</div>
+              </div>
             </div>
           </div>
         </div>

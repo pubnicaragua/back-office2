@@ -68,7 +68,7 @@ export function GestionUsuarios() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium text-gray-900">Gestión de usuarios</h2>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-3 ml-auto">
           <button 
             onClick={() => setShowComunicadoModal(true)}
             className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -104,7 +104,15 @@ export function GestionUsuarios() {
             className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
-        <button 
+        <div className="ml-auto">
+          <button 
+            onClick={() => setShowAgregarModal(true)}
+            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
           onClick={() => setShowAgregarModal(true)}
           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
         >

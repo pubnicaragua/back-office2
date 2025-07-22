@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, Monitor, Smartphone, CreditCard } from 'lucide-react';
+import { CheckCircle, Monitor, Smartphone, CreditCard, Usb, Wifi, QrCode } from 'lucide-react';
 
 export function POSIntegrationSimple() {
   return (
@@ -14,90 +14,198 @@ export function POSIntegrationSimple() {
               <p>• <strong>Empresa:</strong> ANROLTEC SPA (RUT: 78168951-3)</p>
               <p>• <strong>Folios SII:</strong> 45 folios CAF disponibles (Tipo 39 - Boletas)</p>
               <p>• <strong>Terminales:</strong> 3 configurados, 2 en línea</p>
-              <p>• <strong>Proveedor activo:</strong> SumUp para pagos con tarjeta</p>
+              <p>• <strong>Sincronización:</strong> Tiempo real automática</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Integration Steps */}
+      {/* Integration Options */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="font-semibold text-gray-900 mb-6">🔗 Cómo Integrar tu Terminal POS</h3>
+        <h3 className="font-semibold text-gray-900 mb-6">🔗 Opciones para Conectar Terminal de Pago a Solvendo</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Monitor className="w-8 h-8 text-blue-600" />
+          {/* USB/Serial Integration */}
+          <div className="border border-gray-200 rounded-lg p-6">
+            <div className="text-center mb-4">
+              <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Usb className="w-8 h-8 text-blue-600" />
+              </div>
+              <h4 className="font-medium text-gray-900 mb-2">1. USB/Serial (Transbank)</h4>
             </div>
-            <h4 className="font-medium text-gray-900 mb-2">1. Configurar Terminal</h4>
-            <p className="text-sm text-gray-600">
-              Configura tu terminal POS con el código único que te proporcionamos
-            </p>
+            <div className="space-y-3 text-sm">
+              <p className="text-gray-600">Compatible con Transbank POS integrados (Verifone VX520, Ingenico)</p>
+              <div className="bg-blue-50 p-3 rounded">
+                <p className="font-medium text-blue-900">Funcionamiento:</p>
+                <p className="text-blue-800">Solvendo envía monto → Terminal procesa → Respuesta automática</p>
+              </div>
+              <div className="space-y-1">
+                <p className="font-medium text-gray-700">Requisitos:</p>
+                <ul className="text-gray-600 space-y-1">
+                  <li>• Terminal en modo integrado</li>
+                  <li>• Conexión USB/Serial</li>
+                  <li>• Middleware Transbank</li>
+                </ul>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-green-600">✅</span>
+                <span className="text-sm text-green-600">Flujo automático, reduce errores</span>
+              </div>
+            </div>
           </div>
-          
-          <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Smartphone className="w-8 h-8 text-green-600" />
+
+          {/* API Integration */}
+          <div className="border border-gray-200 rounded-lg p-6">
+            <div className="text-center mb-4">
+              <div className="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <QrCode className="w-8 h-8 text-green-600" />
+              </div>
+              <h4 className="font-medium text-gray-900 mb-2">2. API/QR (Virtual)</h4>
             </div>
-            <h4 className="font-medium text-gray-900 mb-2">2. Conectar API</h4>
-            <p className="text-sm text-gray-600">
-              Conecta tu terminal a nuestros endpoints para sincronizar productos y ventas
-            </p>
+            <div className="space-y-3 text-sm">
+              <p className="text-gray-600">Webpay Plus, Mercado Pago, GetNet</p>
+              <div className="bg-green-50 p-3 rounded">
+                <p className="font-medium text-green-900">Funcionamiento:</p>
+                <p className="text-green-800">Solvendo genera QR → Cliente paga → Confirmación automática</p>
+              </div>
+              <div className="space-y-1">
+                <p className="font-medium text-gray-700">Ideal para:</p>
+                <ul className="text-gray-600 space-y-1">
+                  <li>• Venta presencial rápida</li>
+                  <li>• Delivery</li>
+                  <li>• Sin conexión física</li>
+                </ul>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-green-600">✅</span>
+                <span className="text-sm text-green-600">Sin configuración física</span>
+              </div>
+            </div>
           </div>
-          
-          <div className="text-center">
-            <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <CreditCard className="w-8 h-8 text-purple-600" />
+
+          {/* Manual Mode */}
+          <div className="border border-gray-200 rounded-lg p-6">
+            <div className="text-center mb-4">
+              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Monitor className="w-8 h-8 text-gray-600" />
+              </div>
+              <h4 className="font-medium text-gray-900 mb-2">3. Modo Manual</h4>
             </div>
-            <h4 className="font-medium text-gray-900 mb-2">3. Procesar Ventas</h4>
-            <p className="text-sm text-gray-600">
-              Procesa ventas con folios automáticos del SII y sincronización en tiempo real
-            </p>
+            <div className="space-y-3 text-sm">
+              <p className="text-gray-600">Usuario realiza cobro manualmente</p>
+              <div className="bg-gray-50 p-3 rounded">
+                <p className="font-medium text-gray-900">Funcionamiento:</p>
+                <p className="text-gray-800">Cobro manual → Marcar en Solvendo como pagado</p>
+              </div>
+              <div className="space-y-1">
+                <p className="font-medium text-gray-700">Características:</p>
+                <ul className="text-gray-600 space-y-1">
+                  <li>• Fácil de usar</li>
+                  <li>• Sin configuración</li>
+                  <li>• Mayor riesgo de errores</li>
+                </ul>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-green-600">✅</span>
+                <span className="text-sm text-green-600">Implementación inmediata</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* API Endpoints */}
+      {/* Configuration Steps */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">📡 Endpoints Disponibles</h3>
+        <h3 className="font-semibold text-gray-900 mb-4">🛠️ Configuración en Solvendo</h3>
         
         <div className="space-y-4">
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h4 className="font-medium text-gray-900 mb-2">Productos y Precios</h4>
-            <code className="text-sm bg-white p-2 rounded border block">
-              GET /api/productos?empresa_id=tu_empresa_id
-            </code>
-            <p className="text-sm text-gray-600 mt-1">Obtiene productos con stock, precios y códigos de barras</p>
+          <div className="flex items-start space-x-3">
+            <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+            <div>
+              <p className="font-medium text-gray-900">Ir a "Información de POS" → "Opciones de caja"</p>
+              <p className="text-sm text-gray-600">Configurar tipo de moneda (USD/CLP) y proveedores de pago</p>
+            </div>
           </div>
           
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h4 className="font-medium text-gray-900 mb-2">Enviar Ventas</h4>
-            <code className="text-sm bg-white p-2 rounded border block">
-              POST /api/transactions
-            </code>
-            <p className="text-sm text-gray-600 mt-1">Envía ventas completas con folio automático del SII</p>
+          <div className="flex items-start space-x-3">
+            <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+            <div>
+              <p className="font-medium text-gray-900">Seleccionar "Agregar terminal de pago"</p>
+              <p className="text-sm text-gray-600">Elegir tipo: Terminal físico (USB/Serial), Virtual (API/QR), o Manual</p>
+            </div>
           </div>
           
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h4 className="font-medium text-gray-900 mb-2">Folios SII</h4>
-            <code className="text-sm bg-white p-2 rounded border block">
-              POST /api/folio/next
-            </code>
-            <p className="text-sm text-gray-600 mt-1">Obtiene el siguiente folio disponible para boletas</p>
+          <div className="flex items-start space-x-3">
+            <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
+            <div>
+              <p className="font-medium text-gray-900">Configurar conexión</p>
+              <ul className="text-sm text-gray-600 mt-1 space-y-1">
+                <li>• <strong>USB/Serial:</strong> Instalar drivers, conectar terminal, probar conexión</li>
+                <li>• <strong>API/QR:</strong> Configurar credenciales del proveedor</li>
+                <li>• <strong>Manual:</strong> Activar modo manual en caja</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="flex items-start space-x-3">
+            <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">✓</div>
+            <div>
+              <p className="font-medium text-gray-900">Terminal configurado y listo</p>
+              <p className="text-sm text-gray-600">Solvendo sincroniza automáticamente productos, precios y folios SII</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Real-time Sync */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 className="font-semibold text-blue-900 mb-3">📡 Sincronización en Tiempo Real</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div className="text-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+              <span className="text-blue-600 font-bold">📦</span>
+            </div>
+            <p className="font-medium text-blue-900">Productos</p>
+            <p className="text-blue-700">Stock y precios</p>
+          </div>
+          
+          <div className="text-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+              <span className="text-blue-600 font-bold">🎯</span>
+            </div>
+            <p className="font-medium text-blue-900">Promociones</p>
+            <p className="text-blue-700">Descuentos activos</p>
+          </div>
+          
+          <div className="text-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+              <span className="text-blue-600 font-bold">💰</span>
+            </div>
+            <p className="font-medium text-blue-900">Configuración</p>
+            <p className="text-blue-700">Monedas y opciones</p>
+          </div>
+          
+          <div className="text-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+              <span className="text-blue-600 font-bold">📄</span>
+            </div>
+            <p className="font-medium text-blue-900">Folios SII</p>
+            <p className="text-blue-700">Automático</p>
           </div>
         </div>
       </div>
 
       {/* Contact Information */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 className="font-semibold text-blue-900 mb-3">💬 ¿Necesitas Ayuda con la Integración?</h3>
-        <p className="text-blue-800 mb-4">
-          Nuestro equipo técnico puede ayudarte a configurar tu terminal POS y realizar las pruebas necesarias.
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+        <h3 className="font-semibold text-yellow-900 mb-3">💬 Soporte Técnico</h3>
+        <p className="text-yellow-800 mb-4">
+          Nuestro equipo puede ayudarte a configurar cualquier tipo de terminal POS.
         </p>
-        <div className="space-y-2 text-sm text-blue-700">
+        <div className="space-y-2 text-sm text-yellow-700">
           <p>📧 <strong>Email:</strong> soporte@solvendo.com</p>
           <p>📱 <strong>WhatsApp:</strong> +56 9 1234 5678</p>
           <p>🕒 <strong>Horario:</strong> Lunes a Viernes, 9:00 - 18:00</p>
+          <p>🔧 <strong>Instalación:</strong> Servicio técnico disponible</p>
         </div>
       </div>
     </div>
