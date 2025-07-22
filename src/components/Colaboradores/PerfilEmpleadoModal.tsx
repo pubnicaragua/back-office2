@@ -10,6 +10,7 @@ interface PerfilEmpleadoModalProps {
   selectedUser?: any;
 }
 
+export const PerfilEmpleadoModal: React.FC<PerfilEmpleadoModalProps> = ({ isOpen, onClose, selectedUser }) => {
   const [showTurnoModal, setShowTurnoModal] = useState(false);
   const [showTareaModal, setShowTareaModal] = useState(false);
   const [showPermisoModal, setShowPermisoModal] = useState(false);
