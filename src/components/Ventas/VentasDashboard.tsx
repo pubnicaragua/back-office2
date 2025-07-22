@@ -1,7 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { Filter, Download, RefreshCw, TrendingUp, Menu, Clock } from "lucide-react"
+import { Button } from "@/components/ui/button" // Assuming shadcn/ui Button is available
 import { Modal } from "../Common/Modal" // Assuming this Modal component exists
 
 // --- Data Fetching (Simulated Backend) ---
@@ -23,16 +25,16 @@ async function fetchVentasData() {
   // Chart data with varying heights to match the image
   const chartData = [
     { month: "Ene", value: 25000 }, // Corresponds to 25k
-    { month: "Feb", value: 32000 }, // Corresponds to 32k
-    { month: "Mar", value: 20000 },
-    { month: "Abr", value: 35000 },
-    { month: "May", value: 28000 },
-    { month: "Jun", value: 32000 },
-    { month: "Jul", value: 18000 },
-    { month: "Ago", value: 30000 },
-    { month: "Sep", value: 32000 },
-    { month: "Oct", value: 25000 },
-    { month: "Nov", value: 35000 },
+    { month: "Feb", value: 35000 }, // Adjusted to match image
+    { month: "Mar", value: 22000 }, // Adjusted to match image
+    { month: "Abr", value: 38000 }, // Adjusted to match image
+    { month: "May", value: 30000 }, // Adjusted to match image
+    { month: "Jun", value: 36000 }, // Adjusted to match image
+    { month: "Jul", value: 20000 }, // Adjusted to match image
+    { month: "Ago", value: 32000 }, // Adjusted to match image
+    { month: "Sep", value: 34000 }, // Adjusted to match image
+    { month: "Oct", value: 28000 }, // Adjusted to match image
+    { month: "Nov", value: 39000 }, // Adjusted to match image
   ]
 
   // Mock data for filters, replace with actual Supabase data if needed
@@ -123,7 +125,8 @@ export function VentasDashboard() {
     loadData()
   }, [])
 
-  const maxValue = Math.max(...chartData.map((d) => d.value), 35000) // Ensure max value is at least 35k for Y-axis scale
+  // Max value for Y-axis, ensuring it's at least 35k for consistent scaling
+  const maxValue = Math.max(...chartData.map((d) => d.value), 35000)
 
   const handleDownloadReport = () => {
     try {
@@ -171,20 +174,30 @@ export function VentasDashboard() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Main content area */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
+      {/* Main content area - adjusted to account for the fixed right sidebar */}
+      <div className="flex-1 flex flex-col pr-16">
+        {" "}
+        {/* Added pr-16 to make space for the fixed right sidebar */}
+        {/* Global Header (as per image, this is part of the overall app layout, not this component) */}
+        {/* I'm assuming this header is rendered by a parent layout component (e.g., app/layout.tsx) */}
+        {/* If you need a header here, please specify its content. */}
         <header className="flex items-center justify-between h-16 px-6 border-b bg-white shadow-sm">
           <div className="flex items-center gap-4">
-            <button className="lg:hidden p-2 rounded-md hover:bg-gray-100">
+            <Button variant="ghost" size="icon" className="lg:hidden">
               <Menu className="h-6 w-6" />
               <span className="sr-only">Toggle navigation menu</span>
-            </button>
+            </Button>
             <h1 className="text-xl font-semibold text-gray-900">Ventas</h1>
           </div>
           <div className="flex-1 flex justify-center">
             {/* Solvendo Logo */}
-            <div className="text-xl font-bold">Solvendo</div>
+            <Image
+              src="/placeholder.svg?height=32&width=120"
+              alt="Solvendo Logo"
+              width={120}
+              height={32}
+              className="h-8"
+            />
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -192,12 +205,17 @@ export function VentasDashboard() {
               <span>22:00</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+              <Image
+                src="/placeholder.svg?height=32&width=32"
+                alt="User Avatar"
+                width={32}
+                height={32}
+                className="rounded-full border"
+              />
               <span className="text-sm font-medium text-gray-800">Emilio Aguilera</span>
             </div>
           </div>
         </header>
-
         {/* Dashboard Content */}
         <main className="flex-1 p-6 space-y-6">
           {/* Metrics Cards */}
@@ -238,7 +256,7 @@ export function VentasDashboard() {
 
             {/* Chart Container */}
             <div className="relative h-64">
-              {/* Y-axis labels and grid lines */}
+              {/* Y-axis labels */}
               <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-4 pb-4">
                 {yAxisLabels.map((label, i) => (
                   <span key={i} className="h-[calc(100%/7)] flex items-end justify-end pb-1">
@@ -246,6 +264,7 @@ export function VentasDashboard() {
                   </span>
                 ))}
               </div>
+              {/* Grid lines spanning full width */}
               <div className="absolute left-8 top-0 h-full w-[calc(100%-2rem)] flex flex-col justify-between">
                 {Array.from({ length: 7 }).map((_, i) => (
                   <div key={i} className="border-b border-gray-200 h-[calc(100%/7)]"></div>
@@ -277,8 +296,7 @@ export function VentasDashboard() {
               </div>
               {/* Horizontal blue line at the bottom */}
               <div className="absolute bottom-0 left-8 w-[calc(100%-2rem)] h-0.5 bg-blue-600"></div>
-              {/* Large dark gray circle */}
-              <div className="absolute bottom-0 right-0 w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center text-white text-xl font-bold"></div>
+              {/* Removed the large dark gray circle */}
             </div>
           </div>
         </main>
