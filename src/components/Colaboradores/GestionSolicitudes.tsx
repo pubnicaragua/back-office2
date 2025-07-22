@@ -11,7 +11,7 @@ export function GestionSolicitudes() {
   const [selectedSolicitud, setSelectedSolicitud] = useState(null);
 
   const { data: solicitudes, loading, error } = useSupabaseData<any>(
-    'solicitudes_vacaciones', 
+    'solicitudes_vacaciones',
     '*'
   );
 
@@ -25,7 +25,7 @@ export function GestionSolicitudes() {
 
   const processedData = (solicitudes || []).map((solicitud) => ({
     id: solicitud.id,
-    nombres: 'Pedro Pérez', // Fallback name since relationship might not work
+    nombres: 'Pedro Pérez',
     tipo: 'Vacaciones',
     numero_solicitud: solicitud.numero_solicitud,
     fecha: new Date(solicitud.created_at).toLocaleDateString('es-CL'),
@@ -44,6 +44,7 @@ export function GestionSolicitudes() {
     setSelectedSolicitud(solicitud);
     setShowSolicitudModal(true);
   };
+
   if (loading) {
     return <div className="text-center py-4">Cargando solicitudes...</div>;
   }

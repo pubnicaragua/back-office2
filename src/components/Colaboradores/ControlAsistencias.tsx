@@ -10,7 +10,7 @@ export function ControlAsistencias() {
   const [showFilters, setShowFilters] = useState(false);
 
   const { data: asistencias, loading } = useSupabaseData<any>(
-    'asistencias', 
+    'asistencias',
     '*'
   );
 
@@ -24,8 +24,8 @@ export function ControlAsistencias() {
   ];
 
   const processedData = (asistencias || []).map(asistencia => ({
-    nombres: 'Pedro Pérez', // Fallback name
-    rut: '12.345.678-9', // Fallback RUT
+    nombres: 'Pedro Pérez',
+    rut: '12.345.678-9',
     fecha_hora: new Date(asistencia.fecha).toLocaleDateString('es-CL'),
     ingreso_salida: `${asistencia.hora_ingreso || '08:00'} - ${asistencia.hora_salida || '18:00'}`,
     horas_trabajadas: asistencia.hora_ingreso && asistencia.hora_salida ? 
