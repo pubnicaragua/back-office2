@@ -38,14 +38,13 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
           const codigo = detalle.querySelector('CdgItem VlrCodigo')?.textContent || '';
           const nombre = detalle.querySelector('NmbItem')?.textContent || '';
           const cantidad = parseInt(detalle.querySelector('QtyItem')?.textContent || '0');
-          const precio = parseFloat(detalle.querySelector('PrcItem')?.textContent || '0');
+          const precio = Math.round(parseFloat(detalle.querySelector('PrcItem')?.textContent || '0'));
           
           return {
             nombre,
             codigo,
             cantidad,
-            costo: precio * 0.7,
-            precio
+            costo: Math.round(precio * 0.7)
           };
         });
         
@@ -192,15 +191,13 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
               <span>Producto</span>
               <span>Cantidad</span>
               <span>Costo</span>
-              <span>Precio</span>
             </div>
             <div className="space-y-3 max-h-60 overflow-y-auto">
               {productos.slice(0, 5).map((producto, index) => (
-                <div key={index} className="grid grid-cols-4 gap-4 text-sm">
+                <div key={index} className="grid grid-cols-3 gap-4 text-sm">
                   <span className="text-gray-900">{producto.nombre}</span>
                   <span className="text-gray-600">{producto.cantidad}</span>
                   <span className="text-gray-900">${producto.costo}</span>
-                  <span className="text-gray-900">${producto.precio}</span>
                 </div>
               ))}
               {productos.length > 5 && (

@@ -19,6 +19,8 @@ export function ProductosTotales() {
   const [showInventarioModal, setShowInventarioModal] = useState(false);
   const [showProductoModal, setShowProductoModal] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { data: productos, loading, refetch } = useSupabaseData<any>(
     'productos',
@@ -26,6 +28,7 @@ export function ProductosTotales() {
   );
   const { data: sucursales } = useSupabaseData<any>('sucursales', '*');
   const { data: categorias } = useSupabaseData<any>('categorias', '*');
+  const { update: updateProduct } = useSupabaseUpdate('productos');
 
   const columns = [
     { key: 'producto', label: 'Producto' },
@@ -37,7 +40,7 @@ export function ProductosTotales() {
     { key: 'precio', label: 'Precio' },
     { key: 'margen', label: 'Margen' },
     { key: 'disponible', label: 'Disponible' },
-    { key: 'acciones', label: 'Acciones' },
+    { key: 'acciones', label: 'Acciones' }
   ];
 
   // Aplicar filtros
@@ -54,6 +57,26 @@ export function ProductosTotales() {
     return true;
   });
 
+  const handleEditProduct = (producto) => {
+    setSelectedProduct(producto);
+    setShowProductoModal(true);
+  };
+
+  const handleDeleteProduct = (producto) => {
+    setSelectedProduct(producto);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedProduct) {
+      const success = await updateProduct(selectedProduct.id, { activo: false });
+      if (success) {
+        setShowDeleteModal(false);
+        setSelectedProduct(null);
+        refetch();
+      }
+    }
+  };
   const processedData = filteredProductos.map(producto => ({
     id: producto.id,
     producto: producto.nombre,
@@ -65,7 +88,30 @@ export function ProductosTotales() {
     precio: `$${Math.round((producto.precio || 0)).toLocaleString('es-CL')}`,
     margen: `${Math.round(((producto.precio || 0) - (producto.costo || 0)) / (producto.precio || 1) * 100)}%`,
     disponible: producto.stock > 0 ? 'Disponible' : 'Agotado',
-    acciones: producto.id,
+    acciones: (
+      <div className="flex items-center space-x-2">
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            handleEditProduct(producto);
+          }}
+          className="text-blue-600 hover:text-blue-800 p-1"
+          title="Editar producto"
+        >
+          ✏️
+        </button>
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDeleteProduct(producto);
+          }}
+          className="text-red-600 hover:text-red-800 p-1"
+          title="Eliminar producto"
+        >
+          🗑️
+        </button>
+      </div>
+    )
   }));
 
   const filteredData = processedData.filter(item =>
@@ -81,21 +127,21 @@ export function ProductosTotales() {
         <div className="flex items-center space-x-3">
           <button 
             onClick={() => setShowFilters(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <Filter className="w-5 h-5 mr-2" />
             Filtros
           </button>
           <button 
             onClick={() => setShowProductoModal(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <Plus className="w-5 h-5 mr-2" />
             Agregar
           </button>
           <button 
             onClick={() => setShowMermasModal(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <AlertTriangle className="w-5 h-5 mr-2" />
             Mermas
@@ -107,6 +153,8 @@ export function ProductosTotales() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
+            id="search-productos"
+            name="search-productos"
             type="text"
             placeholder="Buscar productos..."
             value={searchTerm}
@@ -118,21 +166,21 @@ export function ProductosTotales() {
         <div className="flex items-center space-x-3">
         <button 
           onClick={() => setShowFilters(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           <Filter className="w-4 h-4" />
           <span>Filtros</span>
         </button>
         <button 
           onClick={() => setShowProductoModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           <Plus className="w-4 h-4" />
           <span>Agregar</span>
         </button>
         <button 
           onClick={() => setShowInventarioModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           <span>📊</span>
           <span>Actualizar inventario</span>
@@ -161,6 +209,12 @@ export function ProductosTotales() {
       <AgregarProductoModal 
         isOpen={showProductoModal} 
         onClose={() => setShowProductoModal(false)} 
+        selectedProduct={selectedProduct}
+        onSuccess={() => {
+          setShowProductoModal(false);
+          setSelectedProduct(null);
+          refetch();
+        }}
       />
 
       <FilterModal
@@ -176,6 +230,8 @@ export function ProductosTotales() {
             <select 
               value={filters.sucursal}
               onChange={(e) => setFilters(prev => ({ ...prev, sucursal: e.target.value }))}
+              id="filter-sucursal"
+              name="filter-sucursal"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todas las sucursales</option>
@@ -192,6 +248,8 @@ export function ProductosTotales() {
             <select 
               value={filters.disponibilidad}
               onChange={(e) => setFilters(prev => ({ ...prev, disponibilidad: e.target.value }))}
+              id="filter-disponibilidad"
+              name="filter-disponibilidad"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todos los productos</option>
@@ -207,6 +265,8 @@ export function ProductosTotales() {
             <select 
               value={filters.categoria}
               onChange={(e) => setFilters(prev => ({ ...prev, categoria: e.target.value }))}
+              id="filter-categoria"
+              name="filter-categoria"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todas las categorías</option>
@@ -226,6 +286,34 @@ export function ProductosTotales() {
           </div>
         </div>
       </FilterModal>
+
+      {/* Delete Modal */}
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        title="Eliminar Producto"
+        size="sm"
+      >
+        <div className="text-center space-y-4">
+          <p className="text-gray-600">
+            ¿Estás seguro de que deseas eliminar el producto "{selectedProduct?.nombre}"?
+          </p>
+          <div className="flex justify-center space-x-3">
+            <button
+              onClick={() => setShowDeleteModal(false)}
+              className="px-4 py-2 text-gray-600 hover:text-gray-800"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={confirmDelete}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            >
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

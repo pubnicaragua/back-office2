@@ -5,9 +5,11 @@ import { useSupabaseInsert } from '../../hooks/useSupabaseData';
 interface AgregarProductoModalProps {
   isOpen: boolean;
   onClose: () => void;
+  selectedProduct?: any;
+  onSuccess?: () => void;
 }
 
-export function AgregarProductoModal({ isOpen, onClose }: AgregarProductoModalProps) {
+export function AgregarProductoModal({ isOpen, onClose, selectedProduct, onSuccess }: AgregarProductoModalProps) {
   const [formData, setFormData] = useState({
     producto: '',
     categoria: '',
@@ -20,21 +22,22 @@ export function AgregarProductoModal({ isOpen, onClose }: AgregarProductoModalPr
   });
 
   const { insert, loading } = useSupabaseInsert('productos');
+  const { update, loading: updating } = useSupabaseUpdate('productos');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const success = await insert({
-      codigo: formData.sku,
-      nombre: formData.producto,
-      descripcion: formData.descripcion,
-      precio: parseFloat(formData.precio_unitario),
-      tipo: 'producto',
-      unidad: formData.se_vende_por === 'unidad' ? 'UN' : 'KG',
-    });
-
-    if (success) {
-      onClose();
+  // Update form when selectedProduct changes
+  React.useEffect(() => {
+    if (selectedProduct) {
+      setFormData({
+        producto: selectedProduct.nombre || '',
+        categoria: selectedProduct.categoria || '',
+        descripcion: selectedProduct.descripcion || '',
+        se_vende_por: selectedProduct.unidad === 'KG' ? 'kilogramo' : 'unidad',
+        codigo_unitario: selectedProduct.codigo || '',
+        precio_unitario: selectedProduct.precio?.toString() || '',
+        sku: selectedProduct.codigo || '',
+        agregar_stock: selectedProduct.stock?.toString() || ''
+      });
+    } else {
       setFormData({
         producto: '',
         categoria: '',
@@ -46,16 +49,55 @@ export function AgregarProductoModal({ isOpen, onClose }: AgregarProductoModalPr
         agregar_stock: ''
       });
     }
+  }, [selectedProduct]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    let success;
+    
+    if (selectedProduct) {
+      // Update existing product
+      success = await update(selectedProduct.id, {
+        codigo: formData.sku,
+        nombre: formData.producto,
+        descripcion: formData.descripcion,
+        precio: parseFloat(formData.precio_unitario),
+        unidad: formData.se_vende_por === 'unidad' ? 'UN' : 'KG',
+        stock: parseFloat(formData.agregar_stock) || 0
+      });
+    } else {
+      // Create new product
+      success = await insert({
+        codigo: formData.sku,
+        nombre: formData.producto,
+        descripcion: formData.descripcion,
+        precio: parseFloat(formData.precio_unitario),
+        tipo: 'producto',
+        unidad: formData.se_vende_por === 'unidad' ? 'UN' : 'KG',
+        stock: parseFloat(formData.agregar_stock) || 0
+      });
+    }
+
+    if (success) {
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        onClose();
+      }
+    }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Agregar producto" size="md">
+    <Modal isOpen={isOpen} onClose={onClose} title={selectedProduct ? "Editar producto" : "Agregar producto"} size="md">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="producto-nombre" className="block text-sm font-medium text-gray-700 mb-1">
             Producto
           </label>
           <input
+            id="producto-nombre"
+            name="producto-nombre"
             type="text"
             value={formData.producto}
             onChange={(e) => setFormData(prev => ({ ...prev, producto: e.target.value }))}
@@ -66,10 +108,12 @@ export function AgregarProductoModal({ isOpen, onClose }: AgregarProductoModalPr
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="producto-categoria" className="block text-sm font-medium text-gray-700 mb-1">
             Categoría
           </label>
           <input
+            id="producto-categoria"
+            name="producto-categoria"
             type="text"
             value={formData.categoria}
             onChange={(e) => setFormData(prev => ({ ...prev, categoria: e.target.value }))}
@@ -79,10 +123,12 @@ export function AgregarProductoModal({ isOpen, onClose }: AgregarProductoModalPr
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="producto-descripcion" className="block text-sm font-medium text-gray-700 mb-1">
             Descripción
           </label>
           <input
+            id="producto-descripcion"
+            name="producto-descripcion"
             type="text"
             value={formData.descripcion}
             onChange={(e) => setFormData(prev => ({ ...prev, descripcion: e.target.value }))}
@@ -98,8 +144,9 @@ export function AgregarProductoModal({ isOpen, onClose }: AgregarProductoModalPr
           <div className="flex space-x-4">
             <label className="flex items-center">
               <input
-                type="radio"
+                id="venta-unidad"
                 name="se_vende_por"
+                type="radio"
                 value="unidad"
                 checked={formData.se_vende_por === 'unidad'}
                 onChange={(e) => setFormData(prev => ({ ...prev, se_vende_por: e.target.value }))}
@@ -109,8 +156,9 @@ export function AgregarProductoModal({ isOpen, onClose }: AgregarProductoModalPr
             </label>
             <label className="flex items-center">
               <input
-                type="radio"
+                id="venta-kilogramo"
                 name="se_vende_por"
+                type="radio"
                 value="kilogramo"
                 checked={formData.se_vende_por === 'kilogramo'}
                 onChange={(e) => setFormData(prev => ({ ...prev, se_vende_por: e.target.value }))}
@@ -123,10 +171,12 @@ export function AgregarProductoModal({ isOpen, onClose }: AgregarProductoModalPr
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="codigo-unitario" className="block text-sm font-medium text-gray-700 mb-1">
               {formData.se_vende_por === 'unidad' ? 'Código unitario' : 'Código por kg'}
             </label>
             <input
+              id="codigo-unitario"
+              name="codigo-unitario"
               type="text"
               value={formData.codigo_unitario}
               onChange={(e) => setFormData(prev => ({ ...prev, codigo_unitario: e.target.value }))}
@@ -135,10 +185,12 @@ export function AgregarProductoModal({ isOpen, onClose }: AgregarProductoModalPr
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="precio-unitario" className="block text-sm font-medium text-gray-700 mb-1">
               {formData.se_vende_por === 'unidad' ? 'Precio unitario' : 'Precio por kg'}
             </label>
             <input
+              id="precio-unitario"
+              name="precio-unitario"
               type="number"
               value={formData.precio_unitario}
               onChange={(e) => setFormData(prev => ({ ...prev, precio_unitario: e.target.value }))}
@@ -150,10 +202,12 @@ export function AgregarProductoModal({ isOpen, onClose }: AgregarProductoModalPr
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="producto-sku" className="block text-sm font-medium text-gray-700 mb-1">
             SKU
           </label>
           <input
+            id="producto-sku"
+            name="producto-sku"
             type="text"
             value={formData.sku}
             onChange={(e) => setFormData(prev => ({ ...prev, sku: e.target.value }))}
@@ -164,10 +218,12 @@ export function AgregarProductoModal({ isOpen, onClose }: AgregarProductoModalPr
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="stock-actual" className="block text-sm font-medium text-gray-700 mb-1">
             Agregar stock actual
           </label>
           <input
+            id="stock-actual"
+            name="stock-actual"
             type="number"
             value={formData.agregar_stock}
             onChange={(e) => setFormData(prev => ({ ...prev, agregar_stock: e.target.value }))}
@@ -179,10 +235,10 @@ export function AgregarProductoModal({ isOpen, onClose }: AgregarProductoModalPr
         <div className="flex justify-center">
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || updating}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
-            {loading ? 'Guardando...' : 'Guardar producto'}
+            {(loading || updating) ? 'Guardando...' : selectedProduct ? 'Actualizar producto' : 'Guardar producto'}
           </button>
         </div>
       </form>

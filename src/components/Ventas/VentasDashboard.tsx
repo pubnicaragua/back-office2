@@ -4,27 +4,27 @@ import { Modal } from '../Common/Modal';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 interface MetricsCardProps {
-  title: string;
-  value: string;
-  change: string;
-  isPositive: boolean;
-}
-
-function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
-  return (
-    <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-sm text-gray-600 font-medium">{title}</p>
-        <HelpCircle className="w-4 h-4 text-gray-400" />
-      </div>
-      <div className="flex items-center justify-between">
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
-        <div className={`flex items-center space-x-1 text-sm font-medium px-2 py-1 rounded-full ${
-          isPositive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
-        }`}>
-          <TrendingUp className="w-4 h-4" />
-          <span>{change}</span>
-        </div>
+        <button 
+          onClick={() => setShowFiltersPanel(true)} 
+          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          <Filter className="w-4 h-4" />
+          <span>Filtros</span>
+        </button>
+        <button 
+          onClick={() => setShowDownloadModal(true)} 
+          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          <Download className="w-4 h-4" />
+          <span>Descargar</span>
+        </button>
+        <button 
+          onClick={() => refetch()} 
+          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          <RefreshCw className="w-4 h-4" />
+          <span>Actualizar</span>
+        </button>
       </div>
     </div>
   );
@@ -35,7 +35,8 @@ export function VentasDashboard() {
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showFiltersPanel, setShowFiltersPanel] = useState(false);
   const [filters, setFilters] = useState({
-    periodo: '',
+    fechaInicio: '',
+    fechaFin: '',
     sucursal: '',
     metodo_pago: ''
   });
@@ -47,12 +48,10 @@ export function VentasDashboard() {
 
   // Apply filters to ventas data
   const filteredVentas = ventas.filter(venta => {
+    if (filters.fechaInicio && new Date(venta.fecha) < new Date(filters.fechaInicio)) return false;
+    if (filters.fechaFin && new Date(venta.fecha) > new Date(filters.fechaFin)) return false;
     if (filters.sucursal && venta.sucursal_id !== filters.sucursal) return false;
     if (filters.metodo_pago && venta.metodo_pago !== filters.metodo_pago) return false;
-    if (filters.periodo) {
-      const ventaYear = new Date(venta.fecha).getFullYear().toString();
-      if (ventaYear !== filters.periodo) return false;
-    }
     return true;
   });
 
@@ -263,20 +262,27 @@ export function VentasDashboard() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Período</label>
-                  <select
-                    value={filters.periodo}
-                    onChange={(e) => setFilters(prev => ({ ...prev, periodo: e.target.value }))}
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Fecha Inicio</label>
+                  <input
+                    type="date"
+                    value={filters.fechaInicio}
+                    onChange={(e) => setFilters(prev => ({ ...prev, fechaInicio: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Enero - Diciembre</option>
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                  </select>
+                  />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Todas las sucursales</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Fecha Fin</label>
+                  <input
+                    type="date"
+                    value={filters.fechaFin}
+                    onChange={(e) => setFilters(prev => ({ ...prev, fechaFin: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Sucursal</label>
                   <select
                     value={filters.sucursal}
                     onChange={(e) => setFilters(prev => ({ ...prev, sucursal: e.target.value }))}
@@ -309,11 +315,16 @@ export function VentasDashboard() {
               </div>
               
               <div className="mt-6">
-                <h4 className="text-sm font-medium text-gray-700 mb-3">Cajeros</h4>
+                <h4 className="text-sm font-medium text-gray-700 mb-3">Cajas</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {['Caja N°1', 'Caja N°2', 'Caja N°3', 'Caja N°4'].map(caja => (
-                    <label key={caja} className="flex items-center space-x-2">
-                      <input type="checkbox" className="w-4 h-4 text-blue-600 border-gray-300 rounded" />
+                    <label key={caja} htmlFor={`caja-${caja}`} className="flex items-center space-x-2">
+                      <input 
+                        id={`caja-${caja}`}
+                        name={`caja-${caja}`}
+                        type="checkbox" 
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded" 
+                      />
                       <span className="text-sm text-gray-700">{caja}</span>
                     </label>
                   ))}

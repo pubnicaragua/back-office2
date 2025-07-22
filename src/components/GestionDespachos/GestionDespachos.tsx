@@ -17,8 +17,8 @@ export function GestionDespachos() {
   });
 
   const { data: despachos, loading, refetch } = useSupabaseData<any>(
-    'despachos',
-    '*'
+    'despachos', 
+    '*, usuarios(nombres, apellidos)'
   );
   const { insert, loading: inserting } = useSupabaseInsert('despachos');
   const { data: usuarios } = useSupabaseData<any>('usuarios', '*');
