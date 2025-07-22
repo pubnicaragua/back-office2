@@ -100,7 +100,6 @@ function DonutChart({ title, data }: DonutChartProps) {
 
 export function GeneralDashboard() {
   const [showChat, setShowChat] = React.useState(false);
-  const [showChat, setShowChat] = React.useState(false);
   
   const { data: ventas, loading: ventasLoading } = useSupabaseData<any>('ventas', '*');
   const { data: ventaItems } = useSupabaseData<any>('venta_items', '*');
