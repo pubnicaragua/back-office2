@@ -53,23 +53,8 @@ export function GestionDespachos() {
   const handleAgregarDespacho = async () => {
     console.log('➕ AGREGANDO NUEVO DESPACHO');
     
-    const success = await insert({
-      empresa_id: '00000000-0000-0000-0000-000000000001',
-      sucursal_id: '00000000-0000-0000-0000-000000000001',
-      entregado_por: '80ca7f2b-d125-4df6-9f22-a5fe3ada00e4',
-      folio: `DESP-${Date.now()}`,
-      rut: '12345678-9',
-      direccion: 'Av. Principal 123',
-      estado: 'pendiente'
-    });
-
-    if (success) {
-      console.log('✅ DESPACHO AGREGADO EXITOSAMENTE');
-      setShowAgregarModal(false);
-      refetch();
-    } else {
-      console.log('❌ ERROR AL AGREGAR DESPACHO');
-    }
+    // Solo mostrar el modal, no agregar automáticamente
+    console.log('📋 MOSTRANDO MODAL PARA AGREGAR DESPACHO');
   };
 
   const handleDownloadReport = () => {

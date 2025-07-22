@@ -225,8 +225,8 @@ export function RecepcionPedidos() {
                 type="text"
                 value={filters.proveedor}
                 onChange={(e) => {
-                  console.log('🔍 FILTRO PROVEEDOR:', e.target.value);
                   setFilters(prev => ({ ...prev, proveedor: e.target.value }));
+                  console.log('🔍 FILTRO PROVEEDOR APLICADO:', e.target.value);
                 }}
                 placeholder="Buscar proveedor..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -243,8 +243,8 @@ export function RecepcionPedidos() {
                 type="date"
                 value={filters.fecha}
                 onChange={(e) => {
-                  console.log('📅 FILTRO FECHA:', e.target.value);
                   setFilters(prev => ({ ...prev, fecha: e.target.value }));
+                  console.log('📅 FILTRO FECHA APLICADO:', e.target.value);
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -253,7 +253,7 @@ export function RecepcionPedidos() {
             <div className="flex justify-end">
               <button
                 onClick={() => {
-                  console.log('✅ APLICANDO FILTROS PEDIDOS:', filters);
+                  console.log('✅ FILTROS PEDIDOS APLICADOS:', filters);
                   setShowFilters(false);
                 }}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"

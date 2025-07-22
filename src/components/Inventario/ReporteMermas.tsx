@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from '../Common/Modal';
+import { Search } from 'lucide-react';
 import { useSupabaseData, useSupabaseInsert } from '../../hooks/useSupabaseData';
 
 interface ReporteMermasProps {
