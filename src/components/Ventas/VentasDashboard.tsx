@@ -4,10 +4,6 @@ import { Modal } from '../Common/Modal';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 interface MetricsCardProps {
-  title: string;
-  value: string;
-  change: string;
-  isPositive: boolean;
 }
 
 function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
