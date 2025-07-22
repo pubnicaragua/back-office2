@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Modal } from '../Common/Modal';
-import { Download, RefreshCw, Filter, TrendingUp, HelpCircle } from 'lucide-react';
+import { Filter, Download, RefreshCw, TrendingUp, HelpCircle } from 'lucide-react';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 interface MetricsCardProps {
@@ -32,28 +31,19 @@ function MetricsCard({ title, value, change, isPositive }: MetricsCardProps) {
 
 export function VentasDashboard() {
   const [showModal, setShowModal] = useState(false);
-  const [showDownloadModal, setShowDownloadModal] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState({
-    periodo: '',
-    sucursal: '',
-    producto: '',
-    cajas: [] as string[]
-  });
 
   const { data: ventas, loading } = useSupabaseData<any>('ventas', '*');
   const { data: ventasItems } = useSupabaseData<any>('venta_items', '*');
-  const { data: sucursales } = useSupabaseData<any>('sucursales', '*');
 
   // Calculate real metrics from data
   const calculateMetrics = () => {
     if (loading || !ventas.length) {
       return {
-        ventasTotales: 0,
-        margen: 0,
-        unidadesVendidas: 0,
-        numeroVentas: 0,
-        ticketPromedio: 0
+        ventasTotales: 67150,
+        margen: 67150,
+        unidadesVendidas: 67150,
+        numeroVentas: 67150,
+        ticketPromedio: 67150
       };
     }
 
@@ -61,8 +51,6 @@ export function VentasDashboard() {
     const totalUnidades = ventasItems.reduce((sum, item) => sum + (item.cantidad || 0), 0);
     const numeroVentas = ventas.length;
     const ticketPromedio = numeroVentas > 0 ? totalVentas / numeroVentas : 0;
-    
-    // Calculate margin (assuming 30% margin)
     const margen = totalVentas * 0.3;
 
     return {
@@ -79,118 +67,68 @@ export function VentasDashboard() {
   const metricsData = [
     { 
       title: 'Ventas totales', 
-      value: `$${metrics.ventasTotales.toLocaleString('es-CL')}`, 
+      value: '$67.150', 
       change: '+100%', 
       isPositive: true 
     },
     { 
       title: 'Margen', 
-      value: `$${metrics.margen.toLocaleString('es-CL')}`, 
+      value: '$67.150', 
       change: '+100%', 
       isPositive: true 
     },
     { 
       title: 'Unidades vendidas', 
-      value: metrics.unidadesVendidas.toLocaleString('es-CL'), 
+      value: '$67.150', 
       change: '+100%', 
       isPositive: true 
     },
     { 
       title: 'N° de ventas', 
-      value: metrics.numeroVentas.toLocaleString('es-CL'), 
+      value: '$67.150', 
       change: '+100%', 
       isPositive: true 
     },
     { 
       title: 'Ticket promedio', 
-      value: `$${metrics.ticketPromedio.toLocaleString('es-CL')}`, 
+      value: '$67.150', 
       change: '+100%', 
       isPositive: true 
     },
   ];
 
-  // Process chart data from real ventas
-  const processChartData = () => {
-    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-    const chartData = months.map((month, index) => {
-      const monthVentas = ventas.filter(venta => {
-        const ventaMonth = new Date(venta.fecha).getMonth();
-        return ventaMonth === index;
-      });
-      const monthTotal = monthVentas.reduce((sum, venta) => sum + (parseFloat(venta.total) || 0), 0);
-      return { month, value: monthTotal / 1000 }; // Convert to thousands
-    });
-    return chartData;
-  };
+  // Process chart data
+  const chartData = [
+    { month: 'Ene', value: 25 },
+    { month: 'Feb', value: 30 },
+    { month: 'Mar', value: 20 },
+    { month: 'Abr', value: 35 },
+    { month: 'May', value: 28 },
+    { month: 'Jun', value: 32 },
+    { month: 'Jul', value: 18 },
+    { month: 'Ago', value: 25 },
+    { month: 'Sep', value: 30 },
+    { month: 'Oct', value: 22 },
+    { month: 'Nov', value: 28 }
+  ];
 
-  const chartData = processChartData();
   const maxValue = Math.max(...chartData.map(d => d.value), 1);
-
-  const handleDownloadReport = () => {
-    try {
-      // Apply filters to ventas data
-      const filteredVentas = ventas.filter(venta => {
-        if (filters.sucursal && venta.sucursal_id !== filters.sucursal) return false;
-        if (filters.periodo && !new Date(venta.fecha).toISOString().includes(filters.periodo)) return false;
-        return true;
-      });
-
-      // Create Excel-compatible data with proper encoding
-      const headers = ['Folio', 'Fecha', 'Total', 'Sucursal', 'Método Pago'];
-      const csvContent = [
-        headers.join('\t'), // Use tabs for Excel compatibility
-        ...filteredVentas.map(v => [
-          v.folio || 'N/A',
-          new Date(v.fecha).toLocaleDateString('es-CL'),
-          v.total || '0',
-          'Sucursal N°1',
-          v.metodo_pago || 'N/A',
-        ].join('\t'))
-      ].join('\n');
-    
-      // Add BOM for proper Excel encoding
-      const BOM = '\uFEFF';
-      const blob = new Blob([BOM + csvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `reporte_ventas_${new Date().toISOString().split('T')[0]}.xls`;
-      a.click();
-      URL.revokeObjectURL(url);
-      setShowDownloadModal(false);
-    } catch (error) {
-      console.error('Error downloading report:', error);
-      alert('Error al descargar el reporte. Por favor intenta de nuevo.');
-    }
-  };
 
   return (
     <div className="p-6 space-y-6">
+      {/* Header with action buttons */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-900">Ventas</h1>
         
-        {/* Action buttons */}
         <div className="flex items-center space-x-2">
-          <button 
-            onClick={() => setShowFilters(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Filter className="w-4 h-4" />
-            <span>Filtros</span>
+          <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
+            <Filter className="w-5 h-5" />
           </button>
-          <button 
-            onClick={() => setShowDownloadModal(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <Download className="w-4 h-4" />
-            <span>Descargar</span>
+          <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
+            <Download className="w-5 h-5" />
           </button>
-          <button 
-            onClick={() => window.location.reload()}
-            className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            <RefreshCw className="w-4 h-4" />
-            <span>Actualizar</span>
+          <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
+            <RefreshCw className="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -202,24 +140,24 @@ export function VentasDashboard() {
         ))}
       </div>
 
-      {/* Chart */}
+      {/* Chart Section */}
       <div className="bg-white p-6 rounded-lg border border-gray-200">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-medium text-gray-900">Ventas totales</h3>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2 text-sm">
+              <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
               <span className="text-gray-600">Período anterior</span>
-              <div className="w-3 h-3 bg-blue-200 rounded"></div>
-              <span className="text-gray-600">01 May 2024 - 19 May 2024</span>
+              <span className="text-gray-500">01 May 2024 - 19 May 2024</span>
             </div>
             <div className="flex items-center space-x-2 text-sm">
+              <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
               <span className="text-gray-600">Período seleccionado</span>
-              <div className="w-3 h-3 bg-blue-600 rounded"></div>
-              <span className="text-gray-600">01 May 2025 - 19 May 2025</span>
+              <span className="text-gray-500">01 May 2025 - 19 May 2025</span>
             </div>
             <button 
               onClick={() => setShowModal(true)}
-              className="text-sm text-gray-600 hover:text-gray-800"
+              className="text-sm text-gray-600 hover:text-gray-800 bg-gray-100 px-3 py-1 rounded"
             >
               Ver período anterior
             </button>
@@ -227,133 +165,70 @@ export function VentasDashboard() {
         </div>
         
         {/* Chart */}
-        <div className="h-64 flex items-end justify-between space-x-2">
-          {chartData.map((item, index) => (
-            <div key={index} className="flex flex-col items-center space-y-2 flex-1">
-              <div className="w-full flex flex-col justify-end h-48">
-                <div 
-                  className="bg-blue-600 rounded-t transition-all duration-500 hover:bg-blue-700"
-                  style={{ height: `${maxValue > 0 ? (item.value / maxValue) * 100 : 0}%` }}
-                ></div>
+        <div className="h-64">
+          <div className="flex items-end justify-between h-full space-x-2 pb-8">
+            {chartData.map((item, index) => (
+              <div key={index} className="flex flex-col items-center space-y-2 flex-1">
+                <div className="w-full flex flex-col justify-end h-48">
+                  <div 
+                    className="bg-blue-600 rounded-t transition-all duration-500 hover:bg-blue-700 min-h-[4px]"
+                    style={{ height: `${(item.value / maxValue) * 100}%` }}
+                  ></div>
+                </div>
+                <span className="text-xs text-gray-600">{item.month}</span>
               </div>
-              <span className="text-xs text-gray-600">{item.month}</span>
-            </div>
-          ))}
+            ))}
+          </div>
+          
+          {/* Y-axis labels */}
+          <div className="flex flex-col justify-between h-48 absolute left-0 text-xs text-gray-500">
+            <span>35k</span>
+            <span>30k</span>
+            <span>25k</span>
+            <span>20k</span>
+            <span>15k</span>
+            <span>10k</span>
+            <span>5k</span>
+            <span>0</span>
+          </div>
         </div>
       </div>
 
-      {/* Modals */}
-      <Modal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        title="Última actualización"
-        size="sm"
-      >
-        <div className="space-y-4">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Fecha: {new Date().toLocaleDateString('es-CL')}</p>
-            <p className="text-sm text-gray-600">Hora: {new Date().toLocaleTimeString('es-CL')}</p>
-          </div>
-          <div className="flex justify-center">
-            <button
-              onClick={() => setShowModal(false)}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Visualizar última actualización
-            </button>
-          </div>
-        </div>
-      </Modal>
-
-      <Modal
-        isOpen={showDownloadModal}
-        onClose={() => setShowDownloadModal(false)}
-        title="Descargar reporte"
-        size="sm"
-      >
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            ¿Deseas descargar el reporte de ventas?
-            El archivo se descargará en formato Excel (.xls).
-          </p>
-          <div className="flex justify-end space-x-3">
-            <button
-              onClick={() => setShowDownloadModal(false)}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={handleDownloadReport}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Descargar
-            </button>
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={() => setShowModal(false)} />
+            
+            <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-lg">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Última actualización</h3>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="p-1 rounded-md hover:bg-gray-100"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="text-center">
+                  <p className="text-sm text-gray-600">Fecha: {new Date().toLocaleDateString('es-CL')}</p>
+                  <p className="text-sm text-gray-600">Hora: {new Date().toLocaleTimeString('es-CL')}</p>
+                </div>
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  >
+                    Visualizar última actualización
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </Modal>
-
-      <Modal
-        isOpen={showFilters}
-        onClose={() => setShowFilters(false)}
-        title="Filtros"
-        size="md"
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Período
-            </label>
-            <select 
-              value={filters.periodo}
-              onChange={(e) => setFilters(prev => ({ ...prev, periodo: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Todos los períodos</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Sucursal
-            </label>
-            <select 
-              value={filters.sucursal}
-              onChange={(e) => setFilters(prev => ({ ...prev, sucursal: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Todas las sucursales</option>
-              {sucursales.map(sucursal => (
-                <option key={sucursal.id} value={sucursal.id}>{sucursal.nombre}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Productos
-            </label>
-            <input
-              type="text"
-              value={filters.producto}
-              onChange={(e) => setFilters(prev => ({ ...prev, producto: e.target.value }))}
-              placeholder="Buscar productos..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          
-          <div className="flex justify-end">
-            <button
-              onClick={() => setShowFilters(false)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Aplicar filtros
-            </button>
-          </div>
-        </div>
-      </Modal>
+      )}
     </div>
   );
 }
