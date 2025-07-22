@@ -177,10 +177,10 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
             </label>
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            {uploadMethod === 'xml' && '📄 XML: Facturas electrónicas SII'}
-            {uploadMethod === 'csv' && '📄 CSV: Formato simple y compatible'}
-            {uploadMethod === 'excel' && '📊 Excel: Soporta .xlsx y .xls'}
-            {uploadMethod === 'pdf' && '📋 PDF: Extrae tablas automáticamente'}
+            {uploadMethod === 'xml' ? '📄 XML: Facturas electrónicas SII' :
+             uploadMethod === 'csv' ? '📄 CSV: Formato simple y compatible' :
+             uploadMethod === 'excel' ? '📊 Excel: Soporta .xlsx y .xls' :
+             '📋 PDF: Extrae tablas automáticamente'}
           </p>
         </div>
 
