@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { Table } from '../Common/Table';
 import { FilterModal } from '../Common/FilterModal';
 import { Filter, Plus, Search, AlertTriangle } from 'lucide-react';
-import { useSupabaseData } from '../../hooks/useSupabaseData';
+import { useSupabaseData, useSupabaseUpdate } from '../../hooks/useSupabaseData';
 import { ReporteMermas } from './ReporteMermas';
 import { ActualizarInventario } from './ActualizarInventario';
-import { AgregarProductoModal } from './AgregarProductoModal';
 
 export function ProductosTotales() {
   const [currentPage, setCurrentPage] = useState(1);
