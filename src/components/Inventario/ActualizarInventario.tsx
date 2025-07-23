@@ -118,14 +118,15 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
       } else if (file.type === 'application/pdf') {
         console.log('📋 PROCESANDO PDF CON IVA');
         // Simulate PDF processing
-        const preciosConIva = [2618, 1666]; // Precios con IVA
+        const preciosConIva = [2618 * 1.19, 1666 * 1.19]; // Precios con IVA aplicado
         const mockPdfData = preciosConIva.map((precioConIva, index) => {
-          const precioSinIva = Math.round(precioConIva / 1.19);
+          const precioSinIva = Math.round(precioConIva);
           return {
             nombre: `Producto PDF ${index + 1}`,
             cantidad: 20 - (index * 10),
             precio: precioConIva,
-            costo: Math.round(precioSinIva * 0.7)
+            costo: Math.round(precioSinIva * 0.7),
+            observaciones: `Producto procesado desde PDF con IVA incluido`
           };
         });
         return mockPdfData;
@@ -149,12 +150,16 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
   };
 
   const handleConfirm = async () => {
+    console.log('🔄 INICIANDO CONFIRMACIÓN DE INVENTARIO MASIVO');
+    console.log('📊 PRODUCTOS A PROCESAR:', productos.length);
+    
     // 1. Se guarda automáticamente en Supabase
     
     // 2. Crear productos en la tabla productos
     for (const producto of productos) {
+      console.log('📦 CREANDO PRODUCTO:', producto.nombre);
       // Crear producto en tabla productos
-      const { data: newProduct, error } = await supabase
+      const { data: newProduct, error } = await import('../../lib/supabase').then(m => m.supabase)
         .from('productos')
         .insert({
           codigo: `PROD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -170,6 +175,7 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
         .single();
       
       if (!error && newProduct) {
+        console.log('✅ PRODUCTO CREADO EN BD:', newProduct.nombre);
         // Registrar movimiento de inventario
         await insert({
           empresa_id: '00000000-0000-0000-0000-000000000001',
@@ -190,11 +196,14 @@ export function ActualizarInventario({ isOpen, onClose }: ActualizarInventarioPr
           id: newProduct.id
         });
         
+      } else {
+        console.error('❌ ERROR CREANDO PRODUCTO:', error);
       }
     }
     
     // 3. Sincronizar con POS
     console.log('🔄 Sincronizando productos con terminales POS...');
+    console.log('✅ INVENTARIO MASIVO COMPLETADO');
     
     onClose();
     window.location.reload(); // Refresh para mostrar nuevos productos

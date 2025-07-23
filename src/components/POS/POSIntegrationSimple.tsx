@@ -140,17 +140,6 @@ export function POSIntegrationSimple() {
           </div>
         </div>
       </div>
-
-
-      {/* Contact Information */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-        <h3 className="font-semibold text-yellow-900 mb-3">💬 Soporte Técnico</h3>
-        <p className="text-yellow-800 mb-4">
-          Nuestro equipo puede ayudarte a configurar cualquier tipo de terminal POS.
-        </p>
-        <div className="space-y-2 text-sm text-yellow-700">
-          <p>📧 <strong>Email:</strong> soporte@solvendo.com</p>
-        </div>
       </div>
     </div>
   );

@@ -45,21 +45,25 @@ export function RecepcionPedidos() {
   });
 
   const handleAgregarPedido = async () => {
+    console.log('➕ INICIANDO AGREGAR PEDIDO');
     // Generar folio único
     const folio = `PED-${Date.now()}`;
+    console.log('📄 FOLIO GENERADO:', folio);
     
     // Verificar si ya existe un pedido con este folio
-    const { data: existingPedido } = await supabase
+    const { data: existingPedido } = await import('../../lib/supabase').then(m => m.supabase)
       .from('pedidos')
       .select('id')
       .eq('folio', folio)
       .single();
     
     if (existingPedido) {
+      console.log('⚠️ FOLIO DUPLICADO DETECTADO:', folio);
       alert('Ya existe un pedido con este folio. Intente nuevamente.');
       return;
     }
     
+    console.log('✅ FOLIO ÚNICO CONFIRMADO, CREANDO PEDIDO...');
     const success = await insert({
       empresa_id: '00000000-0000-0000-0000-000000000001',
       sucursal_id: '00000000-0000-0000-0000-000000000001',
@@ -70,8 +74,11 @@ export function RecepcionPedidos() {
     });
 
     if (success) {
+      console.log('✅ PEDIDO CREADO EXITOSAMENTE');
       setShowAgregarModal(false);
       refetch();
+    } else {
+      console.error('❌ ERROR CREANDO PEDIDO');
     }
   };
 

@@ -267,85 +267,90 @@ export function GestionDespachos() {
         title="Agregar Despacho"
         size="md"
       >
-        <form onSubmit={async (e) => {
-          e.preventDefault();
-          console.log('📝 CREANDO DESPACHO DESDE FORMULARIO');
-          
-          const success = await insert({
-            empresa_id: '00000000-0000-0000-0000-000000000001',
-            sucursal_id: '00000000-0000-0000-0000-000000000001',
-            entregado_por: '80ca7f2b-d125-4df6-9f22-a5fe3ada00e4',
-            folio: `DESP-${Date.now()}`,
-            rut: '12345678-9',
-            direccion: 'Av. Principal 123',
-            estado: 'pendiente'
-          });
-
-          if (success) {
-            console.log('✅ DESPACHO CREADO EXITOSAMENTE');
-            setShowAgregarModal(false);
-            refetch();
-          }
-        }} className="space-y-4">
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            Complete los datos del nuevo despacho:
+          </p>
           <div>
-            <label htmlFor="folio-despacho" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="folio-despacho-input" className="block text-sm font-medium text-gray-700 mb-1">
               Folio
             </label>
             <input
-              id="folio-despacho"
-              name="folio-despacho"
+              id="folio-despacho-input"
+              name="folio-despacho-input"
               type="text"
               defaultValue={`DESP-${Date.now()}`}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
             />
           </div>
           
           <div>
-            <label htmlFor="rut-despacho" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="rut-despacho-input" className="block text-sm font-medium text-gray-700 mb-1">
               RUT
             </label>
             <input
-              id="rut-despacho"
-              name="rut-despacho"
+              id="rut-despacho-input"
+              name="rut-despacho-input"
               type="text"
               defaultValue="12345678-9"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
             />
           </div>
           
           <div>
-            <label htmlFor="direccion-despacho" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="direccion-despacho-input" className="block text-sm font-medium text-gray-700 mb-1">
               Dirección
             </label>
             <input
-              id="direccion-despacho"
-              name="direccion-despacho"
+              id="direccion-despacho-input"
+              name="direccion-despacho-input"
               type="text"
               defaultValue="Av. Principal 123"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
             />
           </div>
           
           <div className="flex justify-end space-x-3">
             <button
-              type="button"
               onClick={() => setShowAgregarModal(false)}
               className="px-4 py-2 text-gray-600 hover:text-gray-800"
             >
               Cancelar
             </button>
             <button
-              type="submit"
+              onClick={async () => {
+                console.log('📝 CREANDO DESPACHO MANUAL');
+                const folio = document.getElementById('folio-despacho-input')?.value || `DESP-${Date.now()}`;
+                const rut = document.getElementById('rut-despacho-input')?.value || '12345678-9';
+                const direccion = document.getElementById('direccion-despacho-input')?.value || 'Av. Principal 123';
+                
+                console.log('📋 DATOS DESPACHO:', { folio, rut, direccion });
+                
+                const success = await insert({
+                  empresa_id: '00000000-0000-0000-0000-000000000001',
+                  sucursal_id: '00000000-0000-0000-0000-000000000001',
+                  entregado_por: '80ca7f2b-d125-4df6-9f22-a5fe3ada00e4',
+                  folio: folio,
+                  rut: rut,
+                  direccion: direccion,
+                  estado: 'pendiente'
+                });
+
+                if (success) {
+                  console.log('✅ DESPACHO CREADO EXITOSAMENTE');
+                  setShowAgregarModal(false);
+                  refetch();
+                } else {
+                  console.error('❌ ERROR CREANDO DESPACHO');
+                }
+              }}
               disabled={inserting}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
               {inserting ? 'Creando...' : 'Crear Despacho'}
             </button>
           </div>
-        </form>
+        </div>
       </Modal>
     </div>
   );

@@ -16,7 +16,19 @@ export function FilterModal({ isOpen, onClose, title = "Filtros", children, onAp
   const handleApplyFilter = () => {
     if (resetFilters) {
       console.log('🔄 RESTABLECIENDO FILTROS');
-      // Trigger reset logic here
+      // Reset all form inputs
+      const form = document.querySelector('.filter-form');
+      if (form) {
+        const inputs = form.querySelectorAll('input, select');
+        inputs.forEach(input => {
+          if (input.type === 'checkbox' || input.type === 'radio') {
+            input.checked = false;
+          } else {
+            input.value = '';
+          }
+        });
+        console.log('✅ FILTROS RESTABLECIDOS');
+      }
     }
     console.log('✅ APLICANDO FILTROS:', { title });
     if (onApplyFilter) {
@@ -45,7 +57,7 @@ export function FilterModal({ isOpen, onClose, title = "Filtros", children, onAp
           </button>
         </div>
         
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 filter-form">
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
