@@ -140,7 +140,6 @@ export function POSIntegrationSimple() {
           </div>
         </div>
       </div>
-      </div>
     </div>
   );
 }
